@@ -11,11 +11,10 @@
         <activity
             android:name=".MainCanvas"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name="com.ideascontest.navi.uask.LoginActivity"
-            android:theme="@style/AppThemeDark" >
+            android:name=".LoginActivity"
+            android:theme="@style/AppThemeDark">
 
             <!-- android:label="@string/title_activity_login"< -->
             <intent-filter>
@@ -25,8 +24,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.ideascontest.navi.uask.SignupActivity"
-            android:theme="@style/AppThemeDark" >
+            android:name=".SignupActivity"
+            android:theme="@style/AppThemeDark">
             >
         </activity>
     </application>

@@ -1,7 +1,13 @@
+/*
+Code Written by Navi
+Implements Log in functionality of uAsk
+7-02-17
+* */
 package com.ideascontest.navi.uask;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.SpannableString;
@@ -19,18 +25,28 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import cz.msebera.android.httpclient.Header;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
 
+    //get all the layout elements by their id
     @InjectView(R.id.input_email) EditText _emailText;
     @InjectView(R.id.input_password) EditText _passwordText;
     @InjectView(R.id.btn_login) Button _loginButton;
     @InjectView(R.id.link_signup) TextView _signupLink;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,124 +54,143 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
 
-        SpannableString signupText = new SpannableString("Don't Have an Account? Create one");
-        ClickableSpan myClickableSpan = new ClickableSpan()
-        {
+        //This method to implement the sign up link functionality.
+        implementSignUpLink();
+
+        //Listener for Log in button
+        _loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("LoginActivity","clickable Span");
+                //Main logic for login
+                    performLogin();
+            }
+        });
+    }
+
+    private void implementSignUpLink()
+    {
+        SpannableString signupText = new SpannableString("Don't Have an Account? Create one");
+
+        ClickableSpan myClickableSpan = new ClickableSpan() {
+            @Override
+            public void onClick(View v) {
+                Log.d("LoginActivity", "clickable Span");
                 Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
                 startActivityForResult(intent, REQUEST_SIGNUP);
             }
         };
-        signupText.setSpan(myClickableSpan, 23,33, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        signupText.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primaryOrange)),23,33,0);
+        signupText.setSpan(myClickableSpan, 23, 33, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        signupText.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primaryOrange)), 23, 33, 0);
         _signupLink.setText(signupText);
         _signupLink.setMovementMethod(LinkMovementMethod.getInstance());
-
-        _loginButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Log.d("LoginActivity","clickable Span");
-                Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
-                startActivityForResult(intent, REQUEST_SIGNUP);
-            }
-        });
-        /*
-    _signupLink.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // Start the Signup activity
-                Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
-                startActivityForResult(intent, REQUEST_SIGNUP);
-            }
-        });*/
     }
-/*
-    public void login() {
-        Log.d(TAG, "Login");
 
-        if (!validate()) {
-            onLoginFailed();
+    private void performLogin()
+    {
+        Log.d("LoginActivity", "login");
+        _loginButton.setEnabled(false);
+
+        String email = _emailText.getText().toString();
+        String password = _passwordText.getText().toString();
+
+        if(!validate(email,password))
+        {
+            _loginButton.setEnabled(true);
             return;
         }
 
-        _loginButton.setEnabled(false);
-
- //       final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
-   //             R.style.AppTheme_Dark_Dialog);
+        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
+                R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
+        RequestParams params = new RequestParams();
+        params.put("username", email);
+        params.put("password", password);
 
-        // TODO: Implement your own authentication logic here.
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get("http://192.168.0.114:8080/UaskServiceProvider/login/dologin", params, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                try {
+                    progressDialog.dismiss();
+                    // JSON Object
+                    String s = new String(responseBody,"UTF-8");
 
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onLoginSuccess or onLoginFailed
-                        onLoginSuccess();
-                        // onLoginFailed();
-                        progressDialog.dismiss();
+                    JSONObject obj = new JSONObject(s);
+                    // When the JSON response has status boolean value assigned with true
+                    if (obj.getBoolean("status")) {
+                        Toast.makeText(getApplicationContext(), "You are successfully logged in!", Toast.LENGTH_LONG).show();
+                        // Navigate to Home screen
+                        Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
+                        startActivityForResult(intent, REQUEST_SIGNUP);
+                        _loginButton.setEnabled(true);
+                        finish();
                     }
-                }, 3000);
-    }
+                    else
+                    {
+                        Toast.makeText(getApplicationContext(), "Email or Password are wrong. Please try again.", Toast.LENGTH_LONG).show();
+                        _loginButton.setEnabled(true);
+                    }
+                    // Else display error message
 
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_SIGNUP) {
-            if (resultCode == RESULT_OK) {
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
 
-                // TODO: Implement successful signup logic here
-                // By default we just finish the Activity and log them in automatically
-                this.finish();
             }
-        }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                progressDialog.dismiss();
+                _loginButton.setEnabled(true);
+                // When Http response code is '404'
+                if (statusCode == 404) {
+                    Toast.makeText(getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code is '500'
+                else if (statusCode == 500) {
+                    Toast.makeText(getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code other than 404, 500
+                else {
+                    Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                }
+            }
+
+        });
+
     }
 
-    @Override
-    public void onBackPressed() {
-        // disable going back to the MainActivity
-        moveTaskToBack(true);
-    }
-
-    public void onLoginSuccess() {
-        _loginButton.setEnabled(true);
-        finish();
-    }
-
-    public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
-
-        _loginButton.setEnabled(true);
-    }
-
-    public boolean validate() {
+    private boolean validate(String email,String password) {
         boolean valid = true;
 
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
-
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        //if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if(email.isEmpty()){
             _emailText.setError("enter a valid email address");
             valid = false;
         } else {
             _emailText.setError(null);
         }
 
-        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _passwordText.setError("between 4 and 10 alphanumeric characters");
+        if (password.isEmpty() || password.length() < 3 || password.length() > 10) {
+            _passwordText.setError("between 3 and 10 alphanumeric characters");
             valid = false;
         } else {
             _passwordText.setError(null);
         }
 
         return valid;
-    }*/
+    }
+
+    public void onLoginSuccess() {
+            _loginButton.setEnabled(true);
+        finish();
+        }
 }

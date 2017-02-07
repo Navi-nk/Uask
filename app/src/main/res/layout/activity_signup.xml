@@ -81,6 +81,23 @@
                 android:hint="Confirm Password"/>
         </android.support.design.widget.TextInputLayout>
 
+
+        <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+            android:id="@+id/android_material_design_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Faculty"
+            app:met_underlineColor="@color/iron"
+            app:met_primaryColor="@color/white"
+            app:met_baseColor="@color/iron"
+            app:met_floatingLabelTextSize="16sp"
+            app:met_floatingLabelTextColor="@color/primaryOrange"
+            app:met_textColor="@color/primaryOrange"
+            app:met_textColorHint="@color/primaryOrange"
+            app:met_floatingLabel="normal"
+            />
+
+
         <!-- Signup Button -->
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_signup"

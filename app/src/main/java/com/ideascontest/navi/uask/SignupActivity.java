@@ -10,10 +10,13 @@ import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -26,12 +29,39 @@ public class SignupActivity extends AppCompatActivity {
     @InjectView(R.id.input_password) EditText _passwordText;
     @InjectView(R.id.btn_signup) Button _signupButton;
     @InjectView(R.id.link_login) TextView _loginLink;
+    String[] SPINNERLIST = {"Arts & Social Sciences",
+            "Business",
+            "Computing",
+            "Continuing and Lifelong Education",
+            "Dentistry",
+            "Design & Environment",
+            "Development of Teaching & Learning",
+            "Duke-NUS",
+            "Engineering",
+            "English Language Communication",
+            "Integrative Sciences & Engineering",
+            "Law",
+            "Medicine",
+            "Music",
+            "Public Health",
+            "Public Policy",
+            "Science",
+            "Systems Science",
+            "USP",
+            "Yale-NUS"
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         ButterKnife.inject(this);
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, SPINNERLIST);
+        MaterialBetterSpinner materialDesignSpinner = (MaterialBetterSpinner)
+                findViewById(R.id.android_material_design_spinner);
+        materialDesignSpinner.setAdapter(arrayAdapter);
 
         SpannableString signupText = new SpannableString("Already a member? Login");
         ClickableSpan myClickableSpan = new ClickableSpan()

@@ -1,8 +1,10 @@
 package com.ideascontest.navi.uask;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,6 +17,7 @@ import android.view.MenuItem;
 
 public class MainCanvas extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final int REQUEST_SIGNUP = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,17 @@ public class MainCanvas extends AppCompatActivity
             super.onBackPressed();
         }
     }
+
+    public void navigateToAnswer(View view) {
+        Intent intent = new Intent(getApplicationContext(), AnswerActivity.class);
+        startActivity(intent);
+    }
+
+    public void navigateToPostAnswer(View view) {
+        Intent intent = new Intent(getApplicationContext(), PostAnswer.class);
+        startActivity(intent);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

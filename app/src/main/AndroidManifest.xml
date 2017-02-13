@@ -29,7 +29,9 @@
             >
         </activity>
         <activity android:name=".AnswerActivity" />
-        <activity android:name=".PostAnswer"></activity>
+        <activity android:name=".PostAnswer"
+            android:label="Post Answer"
+            android:parentActivityName=".MainCanvas"/>
     </application>
 
 </manifest>

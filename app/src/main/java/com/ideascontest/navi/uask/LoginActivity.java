@@ -42,6 +42,9 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
 
+    // Session Manager Class
+    SessionManager _session;
+
     //get all the layout elements by their id
     @InjectView(R.id.input_email) EditText _emailText;
     @InjectView(R.id.input_password) EditText _passwordText;
@@ -54,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
 
+        _session = new SessionManager(getApplicationContext());
         //This method to implement the sign up link functionality.
         implementSignUpLink();
 
@@ -90,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
         Log.d("LoginActivity", "login");
         _loginButton.setEnabled(false);
 
-        String email = _emailText.getText().toString();
+        final String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
         if(!validate(email,password))
@@ -121,7 +125,9 @@ public class LoginActivity extends AppCompatActivity {
                     JSONObject obj = new JSONObject(s);
                     // When the JSON response has status boolean value assigned with true
                     if (obj.getBoolean("status")) {
-                        //Toast.makeText(getApplicationContext(), "You are successfully logged in!", Toast.LENGTH_LONG).show();
+                        //Store user info in session so that user is only required to login if he/she logs out of the app
+                        _session.createLoginSession(email);
+
                         // Navigate to Home screen
                         Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
                         startActivity(intent);

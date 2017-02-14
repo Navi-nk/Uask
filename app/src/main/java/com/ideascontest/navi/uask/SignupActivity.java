@@ -3,16 +3,20 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +29,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -32,16 +38,24 @@ import cz.msebera.android.httpclient.Header;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
+    String _facultyText;
 
-    @InjectView(R.id.input_name) EditText _nameText;
-    @InjectView(R.id.input_email) EditText _emailText;
-    @InjectView(R.id.input_password) EditText _passwordText;
-    @InjectView(R.id.input_password_confirm) EditText _pwdCofirmText;
-    @InjectView(R.id.faculty_spinner) EditText
-    @InjectView(R.id.btn_signup) Button _signupButton;
-    @InjectView(R.id.link_login) TextView _loginLink;
+    @InjectView(R.id.input_name)
+    EditText _nameText;
+    @InjectView(R.id.input_email)
+    EditText _emailText;
+    @InjectView(R.id.input_password)
+    EditText _passwordText;
+    @InjectView(R.id.input_password_confirm)
+    EditText _pwdConfirmText;
+    @InjectView(R.id.faculty_spinner)
+    MaterialBetterSpinner _facultyDropdown;
+    @InjectView(R.id.btn_signup)
+    Button _signupButton;
+    @InjectView(R.id.link_login)
+    TextView _loginLink;
 
-   static String[] SPINNERLIST = {"Arts & Social Sciences",
+    static String[] SPINNERLIST = {"Arts & Social Sciences",
             "Business",
             "Computing",
             "Continuing and Lifelong Education",
@@ -61,7 +75,7 @@ public class SignupActivity extends AppCompatActivity {
             "Systems Science",
             "USP",
             "Yale-NUS"
-            };
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,95 +83,111 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
         ButterKnife.inject(this);
 
-        implementLoginUpLink();
+        implementLogInLink();
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, SPINNERLIST);
-        MaterialBetterSpinner materialDesignSpinner = (MaterialBetterSpinner)
-                findViewById(R.id.android_material_design_spinner);
-        materialDesignSpinner.setAdapter(arrayAdapter);
+        populateFacultySpinner();
 
         _signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                //login for signup
+                performSignup();
             }
         });
 
     }
 
-    private void implementLoginUpLink()
-    {
-        SpannableString signupText = new SpannableString("Don't Have an Account? Create one");
-        ClickableSpan myClickableSpan = new ClickableSpan()
-        {
+    private void implementLogInLink() {
+        SpannableString signupText = new SpannableString("Already a member? Login");
+        ClickableSpan myClickableSpan = new ClickableSpan() {
             @Override
             public void onClick(View v) {
-                Log.d("LoginActivity","clickable Span");
+                Log.d("SignupActivity", "clickable Span");
                 finish();
             }
         };
-        signupText.setSpan(myClickableSpan, 18,23, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        signupText.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primaryOrange)),18,23,0);
+        signupText.setSpan(myClickableSpan, 18, 23, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        signupText.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primaryOrange)), 18, 23, 0);
         _loginLink.setText(signupText);
         _loginLink.setMovementMethod(LinkMovementMethod.getInstance());
     }
-}
 
-    private void performSignup()
-    {
-        Log.d("SignupActivity", "sign");
+    private void populateFacultySpinner() {
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, SPINNERLIST);
+        final MaterialBetterSpinner materialDesignSpinner = (MaterialBetterSpinner)
+                findViewById(R.id.faculty_spinner);
+        materialDesignSpinner.setAdapter(arrayAdapter);
+        materialDesignSpinner.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    //Not required now
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    //Not required
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                _facultyText = materialDesignSpinner.getText().toString();
+            }
+        });
+    }
+
+    private void performSignup() {
+        Log.d("SignupActivity", "signup");
         _signupButton.setEnabled(false);
 
         String name = _nameText.getText().toString();
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
+        String confirmPassword = _pwdConfirmText.getText().toString();
 
-        if(!validate(name,email,password))
-        {
+        if (!validate(name, email, password, confirmPassword, _facultyText)) {
             _signupButton.setEnabled(true);
             return;
         }
 
-        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
+        final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Authenticating...");
+        progressDialog.setMessage("Processing...");
         progressDialog.show();
 
         RequestParams params = new RequestParams();
-        params.put("username", email);
+        params.put("username", name);
+        params.put("email", email);
         params.put("password", password);
+        params.put("faculty", _facultyText);
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get("http://192.168.0.114:8080/UaskServiceProvider/login/dologin", params, new AsyncHttpResponseHandler() {
+        client.get("http://192.168.0.114:8080/UaskServiceProvider/signup/doregister", params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {
                     progressDialog.dismiss();
                     // JSON Object
-                    String s = new String(responseBody,"UTF-8");
+                    String s = new String(responseBody, "UTF-8");
 
                     JSONObject obj = new JSONObject(s);
                     // When the JSON response has status boolean value assigned with true
                     if (obj.getBoolean("status")) {
-                        //Toast.makeText(getApplicationContext(), "You are successfully logged in!", Toast.LENGTH_LONG).show();
                         // Navigate to Home screen
                         Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
-                        startActivityForResult(intent, REQUEST_SIGNUP);
-                        _loginButton.setEnabled(true);
+                        startActivity(intent);
+                        _signupButton.setEnabled(true);
                         finish();
-                    }
-                    else
-                    {
-                        Toast.makeText(getApplicationContext(), "Email or Password are wrong. Please try again.", Toast.LENGTH_LONG).show();
-                        _loginButton.setEnabled(true);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "User already registered. Please continue to login.", Toast.LENGTH_LONG).show();
+                        _signupButton.setEnabled(true);
                     }
                     // Else display error message
 
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
-                    Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
                     e.printStackTrace();
 
                 } catch (UnsupportedEncodingException e) {
@@ -169,37 +199,40 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 progressDialog.dismiss();
-                _loginButton.setEnabled(true);
+                _signupButton.setEnabled(true);
                 // When Http response code is '404'
                 if (statusCode == 404) {
                     Toast.makeText(getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
                 }
                 // When Http response code is '500'
                 else if (statusCode == 500) {
-                    Toast.makeText(getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
                 }
                 // When Http response code other than 404, 500
                 else {
-                    Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Connection Error. Make sure device is connected to Internet.", Toast.LENGTH_LONG).show();
                 }
             }
 
         });
     }
 
-    private boolean validate(String name, String email,String password) {
+    private boolean validate(String name, String email, String password, String confirmpassword, String faculty) {
         boolean valid = true;
 
-        if(name.isEmpty()) {
-            _nameText.setError("Enter user profile name");
+        if (name.isEmpty()) {
+            _nameText.setError("Please enter user profile name");
             valid = false;
-        }
-        else{
+        } else {
             _nameText.setError(null);
         }
 
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _emailText.setError("enter a valid email address");
+        Pattern p_1 = Pattern.compile("^[A-Za-z0-9+_-]+@nus.edu.sg$");
+        Pattern p_2 = Pattern.compile("^[A-Za-z0-9+_-]+@u.nus.edu$");
+        Matcher match_1 = p_1.matcher(email);
+        Matcher match_2 = p_2.matcher(email);
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() || !match_1.matches() || !match_2.matches()) {
+            _emailText.setError("Please enter a valid email address");
             valid = false;
         } else {
             _emailText.setError(null);
@@ -212,5 +245,20 @@ public class SignupActivity extends AppCompatActivity {
             _passwordText.setError(null);
         }
 
+        if (confirmpassword.isEmpty() || !confirmpassword.equals(password)) {
+            _pwdConfirmText.setError("Please enter password same as entered above");
+            valid = false;
+        } else {
+            _pwdConfirmText.setError(null);
+        }
+
+        if ((faculty == null) || faculty.isEmpty()) {
+            _facultyDropdown.setError("Please select your faculty");
+            valid = false;
+        } else {
+            _facultyDropdown.setError(null);
+        }
+
         return valid;
     }
+}

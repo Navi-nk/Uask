@@ -1,8 +1,10 @@
 package com.ideascontest.navi.uask;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,13 +15,42 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.HashMap;
+
 public class MainCanvas extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final int REQUEST_SIGNUP = 0;
+
+    // Session Manager Class
+    SessionManager _session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_canvas);
+        // Session class instance
+        _session = new SessionManager(getApplicationContext());
+        //Check if user is still loggedin if not redirect to login activity
+        if(!_session.isLoggedIn())
+        {
+            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+            // Closing all the Activities
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            // Add new Flag to start new Activity
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            // Staring Login Activity
+            startActivity(i);
+            finish();
+        }
+
+        // get user data from session
+        HashMap<String, String> user = _session.getUserDetails();
+
+        // name
+        String userName = user.get(SessionManager.KEY_NAME);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -51,6 +82,17 @@ public class MainCanvas extends AppCompatActivity
             super.onBackPressed();
         }
     }
+
+    public void navigateToAnswer(View view) {
+        Intent intent = new Intent(getApplicationContext(), AnswerActivity.class);
+        startActivity(intent);
+    }
+
+    public void navigateToPostAnswer(View view) {
+        Intent intent = new Intent(getApplicationContext(), PostAnswer.class);
+        startActivity(intent);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

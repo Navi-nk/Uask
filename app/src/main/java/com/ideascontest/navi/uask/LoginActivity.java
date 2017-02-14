@@ -1,8 +1,3 @@
-/*
-Code Written by Navi
-Implements Log in functionality of uAsk
-7-02-17
-* */
 package com.ideascontest.navi.uask;
 
 import android.app.ProgressDialog;
@@ -19,6 +14,7 @@ import android.text.style.UnderlineSpan;
 import android.util.Log;
 
 import android.content.Intent;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -66,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //Main logic for login
-                    performLogin();
+                performLogin();
             }
         });
     }
@@ -196,7 +192,17 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginSuccess() {
-            _loginButton.setEnabled(true);
+        _loginButton.setEnabled(true);
         finish();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            finish();
+            return true;
         }
+        return super.onKeyDown(keyCode, event);
+    }
 }
+     

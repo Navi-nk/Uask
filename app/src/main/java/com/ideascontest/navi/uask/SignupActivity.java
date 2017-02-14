@@ -40,6 +40,9 @@ public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
     String _facultyText;
 
+    // Session Manager Class
+    SessionManager _session;
+
     @InjectView(R.id.input_name)
     EditText _nameText;
     @InjectView(R.id.input_email)
@@ -82,6 +85,8 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         ButterKnife.inject(this);
+
+        _session = new SessionManager(getApplicationContext());
 
         implementLogInLink();
 
@@ -141,7 +146,7 @@ public class SignupActivity extends AppCompatActivity {
         _signupButton.setEnabled(false);
 
         String name = _nameText.getText().toString();
-        String email = _emailText.getText().toString();
+        final String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
         String confirmPassword = _pwdConfirmText.getText().toString();
 
@@ -174,6 +179,8 @@ public class SignupActivity extends AppCompatActivity {
                     JSONObject obj = new JSONObject(s);
                     // When the JSON response has status boolean value assigned with true
                     if (obj.getBoolean("status")) {
+
+                        _session.createLoginSession(email);
                         // Navigate to Home screen
                         Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
                         startActivity(intent);
@@ -226,12 +233,12 @@ public class SignupActivity extends AppCompatActivity {
         } else {
             _nameText.setError(null);
         }
-
-        Pattern p_1 = Pattern.compile("^[A-Za-z0-9+_-]+@nus.edu.sg$");
-        Pattern p_2 = Pattern.compile("^[A-Za-z0-9+_-]+@u.nus.edu$");
+      //  ^[A-Za-z].*?@gmail\\.com$
+        Pattern p_1 = Pattern.compile("^[A-Za-z0-9+_-]+@nus\\.edu\\.sg$");
+        Pattern p_2 = Pattern.compile("^[A-Za-z0-9+_-]+@u\\.nus\\.edu$");
         Matcher match_1 = p_1.matcher(email);
         Matcher match_2 = p_2.matcher(email);
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() || !match_1.matches() || !match_2.matches()) {
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() || (!match_1.matches() && !match_2.matches())) {
             _emailText.setError("Please enter a valid email address");
             valid = false;
         } else {

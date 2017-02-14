@@ -81,7 +81,6 @@
                 android:hint="Confirm Password"/>
         </android.support.design.widget.TextInputLayout>
 
-
         <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
             android:id="@+id/faculty_spinner"
             android:layout_width="match_parent"

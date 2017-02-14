@@ -121,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
                     JSONObject obj = new JSONObject(s);
                     // When the JSON response has status boolean value assigned with true
                     if (obj.getBoolean("status")) {
-                        Toast.makeText(getApplicationContext(), "You are successfully logged in!", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getApplicationContext(), "You are successfully logged in!", Toast.LENGTH_LONG).show();
                         // Navigate to Home screen
                         Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
                         startActivityForResult(intent, REQUEST_SIGNUP);

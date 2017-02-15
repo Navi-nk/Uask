@@ -31,7 +31,7 @@ public class MainCanvas extends AppCompatActivity
         // Session class instance
         _session = new SessionManager(getApplicationContext());
         //Check if user is still loggedin if not redirect to login activity
-        if(!_session.isLoggedIn())
+      /*  if(!_session.isLoggedIn())
         {
             Intent i = new Intent(getApplicationContext(), LoginActivity.class);
             // Closing all the Activities
@@ -43,7 +43,7 @@ public class MainCanvas extends AppCompatActivity
             // Staring Login Activity
             startActivity(i);
             finish();
-        }
+        }*/
 
         // get user data from session
         HashMap<String, String> user = _session.getUserDetails();

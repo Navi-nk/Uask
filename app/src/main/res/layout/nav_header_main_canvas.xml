@@ -44,6 +44,4 @@
         android:background="@drawable/toggle_expand_collapse"
         android:textOff="@null"
         android:textOn="@null"/>
-
-
 </LinearLayout>

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -14,15 +15,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
+import android.widget.ToggleButton;
 
 import java.util.HashMap;
 
 public class MainCanvas extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final int REQUEST_SIGNUP = 0;
-
+    private static final String TAG = "Main Canvas";
     // Session Manager Class
     SessionManager _session;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +50,16 @@ public class MainCanvas extends AppCompatActivity
             finish();
         }*/
 
+        NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
+        View header = navView.getHeaderView(0);
+        ToggleButton mAccountToggle = (ToggleButton) header.findViewById(R.id.account_view_icon_button);
+        mAccountToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                //mAdapter.setUseAccountMode(isChecked);
+                Log.d(TAG,"Toggle");
+            }
+        });
         // get user data from session
         HashMap<String, String> user = _session.getUserDetails();
 

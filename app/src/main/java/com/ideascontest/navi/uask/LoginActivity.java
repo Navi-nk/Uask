@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     SessionManager _session;
 
     //get all the layout elements by their id
-    @InjectView(R.id.input_email) EditText _emailText;
+    @InjectView(R.id.input_name) EditText _emailText;
     @InjectView(R.id.input_password) EditText _passwordText;
     @InjectView(R.id.btn_login) Button _loginButton;
     @InjectView(R.id.link_signup) TextView _signupLink;
@@ -110,7 +110,8 @@ public class LoginActivity extends AppCompatActivity {
         params.put("password", password);
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get("http://192.168.0.114:8080/UaskServiceProvider/login/dologin", params, new AsyncHttpResponseHandler() {
+        //client.get("http://192.168.0.114:8080/UaskServiceProvider/login/dologin", params, new AsyncHttpResponseHandler() {
+        client.get("http://172.27.242.165:8080/UaskServiceProvider/login/dologin", params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {
@@ -122,7 +123,7 @@ public class LoginActivity extends AppCompatActivity {
                     // When the JSON response has status boolean value assigned with true
                     if (obj.getBoolean("status")) {
                         //Store user info in session so that user is only required to login if he/she logs out of the app
-                        _session.createLoginSession(email);
+                        _session.createLoginSession(email,obj.getString("faculty"));
 
                         // Navigate to Home screen
                         Intent intent = new Intent(getApplicationContext(), MainCanvas.class);

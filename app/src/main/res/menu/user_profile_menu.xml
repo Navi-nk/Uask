@@ -3,13 +3,17 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/nav_question"
             android:icon="@drawable/help_circle"
             android:title="Questions" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_answers"
             android:icon="@drawable/comment_text"
             android:title="Answers" />
+        <item
+            android:id="@+id/nav_facprivate"
+            android:icon="@drawable/privatequestion"
+            android:title="" />
 
     </group>
 

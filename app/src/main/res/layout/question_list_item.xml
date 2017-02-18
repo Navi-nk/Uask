@@ -5,31 +5,72 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/text_margin"
-        android:layout_marginTop="10dp"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:id="@+id/textQuestion"/>
-    <TextView
-        android:id="@+id/textTopAnswer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        android:layout_marginLeft="@dimen/text_margin"
-        android:layout_marginRight="@dimen/text_margin" />
-    <TextView
-        android:id="@+id/textAnswerCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginLeft="@dimen/text_margin"
-        android:layout_marginRight="@dimen/text_margin" />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="6dp"
-        android:background="@color/base" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/text_margin"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"
+            android:onClick="navigateToAnswer"
+            android:id="@+id/textQuestion"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textAuthor"
+                android:layout_marginLeft="@dimen/text_margin"
+                android:textColor="@color/iron" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/textTimeStamp"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/iron" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textTopAnswer"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="@dimen/text_margin"
+            android:layout_marginRight="@dimen/text_margin"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="@dimen/text_margin"
+            android:id="@+id/textAnswerCount"
+            android:textAllCaps="true"/>
+
+        <Button
+            android:id="@+id/bSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="12dp"
+            android:text="Answer"
+            android:onClick="navigateToPostAnswer"
+            />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:background="@color/base" />
+    </LinearLayout>
 </FrameLayout>

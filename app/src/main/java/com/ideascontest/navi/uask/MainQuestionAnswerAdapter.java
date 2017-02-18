@@ -104,7 +104,9 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
         Question current=data.get(position);
         questionTopAnswerHolder.textQuestion.setText(current.questionText);
         questionTopAnswerHolder.textTopAnswer.setText(current.topAnswer);
-        questionTopAnswerHolder.textAnswerCount.setText(String.valueOf(current.noOfAnswers));
+        questionTopAnswerHolder.textAnswerCount.setText(String.valueOf(current.noOfAnswers + " Answers"));
+        questionTopAnswerHolder.textTimeStamp.setText(current.timeStamp);
+        questionTopAnswerHolder.textAuthor.setText(current.author);
     }
 
     /**
@@ -126,7 +128,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
              {
 
         // Will display the position in the list, ie 0 through getItemCount() - 1
-        TextView textQuestion,textTopAnswer,textAnswerCount;
+        TextView textQuestion,textTopAnswer,textAnswerCount,textAuthor,textTimeStamp;
         // Will display which ViewHolder is displaying this data
 
         /**
@@ -142,6 +144,9 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
             textQuestion= (TextView) itemView.findViewById(R.id.textQuestion);
             textTopAnswer= (TextView) itemView.findViewById(R.id.textTopAnswer);
             textAnswerCount = (TextView) itemView.findViewById(R.id.textAnswerCount);
+            textAuthor = (TextView) itemView.findViewById(R.id.textAuthor);
+            textTimeStamp = (TextView) itemView.findViewById(R.id.textTimeStamp);
+
         }
 
     }

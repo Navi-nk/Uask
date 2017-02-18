@@ -8,4 +8,6 @@ public class Question {
     public String questionText;
     public int noOfAnswers;
     public String topAnswer;
+    public String timeStamp;
+    public String author;
 }

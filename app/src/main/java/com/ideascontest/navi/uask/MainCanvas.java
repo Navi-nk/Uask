@@ -53,7 +53,7 @@ public class MainCanvas extends AppCompatActivity
 
         // name
         String userName = user.get(SessionManager.KEY_NAME);
-        String facultyName =  user.get(SessionManager.KEY_FAC);
+        final String facultyName =  user.get(SessionManager.KEY_FAC);
 
         //get reference to navigation view
         final NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
@@ -73,9 +73,12 @@ public class MainCanvas extends AppCompatActivity
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Log.d(TAG,"Toggle");
                 navView.getMenu().clear();
-                if(isChecked)
+                if(isChecked) {
                     navView.inflateMenu(R.menu.user_profile_menu);
-                else
+                    MenuItem mitem =  navView.getMenu().findItem(R.id.nav_facprivate);
+                   mitem.setTitle("Faculty Exclusive");
+
+                }else
                     navView.inflateMenu(R.menu.activity_main_canvas_drawer);
             }
         });
@@ -164,17 +167,11 @@ public class MainCanvas extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_transport) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_food) {
 
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_maps) {
             Intent i = new Intent(getApplicationContext(), MapActivity.class);
             startActivity(i);
         }else if(id == R.id.nav_logout){

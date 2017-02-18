@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_camera"
+    <group android:checkableBehavior="single"
+        android:title="Categories">
+<!--        <item
+            android:id="@+id/nav_transport"
             android:icon="@drawable/ic_menu_camera"
             android:title="Import" />
         <item
@@ -17,19 +18,40 @@
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:title="Tools" /> -->
+        <item
+            android:id="@+id/nav_transport"
+            android:icon="@drawable/walk"
+            android:title="Getting Around" />
+        <item
+            android:id="@+id/nav_food"
+            android:icon="@drawable/food"
+            android:title="Food &amp; Beverages" />
+        <item
+            android:id="@+id/nav_fac"
+            android:icon="@drawable/university"
+            android:title="Faculties/Departments" />
+        <item
+            android:id="@+id/nav_sport"
+            android:icon="@drawable/sports"
+            android:title="Sports &amp; recreation" />
+        <item
+            android:id="@+id/nav_general"
+            android:icon="@drawable/general"
+            android:title="General Questions" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Basic Info">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_maps"
                 android:icon="@drawable/google_maps"
                 android:title="Campus Maps" />
+            <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/about"
+                android:title="About Us" />
+
             <item
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/logout"

@@ -75,7 +75,7 @@ public class SignupActivity extends AppCompatActivity {
             "Public Health",
             "Public Policy",
             "Science",
-            "Systems Science",
+            "Systems Science - ISS",
             "USP",
             "Yale-NUS"
     };

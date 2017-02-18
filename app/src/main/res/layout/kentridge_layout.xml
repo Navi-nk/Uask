@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.ideascontest.navi.uask.MyImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mapOne"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:src ="@drawable/kentridge_map_50_1_70"
+    android:scaleType="fitXY">
+
+</com.ideascontest.navi.uask.MyImageView>
+    </LinearLayout>

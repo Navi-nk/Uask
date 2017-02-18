@@ -7,31 +7,40 @@
         android:icon="@mipmap/finallogo"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:largeHeap="true">
         <activity
             android:name=".MainCanvas"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>/>
+        </activity>
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppThemeDark">
 
             <!-- android:label="@string/title_activity_login"< -->
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".SignupActivity"
-            android:theme="@style/AppThemeDark">
+            android:theme="@style/AppThemeDark"
+            android:parentActivityName=".LoginActivity">
             >
         </activity>
         <activity android:name=".AnswerActivity" />
         <activity android:name=".PostAnswer"
             android:label="Post Answer"
             android:parentActivityName=".MainCanvas"/>
+        <activity
+            android:name=".MapActivity"
+            android:theme="@style/AppThemeDark"
+            android:parentActivityName=".MainCanvas">
+            >
+        </activity>
     </application>
 
 </manifest>

@@ -14,6 +14,7 @@ import android.text.style.UnderlineSpan;
 import android.util.Log;
 
 import android.content.Intent;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,8 +38,11 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
 
+    // Session Manager Class
+    SessionManager _session;
+
     //get all the layout elements by their id
-    @InjectView(R.id.input_email) EditText _emailText;
+    @InjectView(R.id.input_name) EditText _userName;
     @InjectView(R.id.input_password) EditText _passwordText;
     @InjectView(R.id.btn_login) Button _loginButton;
     @InjectView(R.id.link_signup) TextView _signupLink;
@@ -49,6 +53,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
 
+        _session = new SessionManager(getApplicationContext());
         //This method to implement the sign up link functionality.
         implementSignUpLink();
 
@@ -85,10 +90,10 @@ public class LoginActivity extends AppCompatActivity {
         Log.d("LoginActivity", "login");
         _loginButton.setEnabled(false);
 
-        String email = _emailText.getText().toString();
+        final String uname = _userName.getText().toString();
         String password = _passwordText.getText().toString();
 
-        if(!validate(email,password))
+        if(!validate(uname,password))
         {
             _loginButton.setEnabled(true);
             return;
@@ -101,11 +106,12 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.show();
 
         RequestParams params = new RequestParams();
-        params.put("username", email);
+        params.put("username", uname);
         params.put("password", password);
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.get("http://192.168.0.114:8080/UaskServiceProvider/login/dologin", params, new AsyncHttpResponseHandler() {
+//        client.get("http://172.27.242.165:8080/UaskServiceProvider/login/dologin", params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {
@@ -116,16 +122,18 @@ public class LoginActivity extends AppCompatActivity {
                     JSONObject obj = new JSONObject(s);
                     // When the JSON response has status boolean value assigned with true
                     if (obj.getBoolean("status")) {
-                        Toast.makeText(getApplicationContext(), "You are successfully logged in!", Toast.LENGTH_LONG).show();
+                        //Store user info in session so that user is only required to login if he/she logs out of the app
+                        _session.createLoginSession(uname,obj.getJSONArray("res").getJSONObject(0).getString("_faculty") );
+
                         // Navigate to Home screen
                         Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
-                        startActivityForResult(intent, REQUEST_SIGNUP);
+                        startActivity(intent);
                         _loginButton.setEnabled(true);
                         finish();
                     }
                     else
                     {
-                        Toast.makeText(getApplicationContext(), "Email or Password are wrong. Please try again.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "User name or Password are wrong. Please try again.", Toast.LENGTH_LONG).show();
                         _loginButton.setEnabled(true);
                     }
                     // Else display error message
@@ -151,11 +159,11 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 // When Http response code is '500'
                 else if (statusCode == 500) {
-                    Toast.makeText(getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
                 }
                 // When Http response code other than 404, 500
                 else {
-                    Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Connection Error. Make sure device is connected to Internet.", Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -168,10 +176,10 @@ public class LoginActivity extends AppCompatActivity {
 
         //if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
         if(email.isEmpty()){
-            _emailText.setError("enter a valid email address");
+            _userName.setError("enter a valid email address");
             valid = false;
         } else {
-            _emailText.setError(null);
+            _userName.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 3 || password.length() > 10) {
@@ -187,6 +195,15 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
         finish();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
      

@@ -11,15 +11,25 @@
         android:layout_marginLeft="@dimen/text_margin"
         android:layout_marginTop="10dp"
         android:textSize="20sp"
-        android:text="@string/question"
         android:textStyle="bold"
-        android:id="@+id/question"/>
+        android:id="@+id/textQuestion"/>
     <TextView
+        android:id="@+id/textTopAnswer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="@dimen/text_margin"
-        android:layout_marginRight="@dimen/text_margin"
-        android:text="@string/answer" />
+        android:layout_marginTop="30dp"
 
+        android:layout_marginLeft="@dimen/text_margin"
+        android:layout_marginRight="@dimen/text_margin" />
+    <TextView
+        android:id="@+id/textAnswerCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="@dimen/text_margin"
+        android:layout_marginRight="@dimen/text_margin" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:background="@color/base" />
 </FrameLayout>

@@ -10,4 +10,18 @@
     tools:showIn="@layout/app_bar_main_canvas">
 
     <include layout="@layout/content_scrolling" />
+    <TextView
+        android:id="@+id/tv_error_message_display"
+        android:textSize="22sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/error_message"
+        android:visibility="invisible" />
+    <ProgressBar
+        android:id="@+id/pb_loading_indicator"
+        android:layout_height="42dp"
+        android:layout_width="42dp"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
 </RelativeLayout>

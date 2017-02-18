@@ -21,12 +21,14 @@ package com.ideascontest.navi.uask;
  */
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -39,14 +41,23 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
 
-public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestionAnswerAdapter.NumberViewHolder> {
+import java.util.Collections;
+import java.util.List;
+
+import static android.R.attr.textSize;
+
+
+public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestionAnswerAdapter.QuestionTopAnswerHolder> {
 
     private static final String TAG = MainQuestionAnswerAdapter.class.getSimpleName();
-    private int mNumberItems;
+    List<Question> data= Collections.emptyList();
+    Question current;
+    int currentPos=0;
 
-    public MainQuestionAnswerAdapter(int numberOfItems) {
-        mNumberItems = numberOfItems;
+    public MainQuestionAnswerAdapter(List<Question> data) {
+        this.data=data;
     }
 
     /**
@@ -62,14 +73,14 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
      * @return A new NumberViewHolder that holds the View for each list item
      */
     @Override
-    public NumberViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public QuestionTopAnswerHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
         int layoutIdForListItem = R.layout.question_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
 
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
-        NumberViewHolder viewHolder = new NumberViewHolder(view);
+        QuestionTopAnswerHolder viewHolder = new QuestionTopAnswerHolder(view);
 
 
         return viewHolder;
@@ -86,9 +97,14 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
      * @param position The position of the item within the adapter's data set.
      */
     @Override
-    public void onBindViewHolder(NumberViewHolder holder, int position) {
+    public void onBindViewHolder(QuestionTopAnswerHolder holder, int position) {
         Log.d(TAG, "#" + position);
-        holder.bind(position);
+        // Get current position of item in recyclerview to bind data and assign values from list
+        QuestionTopAnswerHolder questionTopAnswerHolder= (QuestionTopAnswerHolder) holder;
+        Question current=data.get(position);
+        questionTopAnswerHolder.textQuestion.setText(current.questionText);
+        questionTopAnswerHolder.textTopAnswer.setText(current.topAnswer);
+        questionTopAnswerHolder.textAnswerCount.setText(String.valueOf(current.noOfAnswers));
     }
 
     /**
@@ -99,18 +115,18 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
      */
     @Override
     public int getItemCount() {
-        return mNumberItems;
+        return data.size();
     }
 
     // COMPLETED (5) Implement OnClickListener in the NumberViewHolder class
     /**
      * Cache of the children views for a list item.
      */
-    class NumberViewHolder extends RecyclerView.ViewHolder
+    class QuestionTopAnswerHolder extends RecyclerView.ViewHolder
              {
 
         // Will display the position in the list, ie 0 through getItemCount() - 1
-        TextView listItemNumberView;
+        TextView textQuestion,textTopAnswer,textAnswerCount;
         // Will display which ViewHolder is displaying this data
 
         /**
@@ -120,21 +136,13 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
          * @param itemView The View that you inflated in
          *                 {@link MainQuestionAnswerAdapter#onCreateViewHolder(ViewGroup, int)}
          */
-        public NumberViewHolder(View itemView) {
+        public QuestionTopAnswerHolder(View itemView) {
             super(itemView);
 
-            listItemNumberView = (TextView) itemView.findViewById(R.id.question_number);
+            textQuestion= (TextView) itemView.findViewById(R.id.textQuestion);
+            textTopAnswer= (TextView) itemView.findViewById(R.id.textTopAnswer);
+            textAnswerCount = (TextView) itemView.findViewById(R.id.textAnswerCount);
         }
-
-        /**
-         * A method we wrote for convenience. This method will take an integer as input and
-         * use that integer to display the appropriate text within a list item.
-         * @param listIndex Position of the item in the list
-         */
-        void bind(int listIndex) {
-            listItemNumberView.setText(String.valueOf(listIndex));
-        }
-
 
     }
 }

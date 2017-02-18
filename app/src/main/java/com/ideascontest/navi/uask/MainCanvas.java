@@ -2,6 +2,7 @@ package com.ideascontest.navi.uask;
 
 import android.app.Application;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,10 +20,21 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MainCanvas extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -34,6 +46,9 @@ public class MainCanvas extends AppCompatActivity
     private RecyclerView mainQuestionAnswerList;
     private static final int NUM_LIST_ITEMS = 100;
     private MainQuestionAnswerAdapter mQuestionAnswerAdapter;
+    private ProgressBar mLoadingIndicator;
+    private TextView mErrorMessageDisplay;
+    private FrameLayout mQuestionTopAnswerContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +69,10 @@ public class MainCanvas extends AppCompatActivity
             finish();
         }
 
+
+        // Make API call and display question
+
+
         // get user data from session
         HashMap<String, String> user = _session.getUserDetails();
 
@@ -65,6 +84,9 @@ public class MainCanvas extends AppCompatActivity
         final NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
         //get reference to header view embedded in navigation view
         View header = navView.getHeaderView(0);
+        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
+        mQuestionTopAnswerContent = (FrameLayout) findViewById(R.id.question_top_answer_content);
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
         //Set user name in header
         TextView name=(TextView)header.findViewById(R.id.tv1);
         name.setText(userName);
@@ -113,37 +135,100 @@ public class MainCanvas extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
-        mainQuestionAnswerList = (RecyclerView) findViewById(R.id.question_top_answer_recylerview);
-
-        /*
-         * A LinearLayoutManager is responsible for measuring and positioning item views within a
-         * RecyclerView into a linear list. This means that it can produce either a horizontal or
-         * vertical list depending on which parameter you pass in to the LinearLayoutManager
-         * constructor. By default, if you don't specify an orientation, you get a vertical list.
-         * In our case, we want a vertical list, so we don't need to pass in an orientation flag to
-         * the LinearLayoutManager constructor.
-         *
-         * There are other LayoutManagers available to display your data in uniform grids,
-         * staggered grids, and more! See the developer documentation for more details.
-         */
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        mainQuestionAnswerList.setLayoutManager(layoutManager);
-
-        /*
-         * Use this setting to improve performance if you know that changes in content do not
-         * change the child layout size in the RecyclerView
-         */
-        mainQuestionAnswerList.setHasFixedSize(true);
-
-        // COMPLETED (13) Pass in this as the ListItemClickListener to the MainQuestionAnswerAdapter constructor
-        /*
-         * The MainQuestionAnswerAdapter is responsible for displaying each item in the list.
-         */
-        mQuestionAnswerAdapter = new MainQuestionAnswerAdapter(NUM_LIST_ITEMS);
-        mainQuestionAnswerList.setAdapter(mQuestionAnswerAdapter);
+        URL SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTIONS,"question_with_top_answer");
+        new QuestionAnswerQueryTask().execute(SearchUrl);
     }
+
+
+    public class QuestionAnswerQueryTask extends AsyncTask<URL, Void, String> {
+
+        // COMPLETED (26) Override onPreExecute to set the loading indicator to visible
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected String doInBackground(URL... params) {
+            URL searchUrl = params[0];
+            String QuestionAnswerSearchResults = null;
+            try {
+                QuestionAnswerSearchResults = NetworkUtils.getResponseFromHttpUrlForQuestionTopAnswer(searchUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return QuestionAnswerSearchResults;
+        }
+
+        @Override
+        protected void onPostExecute(String QuestionAnswerSearchResults) {
+            // COMPLETED (27) As soon as the loading is complete, hide the loading indicator
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
+            if (QuestionAnswerSearchResults != null && !QuestionAnswerSearchResults.equals("")) {
+                // COMPLETED (17) Call showJsonDataView if we have valid, non-null results
+                showJsonDataView();
+                //this method will be running on UI thread
+
+                List<Question> data=new ArrayList<>();
+
+                try {
+
+                    JSONArray jArray = new JSONArray(QuestionAnswerSearchResults);
+
+                    // Extract data from json and store into ArrayList as class objects
+                    for(int i=0;i<jArray.length();i++){
+                        JSONObject json_data = jArray.getJSONObject(i);
+                        Question questionData = new Question();
+                        questionData.questionText= json_data.getString("_Text");
+                        questionData.noOfAnswers = json_data.getInt("_Number_Answers");
+                        questionData.topAnswer= json_data.getString("_Answer");
+                        data.add(questionData);
+                    }
+
+
+                    mainQuestionAnswerList = (RecyclerView) findViewById(R.id.question_top_answer_recylerview);
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(MainCanvas.this);
+                    mainQuestionAnswerList.setLayoutManager(layoutManager);
+                    mainQuestionAnswerList.setHasFixedSize(true);
+                    mQuestionAnswerAdapter = new MainQuestionAnswerAdapter(data);
+                    mainQuestionAnswerList.setAdapter(mQuestionAnswerAdapter);
+
+                    // Setup and Handover data to recyclerview
+
+                } catch (JSONException e) {
+                    Toast.makeText(MainCanvas.this, e.toString(), Toast.LENGTH_LONG).show();
+                }
+
+            } else {
+                // COMPLETED (16) Call showErrorMessage if the result is null in onPostExecute
+                showErrorMessage();
+            }
+        }
+
+        private void showJsonDataView() {
+            // First, make sure the error is invisible
+            mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+            // Then, make sure the JSON data is visible
+            mQuestionTopAnswerContent.setVisibility(View.VISIBLE);
+        }
+
+        // COMPLETED (15) Create a method called showErrorMessage to show the error and hide the data
+        /**
+         * This method will make the error message visible and hide the JSON
+         * View.
+         * <p>
+         * Since it is okay to redundantly set the visibility of a View, we don't
+         * need to check whether each view is currently visible or invisible.
+         */
+        private void showErrorMessage() {
+            // First, hide the currently visible data
+            mQuestionTopAnswerContent.setVisibility(View.INVISIBLE);
+            // Then, show the error
+            mErrorMessageDisplay.setVisibility(View.VISIBLE);
+        }
+    }
+
 
     @Override
     public void onBackPressed() {

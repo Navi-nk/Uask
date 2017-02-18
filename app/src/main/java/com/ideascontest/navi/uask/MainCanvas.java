@@ -64,7 +64,7 @@ public class MainCanvas extends AppCompatActivity
         name.setText(userName);
         //Set faculty name in header
         TextView faculty=(TextView)header.findViewById(R.id.tv2);
-        name.setText(facultyName);
+        faculty.setText(facultyName);
 
         //Implement listener to detect to up-down arrow buttonto switch between menus
         ToggleButton mAccountToggle = (ToggleButton) header.findViewById(R.id.account_view_icon_button);
@@ -175,7 +175,8 @@ public class MainCanvas extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-
+            Intent i = new Intent(getApplicationContext(), MapActivity.class);
+            startActivity(i);
         }else if(id == R.id.nav_logout){
             //Clear session data
             _session.logoutUser();

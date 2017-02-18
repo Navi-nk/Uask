@@ -145,8 +145,8 @@ public class SignupActivity extends AppCompatActivity {
         Log.d("SignupActivity", "signup");
         _signupButton.setEnabled(false);
 
-        String name = _nameText.getText().toString();
-        final String email = _emailText.getText().toString();
+        final String name = _nameText.getText().toString();
+        String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
         String confirmPassword = _pwdConfirmText.getText().toString();
 
@@ -180,7 +180,7 @@ public class SignupActivity extends AppCompatActivity {
                     // When the JSON response has status boolean value assigned with true
                     if (obj.getBoolean("status")) {
 
-                        _session.createLoginSession(email);
+                        _session.createLoginSession(name,"ISS");
                         // Navigate to Home screen
                         Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
                         startActivity(intent);

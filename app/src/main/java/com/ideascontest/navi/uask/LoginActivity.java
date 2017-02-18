@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     SessionManager _session;
 
     //get all the layout elements by their id
-    @InjectView(R.id.input_name) EditText _emailText;
+    @InjectView(R.id.input_name) EditText _userName;
     @InjectView(R.id.input_password) EditText _passwordText;
     @InjectView(R.id.btn_login) Button _loginButton;
     @InjectView(R.id.link_signup) TextView _signupLink;
@@ -90,10 +90,10 @@ public class LoginActivity extends AppCompatActivity {
         Log.d("LoginActivity", "login");
         _loginButton.setEnabled(false);
 
-        final String email = _emailText.getText().toString();
+        final String uname = _userName.getText().toString();
         String password = _passwordText.getText().toString();
 
-        if(!validate(email,password))
+        if(!validate(uname,password))
         {
             _loginButton.setEnabled(true);
             return;
@@ -106,12 +106,12 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.show();
 
         RequestParams params = new RequestParams();
-        params.put("username", email);
+        params.put("username", uname);
         params.put("password", password);
 
         AsyncHttpClient client = new AsyncHttpClient();
-        //client.get("http://192.168.0.114:8080/UaskServiceProvider/login/dologin", params, new AsyncHttpResponseHandler() {
-        client.get("http://172.27.242.165:8080/UaskServiceProvider/login/dologin", params, new AsyncHttpResponseHandler() {
+        client.get("http://192.168.0.114:8080/UaskServiceProvider/login/dologin", params, new AsyncHttpResponseHandler() {
+//        client.get("http://172.27.242.165:8080/UaskServiceProvider/login/dologin", params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {
@@ -123,7 +123,7 @@ public class LoginActivity extends AppCompatActivity {
                     // When the JSON response has status boolean value assigned with true
                     if (obj.getBoolean("status")) {
                         //Store user info in session so that user is only required to login if he/she logs out of the app
-                        _session.createLoginSession(email,obj.getString("faculty"));
+                        _session.createLoginSession(uname,obj.getJSONArray("res").getJSONObject(0).getString("_faculty") );
 
                         // Navigate to Home screen
                         Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
@@ -133,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        Toast.makeText(getApplicationContext(), "Email or Password are wrong. Please try again.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "User name or Password are wrong. Please try again.", Toast.LENGTH_LONG).show();
                         _loginButton.setEnabled(true);
                     }
                     // Else display error message
@@ -176,10 +176,10 @@ public class LoginActivity extends AppCompatActivity {
 
         //if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
         if(email.isEmpty()){
-            _emailText.setError("enter a valid email address");
+            _userName.setError("enter a valid email address");
             valid = false;
         } else {
-            _emailText.setError(null);
+            _userName.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 3 || password.length() > 10) {

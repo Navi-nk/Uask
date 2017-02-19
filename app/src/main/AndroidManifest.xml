@@ -46,8 +46,6 @@
             android:theme="@style/AppThemeDark">
             >
         </activity>
-        <activity android:name=".CategoryActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

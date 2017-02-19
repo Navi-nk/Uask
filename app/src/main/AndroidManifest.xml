@@ -43,17 +43,16 @@
         <activity
             android:name=".MapActivity"
             android:label="NUS Campuses"
-            android:parentActivityName=".MainCanvas"></activity>
+            android:parentActivityName=".MainCanvas" />
         <activity
             android:name=".About"
             android:label="About Us"
             android:parentActivityName=".MainCanvas" />
-
         <activity
             android:name=".AskQuestionActivity"
             android:parentActivityName=".MainCanvas"
-            android:theme="@style/AppTheme" >
-        </activity>
+            android:theme="@style/AppTheme"></activity>
+        <activity android:name=".ShowAnswer"></activity>
     </application>
 
 </manifest>

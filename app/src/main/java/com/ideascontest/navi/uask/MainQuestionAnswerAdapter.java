@@ -158,39 +158,45 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
             textQuestion.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Context context = v.getContext();
-                    String questionText = textQuestion.getText().toString();
-                    String id = textQuestion.getTag().toString();
-                    String authorText = textAuthor.getText().toString();
-                    String timeStamp = textTimeStamp.getText().toString();
-                    Intent intent = new Intent(context, AnswerActivity.class);
-                    intent.putExtra("id",id);
-                    intent.putExtra("question",questionText);
-                    intent.putExtra("author",authorText);
-                    intent.putExtra("timestamp",timeStamp);
-                    context.startActivity(intent);
+                    setTextForIntentAndCall(v,AnswerActivity.class);
                 }
             });
 
             postAnswer.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Context context = v.getContext();
-                    String questionText = textQuestion.getText().toString();
-                    String id = textQuestion.getTag().toString();
-                    String authorText = textAuthor.getText().toString();
-                    String timeStamp = textTimeStamp.getText().toString();
-                    Intent intent = new Intent(context, PostAnswer.class);
-                    intent.putExtra("id",id);
-                    intent.putExtra("question",questionText);
-                    intent.putExtra("author",authorText);
-                    intent.putExtra("timestamp",timeStamp);
-                    context.startActivity(intent);
+                    setTextForIntentAndCall(v,PostAnswer.class);
+                }
+            });
 
+            textTopAnswer.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setTextForIntentAndCall(v,AnswerActivity.class);
+                }
+            });
+            textAnswerCount.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setTextForIntentAndCall(v,AnswerActivity.class);
                 }
             });
 
         }
+                 public void setTextForIntentAndCall(View v,Class s) {
+
+                     Context context = v.getContext();
+                     String questionText = textQuestion.getText().toString();
+                     String id = textQuestion.getTag().toString();
+                     String authorText = textAuthor.getText().toString();
+                     String timeStamp = textTimeStamp.getText().toString();
+                     Intent intent = new Intent(context, s);
+                     intent.putExtra("id",id);
+                     intent.putExtra("question",questionText);
+                     intent.putExtra("author",authorText);
+                     intent.putExtra("timestamp",timeStamp);
+                     context.startActivity(intent);
+                 }
 
     }
 }

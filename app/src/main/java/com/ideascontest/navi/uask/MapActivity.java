@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.TabLayout;
+import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 /**
@@ -26,6 +27,9 @@ public class MapActivity extends AppCompatActivity implements TabLayout.OnTabSel
 
     //    Toast.makeText(this, "Tab Count : " + tabLayout.getTabCount(), Toast.LENGTH_LONG).show();
         getFragmentManager().beginTransaction().replace(R.id.fragmentPlaceHolder, new PageFragmentOne()).commit();
+
+      //  Toolbar toolbar = (Toolbar) findViewById(R.id.tbmap);
+       // setSupportActionBar(toolbar);
     }
 
 

@@ -1,11 +1,14 @@
 package com.ideascontest.navi.uask;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.v7.widget.ButtonBarLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.Collections;
@@ -97,6 +100,7 @@ public class MainAnswerAdapter extends RecyclerView.Adapter<MainAnswerAdapter.An
 
         // Will display the position in the list, ie 0 through getItemCount() - 1
         TextView textAnswer,textAuthor,textTimeStamp;
+        Button viewMore;
         // Will display which ViewHolder is displaying this data
 
         /**
@@ -112,6 +116,19 @@ public class MainAnswerAdapter extends RecyclerView.Adapter<MainAnswerAdapter.An
             textAnswer= (TextView) itemView.findViewById(R.id.textAnswer);
             textAuthor = (TextView) itemView.findViewById(R.id.textAuthor);
             textTimeStamp = (TextView) itemView.findViewById(R.id.textTimeStamp);
+            viewMore = (Button) itemView.findViewById(R.id.viewMore);
+            viewMore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Context context = v.getContext();
+                    Intent i = new Intent(context,ShowAnswer.class);
+                    i.putExtra("answertext",textAnswer.getText().toString());
+                    context.startActivity(i);
+
+                }
+            });
+
+
 
         }
 

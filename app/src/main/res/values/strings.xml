@@ -29,4 +29,7 @@
         "The material is grounded in tactile reality, inspired by the study of paper and ink, yet "
         "when a user tries to pick up one of cards.\n\n"
     </string>
+        <string name="error_message">
+        Failed to get results. Please try again.
+    </string>
 </resources>

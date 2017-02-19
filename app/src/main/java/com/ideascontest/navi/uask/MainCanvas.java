@@ -10,6 +10,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -54,7 +55,8 @@ public class MainCanvas extends AppCompatActivity
     private TextView mErrorMessageDisplay;
     private FrameLayout mQuestionTopAnswerContent;
     private  URL SearchUrl;
-
+    String userName;
+    String facultyName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +72,31 @@ public class MainCanvas extends AppCompatActivity
             String category = i.getStringExtra("category").toString();
             SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FOR_CAT,NetworkUtils.PARAM_CATEGORY,category);
         }
+        else if (feedType.equalsIgnoreCase("userQuestions")){
+            setContentView(R.layout.activity_category);
+            String user = i.getStringExtra("user").toString();
+            SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FROM_USER,NetworkUtils.PARAM_USERID,user);
+            TextView descBasic = (TextView)findViewById(R.id.basicInfo);
+            descBasic.setText("List of all questions asked by you.");
+            descBasic.setGravity(Gravity.CENTER|Gravity.BOTTOM);
+        }
+        else if (feedType.equalsIgnoreCase("userAnswers")){
+            setContentView(R.layout.activity_category);
+            String user = i.getStringExtra("user").toString();
+            SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_ANS_BY_USER,NetworkUtils.PARAM_USERID,user);
+            TextView descBasic = (TextView)findViewById(R.id.basicInfo);
+            descBasic.setText("List of all questions answered by you.");
+            descBasic.setGravity(Gravity.CENTER|Gravity.BOTTOM);
+        }
+        else if (feedType.equalsIgnoreCase("privateQues")){
+            setContentView(R.layout.activity_category);
+            String userFaculty = i.getStringExtra("userfaculty").toString();
+            SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_PQUESTION_BY_FACUSER,NetworkUtils.PARAM_FACULTY,userFaculty);
+            TextView descBasic = (TextView)findViewById(R.id.basicInfo);
+            descBasic.setText("All the private questions asked by your faculty students. Visible only to fellow faculty students");
+            descBasic.setGravity(Gravity.CENTER|Gravity.BOTTOM);
+        }
+
         // Session class instance
         _session = new SessionManager(getApplicationContext());
         //Check if user is still loggedin if not redirect to login activity
@@ -91,8 +118,8 @@ public class MainCanvas extends AppCompatActivity
         HashMap<String, String> user = _session.getUserDetails();
 
         // name
-        String userName = user.get(SessionManager.KEY_NAME);
-        final String facultyName =  user.get(SessionManager.KEY_FAC);
+        userName = user.get(SessionManager.KEY_NAME);
+        facultyName =  user.get(SessionManager.KEY_FAC);
 
         //get reference to navigation view
         final NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
@@ -278,6 +305,7 @@ public class MainCanvas extends AppCompatActivity
             i.putExtra("feedType","category");
             i.putExtra("category","temp");
             startActivity(i);
+            finish();
 
         }
         else if (id == R.id.nav_food) {
@@ -285,17 +313,41 @@ public class MainCanvas extends AppCompatActivity
             i.putExtra("feedType","category");
             i.putExtra("category","temp_1");
             startActivity(i);
+            finish();
         }
         else if (id == R.id.nav_sport) {
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             i.putExtra("feedType","category");
             i.putExtra("category","temp");
             startActivity(i);
+            finish();
         }
 
         else if (id == R.id.nav_general) {
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             startActivity(i);
+            finish();
+        }
+        else if(id == R.id.nav_question){
+            Intent i = new Intent(getApplicationContext(),MainCanvas.class);
+            i.putExtra("feedType","userQuestions");
+            i.putExtra("user",userName);
+            startActivity(i);
+            finish();
+        }
+        else if(id == R.id.nav_answers){
+            Intent i = new Intent(getApplicationContext(),MainCanvas.class);
+            i.putExtra("feedType","userAnswers");
+            i.putExtra("user",userName);
+            startActivity(i);
+            finish();
+        }
+        else if(id == R.id.nav_facprivate){
+            Intent i = new Intent(getApplicationContext(),MainCanvas.class);
+            i.putExtra("feedType","privateQues");
+            i.putExtra("userfaculty",facultyName);
+            startActivity(i);
+            finish();
         }
         else if (id == R.id.nav_maps) {
             Intent i = new Intent(getApplicationContext(), MapActivity.class);

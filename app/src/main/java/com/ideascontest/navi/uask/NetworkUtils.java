@@ -44,8 +44,10 @@ public class NetworkUtils {
 
     final static String GET_ALL_QUESTIONS = BASE_URL+"/qfeed/getfeed";
     final static String GET_ALL_ANSWERS = BASE_URL+"/qfeed/getans";
+    final static String GET_ALL_QUESTION_FOR_CAT = BASE_URL+"/qfeed/getcatfeed";
 
     final static String PARAM_QUESTION = "question";
+    final static String PARAM_CATEGORY="category";
 
     /*
      * The sort field. One of stars, forks, or updated.

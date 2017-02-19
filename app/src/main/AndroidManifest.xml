@@ -20,7 +20,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            />
+            >
         </activity>
         <activity
             android:name=".LoginActivity"
@@ -43,11 +43,19 @@
         <activity
             android:name=".MapActivity"
             android:label="NUS Campuses"
-            android:parentActivityName=".MainCanvas">
-        </activity>
-        <activity android:name=".About"
-            android:label="About Us"
             android:parentActivityName=".MainCanvas"></activity>
+        <activity
+            android:name=".About"
+            android:label="About Us"
+            android:parentActivityName=".MainCanvas" />
+        <activity
+            android:name=".CategoryActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".MainCanvas"/>
+        <activity
+            android:name=".AskQuestionActivity"
+            android:parentActivityName=".MainCanvas"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

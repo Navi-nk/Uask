@@ -1,28 +1,21 @@
 package com.ideascontest.navi.uask;
 
-import android.app.Application;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.util.Log;
 import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -37,28 +30,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static android.R.attr.author;
-import static android.R.attr.id;
-import static com.ideascontest.navi.uask.NetworkUtils.PARAM_QUESTION;
-import static com.ideascontest.navi.uask.R.string.question;
+import static android.R.attr.category;
+import static com.ideascontest.navi.uask.R.id.toolbar;
 
-public class MainCanvas extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-    private static final int REQUEST_SIGNUP = 0;
-    private static final String TAG = "Main Canvas";
-    // Session Manager Class
+public class CategoryActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     SessionManager _session;
-
-    private RecyclerView mainQuestionAnswerList;
-    private MainQuestionAnswerAdapter mQuestionAnswerAdapter;
-    private TextView mErrorMessageDisplay;
-    private FrameLayout mQuestionTopAnswerContent;
+    private MainQuestionAnswerAdapter mCategoryQuestionAnswerAdapter;
+    private RecyclerView mainCategoryQuestionAnswerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_canvas);
-        // Session class instance
+        setContentView(R.layout.activity_category);
+        //session
         _session = new SessionManager(getApplicationContext());
         //Check if user is still loggedin if not redirect to login activity
         if(!_session.isLoggedIn())
@@ -73,7 +57,9 @@ public class MainCanvas extends AppCompatActivity
             finish();
         }
 
+
         // Make API call and display question
+
 
         // get user data from session
         HashMap<String, String> user = _session.getUserDetails();
@@ -82,12 +68,10 @@ public class MainCanvas extends AppCompatActivity
         String userName = user.get(SessionManager.KEY_NAME);
         final String facultyName =  user.get(SessionManager.KEY_FAC);
 
-        //get reference to navigation view
+        //navigation bar
         final NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
         //get reference to header view embedded in navigation view
         View header = navView.getHeaderView(0);
-        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
-        mQuestionTopAnswerContent = (FrameLayout) findViewById(R.id.question_top_answer_content);
         //Set user name in header
         TextView name=(TextView)header.findViewById(R.id.tv1);
         name.setText(userName);
@@ -100,12 +84,11 @@ public class MainCanvas extends AppCompatActivity
         mAccountToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.d(TAG,"Toggle");
                 navView.getMenu().clear();
                 if(isChecked) {
                     navView.inflateMenu(R.menu.user_profile_menu);
                     MenuItem mitem =  navView.getMenu().findItem(R.id.nav_facprivate);
-                   mitem.setTitle("Faculty Exclusive");
+                    mitem.setTitle("Faculty Exclusive");
 
                 }else
                     navView.inflateMenu(R.menu.activity_main_canvas_drawer);
@@ -136,22 +119,16 @@ public class MainCanvas extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        Intent intent = getIntent();
+        String category = intent.getStringExtra("category").toString();
+        Log.d("categorycheck",category);
+        URL SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FOR_CAT,NetworkUtils.PARAM_CATEGORY,category);
+        Log.d("url",SearchUrl.toString());
 
-        URL SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTIONS,NetworkUtils.PARAM_QUESTION,"");
-        new QuestionAnswerQueryTask().execute(SearchUrl);
-        //Ask a question
-        FloatingActionButton qfab = (FloatingActionButton) findViewById(R.id.fab);
-        qfab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), AskQuestionActivity.class);
-                startActivity(i);
-            }
-        });
+        new CategoryQuestionAnswerQueryTask().execute(SearchUrl);
     }
 
-
-    public class QuestionAnswerQueryTask extends AsyncTask<URL, Void, String> {
+    public class CategoryQuestionAnswerQueryTask extends AsyncTask<URL, Void, String> {
 
         // COMPLETED (26) Override onPreExecute to set the loading indicator to visible
         @Override
@@ -162,28 +139,27 @@ public class MainCanvas extends AppCompatActivity
         @Override
         protected String doInBackground(URL... params) {
             URL searchUrl = params[0];
-            String QuestionAnswerSearchResults = null;
+            String CategoryQuestionAnswerSearchResults = null;
             try {
-                QuestionAnswerSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
+                CategoryQuestionAnswerSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return QuestionAnswerSearchResults;
+            return CategoryQuestionAnswerSearchResults;
         }
 
         @Override
-        protected void onPostExecute(String QuestionAnswerSearchResults) {
+        protected void onPostExecute(String CategoryQuestionAnswerSearchResults) {
             // COMPLETED (27) As soon as the loading is complete, hide the loading indicator
-            if (QuestionAnswerSearchResults != null && !QuestionAnswerSearchResults.equals("")) {
+            if (CategoryQuestionAnswerSearchResults != null && !CategoryQuestionAnswerSearchResults.equals("")) {
                 // COMPLETED (17) Call showJsonDataView if we have valid, non-null results
-                showJsonDataView();
                 //this method will be running on UI thread
 
                 List<Question> data=new ArrayList<>();
 
                 try {
 
-                    JSONArray jArray = new JSONArray(QuestionAnswerSearchResults);
+                    JSONArray jArray = new JSONArray(CategoryQuestionAnswerSearchResults);
 
                     // Extract data from json and store into ArrayList as class objects
                     for(int i=0;i<jArray.length();i++){
@@ -199,85 +175,22 @@ public class MainCanvas extends AppCompatActivity
                     }
 
 
-                    mainQuestionAnswerList = (RecyclerView) findViewById(R.id.question_top_answer_recylerview);
-                    LinearLayoutManager layoutManager = new LinearLayoutManager(MainCanvas.this);
-                    mainQuestionAnswerList.setLayoutManager(layoutManager);
-                    mainQuestionAnswerList.setHasFixedSize(true);
-                    mQuestionAnswerAdapter = new MainQuestionAnswerAdapter(data);
-                    mainQuestionAnswerList.setAdapter(mQuestionAnswerAdapter);
+                    mainCategoryQuestionAnswerList = (RecyclerView) findViewById(R.id.question_top_answer_recylerview);
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(CategoryActivity.this);
+                    mainCategoryQuestionAnswerList.setLayoutManager(layoutManager);
+                    mainCategoryQuestionAnswerList.setHasFixedSize(true);
+                    mCategoryQuestionAnswerAdapter = new MainQuestionAnswerAdapter(data);
+                    mainCategoryQuestionAnswerList.setAdapter(mCategoryQuestionAnswerAdapter);
 
                     // Setup and Handover data to recyclerview
 
                 } catch (JSONException e) {
-                    Toast.makeText(MainCanvas.this, e.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(CategoryActivity.this, e.toString(), Toast.LENGTH_LONG).show();
                 }
 
-            } else {
-                // COMPLETED (16) Call showErrorMessage if the result is null in onPostExecute
-                showErrorMessage();
             }
         }
 
-        private void showJsonDataView() {
-            // First, make sure the error is invisible
-            mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-            // Then, make sure the JSON data is visible
-            mQuestionTopAnswerContent.setVisibility(View.VISIBLE);
-        }
-
-        // COMPLETED (15) Create a method called showErrorMessage to show the error and hide the data
-        /**
-         * This method will make the error message visible and hide the JSON
-         * View.
-         * <p>
-         * Since it is okay to redundantly set the visibility of a View, we don't
-         * need to check whether each view is currently visible or invisible.
-         */
-        private void showErrorMessage() {
-            // First, hide the currently visible data
-            mQuestionTopAnswerContent.setVisibility(View.INVISIBLE);
-            // Then, show the error
-            mErrorMessageDisplay.setVisibility(View.VISIBLE);
-        }
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    public void navigateToPostAnswer(View view) {
-        Intent intent = new Intent(getApplicationContext(), PostAnswer.class);
-        startActivity(intent);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_canvas, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -310,11 +223,7 @@ public class MainCanvas extends AppCompatActivity
         else if (id == R.id.nav_maps) {
             Intent i = new Intent(getApplicationContext(), MapActivity.class);
             startActivity(i);
-        }else if (id == R.id.nav_about) {
-            Intent i = new Intent(getApplicationContext(), About.class);
-            startActivity(i);
-        }
-        else if(id == R.id.nav_logout){
+        }else if(id == R.id.nav_logout){
             //Clear session data
             _session.logoutUser();
             // After logout redirect user to Loing Activity

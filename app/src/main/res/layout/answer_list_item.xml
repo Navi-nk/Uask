@@ -16,7 +16,6 @@
             android:layout_marginLeft="@dimen/text_margin"
             android:layout_marginTop="10dp"
             android:textSize="20sp"
-            android:onClick="navigateToAnswer"
             android:id="@+id/textAnswer"
             android:textStyle="bold" />
 

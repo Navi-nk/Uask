@@ -9,19 +9,15 @@
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textId"
-            android:visibility="invisible"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/text_margin"
+            android:layout_marginTop="10dp"
             android:textSize="20sp"
             android:onClick="navigateToAnswer"
-            android:id="@+id/textQuestion"
+            android:id="@+id/textAnswer"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -45,32 +41,6 @@
                 android:textColor="@color/iron" />
 
         </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/textTopAnswer"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="@dimen/text_margin"
-            android:layout_marginRight="@dimen/text_margin"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="@dimen/text_margin"
-            android:id="@+id/textAnswerCount"
-            android:textAllCaps="true"/>
-
-        <Button
-            android:id="@+id/bSearch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="12dp"
-            android:text="Answer"
-            android:onClick="navigateToPostAnswer"
-            />
-
 
         <View
             android:layout_width="match_parent"

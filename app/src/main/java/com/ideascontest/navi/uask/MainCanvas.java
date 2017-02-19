@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -36,6 +37,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.R.attr.id;
+import static com.ideascontest.navi.uask.NetworkUtils.PARAM_QUESTION;
+import static com.ideascontest.navi.uask.R.string.question;
+
 public class MainCanvas extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final int REQUEST_SIGNUP = 0;
@@ -46,7 +51,6 @@ public class MainCanvas extends AppCompatActivity
     private RecyclerView mainQuestionAnswerList;
     private static final int NUM_LIST_ITEMS = 100;
     private MainQuestionAnswerAdapter mQuestionAnswerAdapter;
-    private ProgressBar mLoadingIndicator;
     private TextView mErrorMessageDisplay;
     private FrameLayout mQuestionTopAnswerContent;
 
@@ -86,7 +90,6 @@ public class MainCanvas extends AppCompatActivity
         View header = navView.getHeaderView(0);
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
         mQuestionTopAnswerContent = (FrameLayout) findViewById(R.id.question_top_answer_content);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
         //Set user name in header
         TextView name=(TextView)header.findViewById(R.id.tv1);
         name.setText(userName);
@@ -135,7 +138,7 @@ public class MainCanvas extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        URL SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTIONS,"question_with_top_answer");
+        URL SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTIONS,NetworkUtils.PARAM_QUESTION,"");
         new QuestionAnswerQueryTask().execute(SearchUrl);
     }
 
@@ -146,7 +149,6 @@ public class MainCanvas extends AppCompatActivity
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -154,7 +156,7 @@ public class MainCanvas extends AppCompatActivity
             URL searchUrl = params[0];
             String QuestionAnswerSearchResults = null;
             try {
-                QuestionAnswerSearchResults = NetworkUtils.getResponseFromHttpUrlForQuestionTopAnswer(searchUrl);
+                QuestionAnswerSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -164,7 +166,6 @@ public class MainCanvas extends AppCompatActivity
         @Override
         protected void onPostExecute(String QuestionAnswerSearchResults) {
             // COMPLETED (27) As soon as the loading is complete, hide the loading indicator
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (QuestionAnswerSearchResults != null && !QuestionAnswerSearchResults.equals("")) {
                 // COMPLETED (17) Call showJsonDataView if we have valid, non-null results
                 showJsonDataView();
@@ -185,6 +186,7 @@ public class MainCanvas extends AppCompatActivity
                         questionData.topAnswer= json_data.getString("_Answer");
                         questionData.author=json_data.getString("_Used_Id");
                         questionData.timeStamp=json_data.getString("_Datetime");
+                        questionData.id=json_data.getString("_Id");
                         data.add(questionData);
                     }
 
@@ -243,7 +245,17 @@ public class MainCanvas extends AppCompatActivity
     }
 
     public void navigateToAnswer(View view) {
+        String id = (String) view.getTag();
+
+        TextView question = (TextView) view;
+        String questionText = question.getText().toString();
+//        TextView author = (TextView)view.findViewById(R.id.textAuthor);
+//        String authorText = author.getText().toString();
+//        Log.d("Checkauthor",authorText);
+        Log.d("CheckID",id);
         Intent intent = new Intent(getApplicationContext(), AnswerActivity.class);
+        intent.putExtra("id",id);
+        intent.putExtra("question",questionText);
         startActivity(intent);
     }
 

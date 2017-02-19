@@ -10,4 +10,5 @@ public class Question {
     public String topAnswer;
     public String timeStamp;
     public String author;
+    public String id;
 }

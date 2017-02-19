@@ -39,12 +39,13 @@ import java.util.Scanner;
  */
 public class NetworkUtils {
 
-    final static String GITHUB_BASE_URL =
+    final static String BASE_URL =
             "http://192.168.0.114:8080/UaskServiceProvider";
 
-    final static String GET_ALL_QUESTIONS = GITHUB_BASE_URL+"/qfeed/getfeed";
+    final static String GET_ALL_QUESTIONS = BASE_URL+"/qfeed/getfeed";
+    final static String GET_ALL_ANSWERS = BASE_URL+"/qfeed/getans";
 
-    final static String PARAM_QUERY = "q";
+    final static String PARAM_QUESTION = "question";
 
     /*
      * The sort field. One of stars, forks, or updated.
@@ -53,12 +54,11 @@ public class NetworkUtils {
     /**
      * Builds the URL used to query GitHub.
      *
-     * @param QueryParameter The keyword that will be queried for.
      * @return The URL to use to query the GitHub.
      */
-    public static URL buildUrl(String BaseURL,String QueryParameter) {
+    public static URL buildUrl(String BaseURL,String param,String paramvalue) {
         Uri builtUri = Uri.parse(BaseURL).buildUpon()
-                .appendQueryParameter(PARAM_QUERY, QueryParameter)
+                .appendQueryParameter(param, paramvalue)
                 .build();
 
         URL url = null;
@@ -78,10 +78,6 @@ public class NetworkUtils {
      * @return The contents of the HTTP response.
      * @throws IOException Related to network and stream reading
      */
-
-    public static String getResponseFromHttpUrlForQuestionTopAnswer(URL url) throws IOException{
-      return getResponseFromHttpUrl(url);
-    }
 
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

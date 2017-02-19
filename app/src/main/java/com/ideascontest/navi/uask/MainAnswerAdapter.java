@@ -1,61 +1,33 @@
 package com.ideascontest.navi.uask;
 
-/**
- * Created by ethi on 18/02/17.
- */
-
-/*
- * Copyright (C) 2016 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import android.content.Context;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.ColorUtils;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.Collections;
 import java.util.List;
 
-import static android.R.attr.textSize;
+import static android.R.attr.id;
+import static com.ideascontest.navi.uask.R.id.textAnswerCount;
+import static com.ideascontest.navi.uask.R.id.textAuthor;
+import static com.ideascontest.navi.uask.R.id.textQuestion;
+import static com.ideascontest.navi.uask.R.id.textTimeStamp;
+import static com.ideascontest.navi.uask.R.id.textTopAnswer;
 
+/**
+ * Created by ethi on 19/02/17.
+ */
 
-public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestionAnswerAdapter.QuestionTopAnswerHolder> {
+public class MainAnswerAdapter extends RecyclerView.Adapter<MainAnswerAdapter.AnswerHolder>{
+    private static final String TAG = MainAnswerAdapter.class.getSimpleName();
+    List<Answer> data= Collections.emptyList();
+    Answer current;
 
-    private static final String TAG = MainQuestionAnswerAdapter.class.getSimpleName();
-    List<Question> data= Collections.emptyList();
-    Question current;
-
-    public MainQuestionAnswerAdapter(List<Question> data) {
+    public MainAnswerAdapter(List<Answer> data) {
         this.data=data;
     }
 
@@ -72,14 +44,14 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
      * @return A new NumberViewHolder that holds the View for each list item
      */
     @Override
-    public QuestionTopAnswerHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public MainAnswerAdapter.AnswerHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
-        int layoutIdForListItem = R.layout.question_list_item;
+        int layoutIdForListItem = R.layout.answer_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
 
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
-        QuestionTopAnswerHolder viewHolder = new QuestionTopAnswerHolder(view);
+        MainAnswerAdapter.AnswerHolder viewHolder = new MainAnswerAdapter.AnswerHolder(view);
 
 
         return viewHolder;
@@ -96,17 +68,13 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
      * @param position The position of the item within the adapter's data set.
      */
     @Override
-    public void onBindViewHolder(QuestionTopAnswerHolder holder, int position) {
+    public void onBindViewHolder(MainAnswerAdapter.AnswerHolder holder, int position) {
         Log.d(TAG, "#" + position);
         // Get current position of item in recyclerview to bind data and assign values from list
-        QuestionTopAnswerHolder questionTopAnswerHolder= (QuestionTopAnswerHolder) holder;
-        Question current=data.get(position);
-        questionTopAnswerHolder.textQuestion.setText(current.questionText);
-        questionTopAnswerHolder.textTopAnswer.setText(current.topAnswer);
-        questionTopAnswerHolder.textAnswerCount.setText(String.valueOf(current.noOfAnswers + " Answers"));
-        questionTopAnswerHolder.textTimeStamp.setText(current.timeStamp);
-        questionTopAnswerHolder.textAuthor.setText(current.author);
-        questionTopAnswerHolder.textQuestion.setTag(String.valueOf(current.id));
+        Answer current = data.get(position);
+        holder.textAnswer.setText(current.answerText);
+        holder.textTimeStamp.setText(current.timeStamp);
+        holder.textAuthor.setText(current.author);
     }
 
     /**
@@ -124,11 +92,11 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
     /**
      * Cache of the children views for a list item.
      */
-    class QuestionTopAnswerHolder extends RecyclerView.ViewHolder
-             {
+    class AnswerHolder extends RecyclerView.ViewHolder
+    {
 
         // Will display the position in the list, ie 0 through getItemCount() - 1
-        TextView textQuestion,textTopAnswer,textAnswerCount,textAuthor,textTimeStamp,textId;
+        TextView textAnswer,textAuthor,textTimeStamp;
         // Will display which ViewHolder is displaying this data
 
         /**
@@ -138,18 +106,14 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
          * @param itemView The View that you inflated in
          *                 {@link MainQuestionAnswerAdapter#onCreateViewHolder(ViewGroup, int)}
          */
-        public QuestionTopAnswerHolder(View itemView) {
+        public AnswerHolder(View itemView) {
             super(itemView);
 
-            textQuestion= (TextView) itemView.findViewById(R.id.textQuestion);
-            textTopAnswer= (TextView) itemView.findViewById(R.id.textTopAnswer);
-            textAnswerCount = (TextView) itemView.findViewById(R.id.textAnswerCount);
+            textAnswer= (TextView) itemView.findViewById(R.id.textAnswer);
             textAuthor = (TextView) itemView.findViewById(R.id.textAuthor);
             textTimeStamp = (TextView) itemView.findViewById(R.id.textTimeStamp);
-            textId = (TextView) itemView.findViewById(R.id.textId);
 
         }
 
     }
 }
-

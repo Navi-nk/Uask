@@ -1,52 +1,57 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-
+    android:layout_height="match_parent">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
+        android:layout_marginLeft="@dimen/text_margin"
         android:textSize="20sp"
-        android:text="@string/question"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:onClick="navigateToAnswer"
+        android:id="@+id/textQuestion"
         android:textStyle="bold" />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="6dp"
-        android:background="@color/base" />
-
-
-
-    <TextView
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:text="@string/answer" />
+        android:orientation="horizontal"
+        android:id="@+id/question_bar"
+        android:layout_below="@id/textQuestion">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textAuthor"
+            android:layout_marginLeft="@dimen/text_margin"
+            android:textColor="@color/iron" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/textTimeStamp"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/iron" />
+
+    </LinearLayout>
     <View
         android:layout_width="match_parent"
         android:layout_height="6dp"
-        android:background="@color/base" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:text="@string/answer" />
-    <View
+        android:background="@color/base"
+        android:layout_below="@id/question_bar"
+        android:id="@+id/spacer"/>
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="6dp"
-        android:background="@color/base" />
+        android:layout_height="match_parent"
+        android:id="@+id/question_top_answer_content"
+        android:layout_below="@id/spacer"
+        android:layout_marginTop="0dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:text="@string/answer" />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="6dp"
-        android:background="@color/base" />
-</LinearLayout>
-
-
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/question_top_answer_recylerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </FrameLayout>
+</RelativeLayout>

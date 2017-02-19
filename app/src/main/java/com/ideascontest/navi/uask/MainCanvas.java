@@ -53,17 +53,29 @@ public class MainCanvas extends AppCompatActivity
     private MainQuestionAnswerAdapter mQuestionAnswerAdapter;
     private TextView mErrorMessageDisplay;
     private FrameLayout mQuestionTopAnswerContent;
+    private  URL SearchUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_canvas);
+        Intent i = getIntent();
+        String feedType = i.getStringExtra("feedType");
+        if (feedType == null)
+        {
+            setContentView(R.layout.activity_main_canvas);
+            SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTIONS,NetworkUtils.PARAM_QUESTION,"");
+        }
+        else if (feedType.equalsIgnoreCase("category")){
+            setContentView(R.layout.activity_category);
+            String category = i.getStringExtra("category").toString();
+            SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FOR_CAT,NetworkUtils.PARAM_CATEGORY,category);
+        }
         // Session class instance
         _session = new SessionManager(getApplicationContext());
         //Check if user is still loggedin if not redirect to login activity
         if(!_session.isLoggedIn())
         {
-            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+            i = new Intent(getApplicationContext(), LoginActivity.class);
             // Closing all the Activities
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             // Add new Flag to start new Activity
@@ -137,7 +149,6 @@ public class MainCanvas extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        URL SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTIONS,NetworkUtils.PARAM_QUESTION,"");
         new QuestionAnswerQueryTask().execute(SearchUrl);
         //Ask a question
         FloatingActionButton qfab = (FloatingActionButton) findViewById(R.id.fab);
@@ -176,7 +187,6 @@ public class MainCanvas extends AppCompatActivity
             // COMPLETED (27) As soon as the loading is complete, hide the loading indicator
             if (QuestionAnswerSearchResults != null && !QuestionAnswerSearchResults.equals("")) {
                 // COMPLETED (17) Call showJsonDataView if we have valid, non-null results
-                showJsonDataView();
                 //this method will be running on UI thread
 
                 List<Question> data=new ArrayList<>();
@@ -212,33 +222,10 @@ public class MainCanvas extends AppCompatActivity
                     Toast.makeText(MainCanvas.this, e.toString(), Toast.LENGTH_LONG).show();
                 }
 
-            } else {
-                // COMPLETED (16) Call showErrorMessage if the result is null in onPostExecute
-                showErrorMessage();
             }
         }
 
-        private void showJsonDataView() {
-            // First, make sure the error is invisible
-            mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-            // Then, make sure the JSON data is visible
-            mQuestionTopAnswerContent.setVisibility(View.VISIBLE);
-        }
 
-        // COMPLETED (15) Create a method called showErrorMessage to show the error and hide the data
-        /**
-         * This method will make the error message visible and hide the JSON
-         * View.
-         * <p>
-         * Since it is okay to redundantly set the visibility of a View, we don't
-         * need to check whether each view is currently visible or invisible.
-         */
-        private void showErrorMessage() {
-            // First, hide the currently visible data
-            mQuestionTopAnswerContent.setVisibility(View.INVISIBLE);
-            // Then, show the error
-            mErrorMessageDisplay.setVisibility(View.VISIBLE);
-        }
     }
 
 
@@ -287,18 +274,21 @@ public class MainCanvas extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_transport) {
-            Intent i = new Intent(getApplicationContext(),CategoryActivity.class);
+            Intent i = new Intent(getApplicationContext(),MainCanvas.class);
+            i.putExtra("feedType","category");
             i.putExtra("category","temp");
             startActivity(i);
 
         }
         else if (id == R.id.nav_food) {
-            Intent i = new Intent(getApplicationContext(),CategoryActivity.class);
+            Intent i = new Intent(getApplicationContext(),MainCanvas.class);
+            i.putExtra("feedType","category");
             i.putExtra("category","temp_1");
             startActivity(i);
         }
         else if (id == R.id.nav_sport) {
-            Intent i = new Intent(getApplicationContext(),CategoryActivity.class);
+            Intent i = new Intent(getApplicationContext(),MainCanvas.class);
+            i.putExtra("feedType","category");
             i.putExtra("category","temp");
             startActivity(i);
         }

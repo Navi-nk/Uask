@@ -48,14 +48,12 @@
             android:name=".About"
             android:label="About Us"
             android:parentActivityName=".MainCanvas" />
-        <activity
-            android:name=".CategoryActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".MainCanvas"/>
+
         <activity
             android:name=".AskQuestionActivity"
             android:parentActivityName=".MainCanvas"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme" >
+        </activity>
     </application>
 
 </manifest>

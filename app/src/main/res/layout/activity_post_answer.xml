@@ -18,29 +18,71 @@
             android:visibility="gone" />
 
     </android.support.design.widget.AppBarLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/text_margin"
+            android:textSize="20sp"
+            android:id="@+id/textQuestion"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textQuestion"
+            android:id="@+id/author_timestamp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textAuthor"
+                android:layout_marginLeft="@dimen/text_margin"
+                android:textColor="@color/iron" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/textTimeStamp"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/iron" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/author_timestamp"
+            android:orientation="vertical">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="6"
+            android:layout_margin="@dimen/text_margin"
+            android:id="@+id/answer"
+            />
+
+        <Button
+            android:id="@+id/submitanswer"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center_horizontal"
+            android:text="Done"
+            />
+        </LinearLayout>
+
+    </RelativeLayout>
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:textSize="20sp"
-        android:text="@string/question"
-        android:textStyle="bold" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        />
-
-    <Button
-        android:id="@+id/bSearch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="Done"
-        />
 
 
 

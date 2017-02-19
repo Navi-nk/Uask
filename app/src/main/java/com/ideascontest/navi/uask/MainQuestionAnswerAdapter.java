@@ -24,11 +24,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
+import android.support.v7.widget.ButtonBarLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -132,6 +134,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
 
         // Will display the position in the list, ie 0 through getItemCount() - 1
         TextView textQuestion,textTopAnswer,textAnswerCount,textAuthor,textTimeStamp,textId;
+        Button postAnswer;
         // Will display which ViewHolder is displaying this data
 
         /**
@@ -150,6 +153,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
             textAuthor = (TextView) itemView.findViewById(R.id.textAuthor);
             textTimeStamp = (TextView) itemView.findViewById(R.id.textTimeStamp);
             textId = (TextView) itemView.findViewById(R.id.textId);
+            postAnswer =(Button) itemView.findViewById(R.id.postanswer);
 
             textQuestion.setOnClickListener(new OnClickListener() {
                 @Override
@@ -165,6 +169,24 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                     intent.putExtra("author",authorText);
                     intent.putExtra("timestamp",timeStamp);
                     context.startActivity(intent);
+                }
+            });
+
+            postAnswer.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Context context = v.getContext();
+                    String questionText = textQuestion.getText().toString();
+                    String id = textQuestion.getTag().toString();
+                    String authorText = textAuthor.getText().toString();
+                    String timeStamp = textTimeStamp.getText().toString();
+                    Intent intent = new Intent(context, PostAnswer.class);
+                    intent.putExtra("id",id);
+                    intent.putExtra("question",questionText);
+                    intent.putExtra("author",authorText);
+                    intent.putExtra("timestamp",timeStamp);
+                    context.startActivity(intent);
+
                 }
             });
 

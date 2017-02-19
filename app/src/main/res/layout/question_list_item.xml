@@ -20,7 +20,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/text_margin"
             android:textSize="20sp"
-            android:onClick="navigateToAnswer"
             android:id="@+id/textQuestion"
             android:textStyle="bold" />
 

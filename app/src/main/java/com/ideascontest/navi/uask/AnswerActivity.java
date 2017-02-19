@@ -24,7 +24,7 @@ public class AnswerActivity extends AppCompatActivity {
 
     private RecyclerView mainAnswerList;
     private MainAnswerAdapter mAnswerAdapter;
-    private TextView questionText;
+    private TextView questionText,authorText,timeStampText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +33,15 @@ public class AnswerActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String id = intent.getStringExtra("id");
         String question = intent.getStringExtra("question");
+        String author = intent.getStringExtra("author");
+        String timeStamp = intent.getStringExtra("timestamp");
         questionText = (TextView)findViewById(R.id.textQuestion);
         questionText.setText(question);
+        authorText = (TextView)findViewById(R.id.textAuthor);
+        authorText.setText(author);
+        timeStampText = (TextView)findViewById(R.id.textTimeStamp);
+        timeStampText.setText(timeStamp);
+
 
 
         URL SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_ANSWERS,NetworkUtils.PARAM_QUESTION,id);

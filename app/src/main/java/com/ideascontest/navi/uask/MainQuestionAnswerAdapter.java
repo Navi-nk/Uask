@@ -21,6 +21,7 @@ package com.ideascontest.navi.uask;
  */
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.RecyclerView;
@@ -46,6 +47,8 @@ import org.w3c.dom.Text;
 import java.util.Collections;
 import java.util.List;
 
+import static android.R.attr.author;
+import static android.R.attr.id;
 import static android.R.attr.textSize;
 
 
@@ -147,6 +150,23 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
             textAuthor = (TextView) itemView.findViewById(R.id.textAuthor);
             textTimeStamp = (TextView) itemView.findViewById(R.id.textTimeStamp);
             textId = (TextView) itemView.findViewById(R.id.textId);
+
+            textQuestion.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Context context = v.getContext();
+                    String questionText = textQuestion.getText().toString();
+                    String id = textQuestion.getTag().toString();
+                    String authorText = textAuthor.getText().toString();
+                    String timeStamp = textTimeStamp.getText().toString();
+                    Intent intent = new Intent(context, AnswerActivity.class);
+                    intent.putExtra("id",id);
+                    intent.putExtra("question",questionText);
+                    intent.putExtra("author",authorText);
+                    intent.putExtra("timestamp",timeStamp);
+                    context.startActivity(intent);
+                }
+            });
 
         }
 

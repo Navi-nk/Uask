@@ -36,6 +36,10 @@
             android:icon="@drawable/sports"
             android:title="Sports &amp; recreation" />
         <item
+            android:id="@+id/nav_accom"
+            android:icon="@drawable/residence"
+            android:title="Residences" />
+        <item
             android:id="@+id/nav_general"
             android:icon="@drawable/general"
             android:title="General Questions" />

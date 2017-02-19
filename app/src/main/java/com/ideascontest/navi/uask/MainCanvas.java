@@ -174,7 +174,11 @@ public class MainCanvas extends AppCompatActivity
         } else if (id == R.id.nav_maps) {
             Intent i = new Intent(getApplicationContext(), MapActivity.class);
             startActivity(i);
-        }else if(id == R.id.nav_logout){
+        }else if (id == R.id.nav_about) {
+            Intent i = new Intent(getApplicationContext(), About.class);
+            startActivity(i);
+        }
+        else if(id == R.id.nav_logout){
             //Clear session data
             _session.logoutUser();
             // After logout redirect user to Loing Activity

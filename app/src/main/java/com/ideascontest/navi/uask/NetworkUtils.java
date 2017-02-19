@@ -40,7 +40,7 @@ import java.util.Scanner;
 public class NetworkUtils {
 
     final static String BASE_URL =
-            "http://192.168.0.114:8080/UaskServiceProvider";
+            "http://a8c45348.ngrok.io/UaskServiceProvider";
 
     final static String GET_ALL_QUESTIONS = BASE_URL+"/qfeed/getfeed";
     final static String GET_ALL_ANSWERS = BASE_URL+"/qfeed/getans";

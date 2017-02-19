@@ -60,6 +60,12 @@ public class NetworkUtils {
     final  static String PARAM_QUESTION_ID = "questionId";
     final static String PARAM_USER_ID = "userId";
     final static  String ANSWER ="answer";
+    final static String GET_ALL_QUESTION_FROM_USER = BASE_URL+"/qfeed/getuserques";
+    final static String GET_ALL_QUESTION_ANS_BY_USER = BASE_URL+"/qfeed/getuserqa";
+    final static String GET_ALL_PQUESTION_BY_FACUSER = BASE_URL+"/qfeed/getprivatefeed";
+
+    final static String PARAM_USERID="userId";
+    final static String PARAM_FACULTY="faculty";
 
     /*
      * The sort field. One of stars, forks, or updated.
@@ -129,28 +135,5 @@ public class NetworkUtils {
         }
     }
 
-    public static String putResponseFromHttpUrl(URL url) throws IOException {
-        String response="";
-        try {
-            Log.d("url check",url.toString());
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            OutputStream os = urlConnection.getOutputStream();
-        BufferedWriter writer = new BufferedWriter(
-                new OutputStreamWriter(os, "UTF-8"));
-        writer.write(urlConnection.toString());
 
-        writer.flush();
-        writer.close();
-        os.close();
-        int responseCode=urlConnection.getResponseCode();
-        Log.d("responsecode",String.valueOf(responseCode));
-
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-
-    return response;
-
-
-}
 }

@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.R.attr.author;
 import static android.R.attr.id;
 import static com.ideascontest.navi.uask.NetworkUtils.PARAM_QUESTION;
 import static com.ideascontest.navi.uask.R.string.question;
@@ -242,21 +243,6 @@ public class MainCanvas extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    public void navigateToAnswer(View view) {
-        String id = (String) view.getTag();
-
-        TextView question = (TextView) view;
-        String questionText = question.getText().toString();
-//        TextView author = (TextView)view.findViewById(R.id.textAuthor);
-//        String authorText = author.getText().toString();
-//        Log.d("Checkauthor",authorText);
-        Log.d("CheckID",id);
-        Intent intent = new Intent(getApplicationContext(), AnswerActivity.class);
-        intent.putExtra("id",id);
-        intent.putExtra("question",questionText);
-        startActivity(intent);
     }
 
     public void navigateToPostAnswer(View view) {

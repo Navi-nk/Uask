@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_about"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ideascontest.navi.uask.About">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        app:srcCompat="@drawable/logofinal"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="54dp"
+        android:id="@+id/iV" />
+
+    <TextView
+        android:text="A place which enables students\n\t\t\t\tto help fellow students."
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iV"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:id="@+id/tV1"
+        android:textSize="16sp" />
+
+    <TextView
+        android:text="A product by Team codeLords"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tV1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:id="@+id/tV2"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:text="university Ask"
+        android:textColor="@color/primaryOrange"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tV1"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/tV3" />
+
+
+</RelativeLayout>

@@ -95,7 +95,7 @@ public class SignupActivity extends AppCompatActivity {
         _signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //login for signup
+                //logic for signup
                 performSignup();
             }
         });

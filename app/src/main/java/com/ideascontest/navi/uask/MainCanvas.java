@@ -85,9 +85,7 @@ public class MainCanvas extends AppCompatActivity
             finish();
         }
 
-
         // Make API call and display question
-
 
         // get user data from session
         HashMap<String, String> user = _session.getUserDetails();
@@ -152,6 +150,15 @@ public class MainCanvas extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         new QuestionAnswerQueryTask().execute(SearchUrl);
+        //Ask a question
+        FloatingActionButton qfab = (FloatingActionButton) findViewById(R.id.fab);
+        qfab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(), AskQuestionActivity.class);
+                startActivity(i);
+            }
+        });
     }
 
 
@@ -293,7 +300,11 @@ public class MainCanvas extends AppCompatActivity
         else if (id == R.id.nav_maps) {
             Intent i = new Intent(getApplicationContext(), MapActivity.class);
             startActivity(i);
-        }else if(id == R.id.nav_logout){
+        }else if (id == R.id.nav_about) {
+            Intent i = new Intent(getApplicationContext(), About.class);
+            startActivity(i);
+        }
+        else if(id == R.id.nav_logout){
             //Clear session data
             _session.logoutUser();
             // After logout redirect user to Loing Activity

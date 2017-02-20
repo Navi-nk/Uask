@@ -14,6 +14,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/text_margin"
+            android:drawableLeft="@drawable/answerhand"
+            android:drawablePadding="4dp"
             android:layout_marginTop="10dp"
             android:textSize="20sp"
             android:id="@+id/textAnswer"

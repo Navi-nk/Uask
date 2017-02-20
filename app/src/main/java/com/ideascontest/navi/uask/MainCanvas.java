@@ -99,8 +99,10 @@ public class MainCanvas extends AppCompatActivity
                 descBasic.setGravity(Gravity.CENTER | Gravity.BOTTOM);
             }
             String infoText = (String) descBasic.getText();
-            if (infoText.length()>140) {
-                infoText=infoText.substring(0,140)+"... "+"view more";
+            int count = infoText.split("\n").length;
+            int upperLimit = (count > 5) ?MainAnswerAdapter.ordinalIndexOf(infoText,"\n",5):140;
+            if (infoText.length()>140 || count > 5) {
+                infoText=infoText.substring(0,upperLimit)+"... "+"view more";
 
                 SpannableString sText = new SpannableString(infoText);
                 ClickableSpan myClickableSpan = new ClickableSpan() {
@@ -110,9 +112,11 @@ public class MainCanvas extends AppCompatActivity
                         //finish();
                     }
                 };
-                sText.setSpan(myClickableSpan, 144, 153, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                sText.setSpan(new RelativeSizeSpan(0.75f),144, 153, 0);
-                sText.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primaryOrange)), 144, 153, 0);
+                int spanLowLimit = upperLimit + 4;
+                int spanHighLimit = upperLimit + 13;
+                sText.setSpan(myClickableSpan, spanLowLimit, spanHighLimit, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sText.setSpan(new RelativeSizeSpan(0.75f),spanLowLimit, spanHighLimit, 0);
+                sText.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primaryOrange)), spanLowLimit, spanHighLimit, 0);
                 descBasic.setText(sText);
                 descBasic.setMovementMethod(LinkMovementMethod.getInstance());
 

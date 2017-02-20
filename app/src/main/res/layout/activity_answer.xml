@@ -6,6 +6,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/text_margin"
         android:textSize="20sp"
+        android:drawableLeft="@drawable/ask_question24"
+        android:drawablePadding="4dp"
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
         android:onClick="navigateToAnswer"

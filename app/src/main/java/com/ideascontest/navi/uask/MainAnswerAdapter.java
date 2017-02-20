@@ -86,11 +86,12 @@ public class MainAnswerAdapter extends RecyclerView.Adapter<MainAnswerAdapter.An
         holder.textAuthor.setText(current.author);
 
         final String ansText = (String) holder.textAnswer.getText();
-
-        Log.d("MAAdapter string", ansText);
-        if (ansText.length()>140) {
+        int count = ansText.split("\n").length;
+        int upperLimit = (count > 5) ?ordinalIndexOf(ansText,"\n",5):140;
+        //Log.d("MAAdapter string", ansText+" "+Integer.toString(count));
+        if (ansText.length()>140 || count > 5) {
             Log.d("MainAnswerAdapter", "clickable Span");
-            String spantext = ansText.substring(0, 140) + "... " + "view more";
+            String spantext = ansText.substring(0, upperLimit) + "... " + "view more";
 
             SpannableString sText = new SpannableString(spantext);
             ClickableSpan myClickableSpan = new ClickableSpan() {
@@ -103,12 +104,21 @@ public class MainAnswerAdapter extends RecyclerView.Adapter<MainAnswerAdapter.An
                     context.startActivity(i);
                 }
             };
-            sText.setSpan(myClickableSpan, 144, 153, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            sText.setSpan(new RelativeSizeSpan(0.75f),144, 153, 0);
-            sText.setSpan(new ForegroundColorSpan(holder.v.getResources().getColor(R.color.primaryOrange)), 144, 153, 0);
+            int spanLowLimit = upperLimit + 4;
+            int spanHighLimit = upperLimit + 13;
+            sText.setSpan(myClickableSpan, spanLowLimit, spanHighLimit, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            sText.setSpan(new RelativeSizeSpan(0.75f),spanLowLimit, spanHighLimit, 0);
+            sText.setSpan(new ForegroundColorSpan(holder.v.getResources().getColor(R.color.primaryOrange)), spanLowLimit, spanHighLimit, 0);
             holder.textAnswer.setText(sText);
             holder.textAnswer.setMovementMethod(LinkMovementMethod.getInstance());
         }
+    }
+
+    public static int ordinalIndexOf(String str, String substr, int n) {
+        int pos = str.indexOf(substr);
+        while (--n > 0 && pos != -1)
+            pos = str.indexOf(substr, pos + 1);
+        return pos;
     }
 
     /**

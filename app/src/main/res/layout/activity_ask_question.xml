@@ -28,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:hint="Ask your Question."
+                android:hint="Ask your Question"
                 android:textColorLink="@color/iron" />
         </android.support.design.widget.TextInputLayout>
 
@@ -48,13 +48,23 @@
             />
 
         <!-- Signup Button -->
+        <CheckBox
+            android:text="Private Quesition?"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textColor="@color/primaryOrange"
+            android:textSize="18sp"
+            android:id="@+id/checkBox" />
+
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/question_submit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             android:padding="12dp"
             android:textColor="@color/white"
-            android:background="@color/primaryOrange"
+            android:background="@drawable/button_setting"
             android:text="Submit"
             android:layout_alignParentStart="true"
             android:layout_gravity="center" />

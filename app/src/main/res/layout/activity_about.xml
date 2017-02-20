@@ -16,7 +16,7 @@
         android:id="@+id/iV" />
 
     <TextView
-        android:text="A place enables students to get answers to questions about anything and everything regarding university life."
+        android:text="A platform which enables students to get answers to their questions about anything and everything regarding university life."
         android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

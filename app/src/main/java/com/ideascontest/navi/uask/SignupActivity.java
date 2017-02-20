@@ -168,7 +168,8 @@ public class SignupActivity extends AppCompatActivity {
         params.put("faculty", _facultyText);
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get("http://192.168.0.114:8080/UaskServiceProvider/signup/doregister", params, new AsyncHttpResponseHandler() {
+        //client.get("http://192.168.0.114:8080/UaskServiceProvider/signup/doregister", params, new AsyncHttpResponseHandler() {
+        client.get("88ce57f3.ngrok.io/UaskServiceProvider/signup/doregister", params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {

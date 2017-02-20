@@ -52,6 +52,8 @@
                 android:layout_marginBottom="10dp"
                 android:textColor="@color/iron" />
 
+
+
         </LinearLayout>
 
         <LinearLayout
@@ -59,20 +61,33 @@
             android:layout_height="match_parent"
             android:layout_below="@id/author_timestamp"
             android:orientation="vertical">
-
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:background="@color/base"
+                android:layout_below="@id/question_bar"
+                android:id="@+id/spacer"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_below="@id/author_timestamp"
+            android:orientation="vertical">
         <EditText
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="6"
+            android:layout_height="wrap_content"
             android:layout_margin="@dimen/text_margin"
             android:id="@+id/answer"
+            android:maxLines="1000"
+            android:backgroundTint="@color/white"
+            android:hint="Enter your Answer"
             />
-
+        </LinearLayout>
         <Button
             android:id="@+id/submitanswer"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_setting"
+
             android:layout_alignParentBottom="true"
             android:layout_gravity="center_horizontal"
             android:text="Done"

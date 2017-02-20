@@ -9,6 +9,12 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -50,6 +56,7 @@ public class MainCanvas extends AppCompatActivity
     // Session Manager Class
     SessionManager _session;
 
+
     private RecyclerView mainQuestionAnswerList;
     private MainQuestionAnswerAdapter mQuestionAnswerAdapter;
     private TextView mErrorMessageDisplay;
@@ -62,44 +69,60 @@ public class MainCanvas extends AppCompatActivity
         super.onCreate(savedInstanceState);
         Intent i = getIntent();
         String feedType = i.getStringExtra("feedType");
+        final int menuItemIdx = i.getIntExtra("itemposition",-1);
         if (feedType == null)
         {
             setContentView(R.layout.activity_main_canvas);
             SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTIONS,NetworkUtils.PARAM_QUESTION,"");
         }
-        else if (feedType.equalsIgnoreCase("category")){
+        else {
             setContentView(R.layout.activity_category);
-            String category = i.getStringExtra("category").toString();
-            SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FOR_CAT,NetworkUtils.PARAM_CATEGORY,category);
-        }
-        else if (feedType.equalsIgnoreCase("userQuestions")){
-            setContentView(R.layout.activity_category);
-            String user = i.getStringExtra("user").toString();
-            SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FROM_USER,NetworkUtils.PARAM_USERID,user);
-            TextView descBasic = (TextView)findViewById(R.id.basicInfo);
-            descBasic.setText("List of all questions asked by you.");
-            descBasic.setGravity(Gravity.CENTER|Gravity.BOTTOM);
-        }
-        else if (feedType.equalsIgnoreCase("userAnswers")){
-            setContentView(R.layout.activity_category);
-            String user = i.getStringExtra("user").toString();
-            SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_ANS_BY_USER,NetworkUtils.PARAM_USERID,user);
-            TextView descBasic = (TextView)findViewById(R.id.basicInfo);
-            descBasic.setText("List of all questions answered by you.");
-            descBasic.setGravity(Gravity.CENTER|Gravity.BOTTOM);
-        }
-        else if (feedType.equalsIgnoreCase("privateQues")){
-            setContentView(R.layout.activity_category);
-            String userFaculty = i.getStringExtra("userfaculty").toString();
-            SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_PQUESTION_BY_FACUSER,NetworkUtils.PARAM_FACULTY,userFaculty);
-            TextView descBasic = (TextView)findViewById(R.id.basicInfo);
-            descBasic.setText("All the private questions asked by your faculty students. Visible only to fellow faculty students");
-            descBasic.setGravity(Gravity.CENTER|Gravity.BOTTOM);
-        }
+            TextView descBasic = (TextView) findViewById(R.id.basicInfo);
 
+            if (feedType.equalsIgnoreCase("category")) {
+                String category = i.getStringExtra("category").toString();
+                SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FOR_CAT, NetworkUtils.PARAM_CATEGORY, category);
+            } else if (feedType.equalsIgnoreCase("userQuestions")) {
+                String user = i.getStringExtra("user").toString();
+                SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FROM_USER, NetworkUtils.PARAM_USERID, user);
+                descBasic.setText("List of all questions asked by you.");
+                descBasic.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+            } else if (feedType.equalsIgnoreCase("userAnswers")) {
+                String user = i.getStringExtra("user").toString();
+                SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_ANS_BY_USER, NetworkUtils.PARAM_USERID, user);
+                descBasic.setText("List of all questions answered by you.");
+                descBasic.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+            } else if (feedType.equalsIgnoreCase("privateQues")) {
+                String userFaculty = i.getStringExtra("userfaculty").toString();
+                SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_PQUESTION_BY_FACUSER, NetworkUtils.PARAM_FACULTY, userFaculty);
+                descBasic.setText("All the private questions asked by your faculty students. Visible only to fellow faculty students");
+                descBasic.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+            }
+            String infoText = (String) descBasic.getText();
+            if (infoText.length()>140) {
+                infoText=infoText.substring(0,140)+"... "+"view more";
+
+                SpannableString sText = new SpannableString(infoText);
+                ClickableSpan myClickableSpan = new ClickableSpan() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d("MainCanvas Category", "clickable Span");
+                        //finish();
+                    }
+                };
+                sText.setSpan(myClickableSpan, 144, 153, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sText.setSpan(new RelativeSizeSpan(0.75f),144, 153, 0);
+                sText.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primaryOrange)), 144, 153, 0);
+                descBasic.setText(sText);
+                descBasic.setMovementMethod(LinkMovementMethod.getInstance());
+
+            }
+
+        }
         // Session class instance
         _session = new SessionManager(getApplicationContext());
         //Check if user is still loggedin if not redirect to login activity
+
         if(!_session.isLoggedIn())
         {
             i = new Intent(getApplicationContext(), LoginActivity.class);
@@ -183,6 +206,7 @@ public class MainCanvas extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(getApplicationContext(), AskQuestionActivity.class);
+                i.putExtra("position",menuItemIdx);
                 startActivity(i);
             }
         });
@@ -304,6 +328,7 @@ public class MainCanvas extends AppCompatActivity
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             i.putExtra("feedType","category");
             i.putExtra("category","temp");
+            i.putExtra("itemposition",0);
             startActivity(i);
             finish();
 
@@ -312,19 +337,47 @@ public class MainCanvas extends AppCompatActivity
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             i.putExtra("feedType","category");
             i.putExtra("category","temp_1");
+            i.putExtra("itemposition",1);
+            startActivity(i);
+            finish();
+        }
+        else if (id == R.id.nav_fac) {
+           // SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FOR_CAT, NetworkUtils.PARAM_CATEGORY, "temp");
+           // new QuestionAnswerQueryTask().execute(SearchUrl);
+
+            Intent i = new Intent(getApplicationContext(),MainCanvas.class);
+            i.putExtra("feedType","category");
+            i.putExtra("category","temp");
+            i.putExtra("itemposition",2);
             startActivity(i);
             finish();
         }
         else if (id == R.id.nav_sport) {
+     //       SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FOR_CAT, NetworkUtils.PARAM_CATEGORY, "temp");
+     //       new QuestionAnswerQueryTask().execute(SearchUrl);
+
+            Intent i = new Intent(getApplicationContext(),MainCanvas.class);
+            i.putExtra("feedType","category");
+            i.putExtra("category","temp_1");
+            i.putExtra("itemposition",3);
+            startActivity(i);
+            finish();
+        }
+        else if (id == R.id.nav_accom) {
+      //      SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FOR_CAT, NetworkUtils.PARAM_CATEGORY, "temp");
+       //     new QuestionAnswerQueryTask().execute(SearchUrl);
+
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             i.putExtra("feedType","category");
             i.putExtra("category","temp");
+            i.putExtra("itemposition",4);
             startActivity(i);
             finish();
         }
 
         else if (id == R.id.nav_general) {
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
+            i.putExtra("itemposition",5);
             startActivity(i);
             finish();
         }

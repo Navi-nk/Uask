@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,8 @@ public class AskQuestionActivity extends AppCompatActivity {
     EditText _quesText;
     @InjectView(R.id.cat_spinner)
     MaterialBetterSpinner _categoryDropdown;
+    @InjectView(R.id.checkBox)
+    CheckBox privateFlag;
     @InjectView(R.id.question_submit)
     Button _submitButton;
 
@@ -58,10 +61,14 @@ public class AskQuestionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ask_question);
         ButterKnife.inject(this);
+
+        Intent i = getIntent();
+        int catDropDownPosition = i.getIntExtra("position",-1);
+        Log.d("Position in Q",Integer.toString(catDropDownPosition));
         //get session object
         _session = new SessionManager(getApplicationContext());
         //populate category dropdown
-        populateCategorySpinner();
+        populateCategorySpinner(catDropDownPosition);
 
         //implement listener for question submit
         _submitButton.setOnClickListener(new View.OnClickListener() {
@@ -73,12 +80,18 @@ public class AskQuestionActivity extends AppCompatActivity {
         });
     }
 
-    private void populateCategorySpinner() {
+    private void populateCategorySpinner(int dropDownPosition) {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_dropdown_item_1line, CATLIST);
         final MaterialBetterSpinner materialDesignSpinner = (MaterialBetterSpinner)
                 findViewById(R.id.cat_spinner);
         materialDesignSpinner.setAdapter(arrayAdapter);
+
+        if(dropDownPosition >= 0 && dropDownPosition < 6) {
+            materialDesignSpinner.setText(CATLIST[dropDownPosition]);
+            _categoryText = CATLIST[dropDownPosition];
+        }
+
         materialDesignSpinner.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -116,14 +129,17 @@ public class AskQuestionActivity extends AppCompatActivity {
         progressDialog.setMessage("Submitting...");
         progressDialog.show();
 
+        String flag = (privateFlag.isChecked())? "true" :"false" ;
+        Log.d("flag",flag);
         RequestParams params = new RequestParams();
         params.put("question", _questionText);
         params.put("category", _categoryText);
-        params.put("flag", "0");
+        params.put("flag", flag);
         params.put("userId",userName);
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get("http://192.168.0.114:8080/UaskServiceProvider/qfeed/askques", params, new AsyncHttpResponseHandler() {
+       // client.get("http://192.168.0.114:8080/UaskServiceProvider/qfeed/askques", params, new AsyncHttpResponseHandler() {
+        client.get("http://88ce57f3.ngrok.io/UaskServiceProvider/qfeed/askques", params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {

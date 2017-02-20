@@ -4,6 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.ButtonBarLayout;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,6 +84,31 @@ public class MainAnswerAdapter extends RecyclerView.Adapter<MainAnswerAdapter.An
         holder.textAnswer.setText(current.answerText);
         holder.textTimeStamp.setText(current.timeStamp);
         holder.textAuthor.setText(current.author);
+
+        final String ansText = (String) holder.textAnswer.getText();
+
+        Log.d("MAAdapter string", ansText);
+        if (ansText.length()>140) {
+            Log.d("MainAnswerAdapter", "clickable Span");
+            String spantext = ansText.substring(0, 140) + "... " + "view more";
+
+            SpannableString sText = new SpannableString(spantext);
+            ClickableSpan myClickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("MainAnswerAdapter", "clickable Span1");
+                    Context context = v.getContext();
+                    Intent i = new Intent(context, ShowAnswer.class);
+                    i.putExtra("answertext", ansText);
+                    context.startActivity(i);
+                }
+            };
+            sText.setSpan(myClickableSpan, 144, 153, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            sText.setSpan(new RelativeSizeSpan(0.75f),144, 153, 0);
+            sText.setSpan(new ForegroundColorSpan(holder.v.getResources().getColor(R.color.primaryOrange)), 144, 153, 0);
+            holder.textAnswer.setText(sText);
+            holder.textAnswer.setMovementMethod(LinkMovementMethod.getInstance());
+        }
     }
 
     /**
@@ -100,7 +131,7 @@ public class MainAnswerAdapter extends RecyclerView.Adapter<MainAnswerAdapter.An
 
         // Will display the position in the list, ie 0 through getItemCount() - 1
         TextView textAnswer,textAuthor,textTimeStamp;
-        Button viewMore;
+        View v;
         // Will display which ViewHolder is displaying this data
 
         /**
@@ -112,25 +143,10 @@ public class MainAnswerAdapter extends RecyclerView.Adapter<MainAnswerAdapter.An
          */
         public AnswerHolder(View itemView) {
             super(itemView);
-
+            v=itemView;
             textAnswer= (TextView) itemView.findViewById(R.id.textAnswer);
             textAuthor = (TextView) itemView.findViewById(R.id.textAuthor);
             textTimeStamp = (TextView) itemView.findViewById(R.id.textTimeStamp);
-            viewMore = (Button) itemView.findViewById(R.id.viewMore);
-            viewMore.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Context context = v.getContext();
-                    Intent i = new Intent(context,ShowAnswer.class);
-                    i.putExtra("answertext",textAnswer.getText().toString());
-                    context.startActivity(i);
-
-                }
-            });
-
-
-
         }
-
     }
 }

@@ -16,13 +16,16 @@
         android:id="@+id/iV" />
 
     <TextView
-        android:text="A place which enables students\n\t\t\t\tto help fellow students."
+        android:text="A platform which enables students to get answers to their questions about anything and everything regarding university life."
         android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/iV"
+        android:gravity="center"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="18dp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_vertical_margin"
         android:id="@+id/tV1"
         android:textSize="16sp" />
 

@@ -26,12 +26,20 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.ButtonBarLayout;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 
@@ -58,10 +66,14 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
 
     private static final String TAG = MainQuestionAnswerAdapter.class.getSimpleName();
     List<Question> data= Collections.emptyList();
+    int _category;
     Question current;
+    private static final int STATIC_CARD = 0;
+    private static final int DYNAMIC_CARD = 1;
 
-    public MainQuestionAnswerAdapter(List<Question> data) {
+    public MainQuestionAnswerAdapter(List<Question> data,int category) {
         this.data=data;
+        _category = category;
     }
 
     /**
@@ -79,17 +91,34 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
     @Override
     public QuestionTopAnswerHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
-        int layoutIdForListItem = R.layout.question_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
+        int layoutIdForListItem;
+        View view;
+        QuestionTopAnswerHolder viewHolder;
 
-        View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
-        QuestionTopAnswerHolder viewHolder = new QuestionTopAnswerHolder(view);
-
-
+        if(viewType == STATIC_CARD)
+        {
+            layoutIdForListItem = R.layout.question_list_item_one;
+            view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
+            viewHolder = new QuestionTopAnswerHolder(view,viewType);
+        }
+        else {
+            layoutIdForListItem = R.layout.question_list_item;
+            view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
+            viewHolder = new QuestionTopAnswerHolder(view,viewType);
+        }
         return viewHolder;
     }
 
+    @Override
+    public int getItemViewType(int position)
+    {
+        if(position == 0 && (_category >= 0 && _category <8))
+            return STATIC_CARD;
+        else
+            return DYNAMIC_CARD;
+    }
     /**
      * OnBindViewHolder is called by the RecyclerView to display the data at the specified
      * position. In this method, we update the contents of the ViewHolder to display the correct
@@ -103,20 +132,101 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
     @Override
     public void onBindViewHolder(QuestionTopAnswerHolder holder, int position) {
         Log.d(TAG, "#" + position);
-        // Get current position of item in recyclerview to bind data and assign values from list
-        QuestionTopAnswerHolder questionTopAnswerHolder= (QuestionTopAnswerHolder) holder;
-        Question current=data.get(position);
-        questionTopAnswerHolder.textQuestion.setText(current.questionText);
+        QuestionTopAnswerHolder questionTopAnswerHolder = (QuestionTopAnswerHolder) holder;
 
-        if(current.topAnswer.equals("0"))
-            questionTopAnswerHolder.textTopAnswer.setText("");
+            switch (_category) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                {
+                    if(position == 0) {
+                        String infoText = (String) questionTopAnswerHolder.basicInfoText.getText();
+                        int count = infoText.split("\n").length;
+                        int upperLimit = (count > 5) ? MainAnswerAdapter.ordinalIndexOf(infoText, "\n", 5) : 140;
+                        if (infoText.length() > 140 || count > 5) {
+                            infoText = infoText.substring(0, upperLimit) + "... " + "view more";
+
+                            SpannableString sText = new SpannableString(infoText);
+                            ClickableSpan myClickableSpan = new ClickableSpan() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.d("MainCanvas Category", "clickable Span");
+                                    //finish();
+                                }
+                            };
+                            int spanLowLimit = upperLimit + 4;
+                            int spanHighLimit = upperLimit + 13;
+                            sText.setSpan(myClickableSpan, spanLowLimit, spanHighLimit, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            sText.setSpan(new RelativeSizeSpan(0.75f), spanLowLimit, spanHighLimit, 0);
+                            sText.setSpan(new ForegroundColorSpan( questionTopAnswerHolder.v.getResources().getColor(R.color.primaryOrange)), spanLowLimit, spanHighLimit, 0);
+                            questionTopAnswerHolder.basicInfoText.setText(sText);
+                            questionTopAnswerHolder.basicInfoText.setMovementMethod(LinkMovementMethod.getInstance());
+                        }
+                    }
+                    else
+                    {
+                        populateDynamicUiElements(questionTopAnswerHolder,(position-1));
+                    }
+                }
+                    break;
+                case 6:
+                {
+                    if(position == 0) {
+                        questionTopAnswerHolder.basicInfoText.setText("List of all questions asked by you.");
+                        questionTopAnswerHolder.basicInfoText.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                    }
+                    else{
+                        populateDynamicUiElements(questionTopAnswerHolder,(position-1));
+                    }
+                }
+                    break;
+                case 7:
+                {
+                    if(position == 0) {
+                        questionTopAnswerHolder.basicInfoText.setText("List of all questions answered by you.");
+                        questionTopAnswerHolder.basicInfoText.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                    }
+                    else{
+                        populateDynamicUiElements(questionTopAnswerHolder,(position-1));
+                    }
+                }
+                case 8:
+                {
+                    if(position == 0) {
+                        questionTopAnswerHolder.basicInfoText.setText("All the private questions asked by your faculty students. Visible only to fellow faculty students");
+                        questionTopAnswerHolder.basicInfoText.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                    }
+                    else{
+                        populateDynamicUiElements(questionTopAnswerHolder,(position-1));
+                    }
+                }
+                break;
+                default: {
+                    populateDynamicUiElements(questionTopAnswerHolder,position);
+                }
+                break;
+
+            }
+
+    }
+
+    public void populateDynamicUiElements(QuestionTopAnswerHolder holder,int position )
+    {
+        Question current = data.get(position);
+        holder.textQuestion.setText(current.questionText);
+
+        if (current.topAnswer.equals("0"))
+            holder.textTopAnswer.setText("");
         else
-            questionTopAnswerHolder.textTopAnswer.setText(current.topAnswer);
+            holder.textTopAnswer.setText(current.topAnswer);
 
-        questionTopAnswerHolder.textAnswerCount.setText(String.valueOf(current.noOfAnswers + " Answers"));
-        questionTopAnswerHolder.textTimeStamp.setText(current.timeStamp);
-        questionTopAnswerHolder.textAuthor.setText(current.author);
-        questionTopAnswerHolder.textQuestion.setTag(String.valueOf(current.id));
+        holder.textAnswerCount.setText(String.valueOf(current.noOfAnswers + " Answers"));
+        holder.textTimeStamp.setText(current.timeStamp);
+        holder.textAuthor.setText(current.author);
+        holder.textQuestion.setTag(String.valueOf(current.id));
     }
 
     /**
@@ -138,8 +248,9 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
              {
 
         // Will display the position in the list, ie 0 through getItemCount() - 1
-        TextView textQuestion,textTopAnswer,textAnswerCount,textAuthor,textTimeStamp,textId;
+        TextView textQuestion,textTopAnswer,textAnswerCount,textAuthor,textTimeStamp,textId,basicInfoText;
         Button postAnswer;
+                 View v;
         // Will display which ViewHolder is displaying this data
 
         /**
@@ -149,44 +260,50 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
          * @param itemView The View that you inflated in
          *                 {@link MainQuestionAnswerAdapter#onCreateViewHolder(ViewGroup, int)}
          */
-        public QuestionTopAnswerHolder(View itemView) {
+        public QuestionTopAnswerHolder(View itemView,int viewType) {
             super(itemView);
+            v = itemView;
+            if(viewType == STATIC_CARD)
+            {
+                basicInfoText = (TextView) itemView.findViewById(R.id.basicInfo);
+            }
+            else {
 
-            textQuestion= (TextView) itemView.findViewById(R.id.textQuestion);
-            textTopAnswer= (TextView) itemView.findViewById(R.id.textTopAnswer);
-            textAnswerCount = (TextView) itemView.findViewById(R.id.textAnswerCount);
-            textAuthor = (TextView) itemView.findViewById(R.id.textAuthor);
-            textTimeStamp = (TextView) itemView.findViewById(R.id.textTimeStamp);
-            textId = (TextView) itemView.findViewById(R.id.textId);
-            postAnswer =(Button) itemView.findViewById(R.id.postanswer);
+                textQuestion = (TextView) itemView.findViewById(R.id.textQuestion);
+                textTopAnswer = (TextView) itemView.findViewById(R.id.textTopAnswer);
+                textAnswerCount = (TextView) itemView.findViewById(R.id.textAnswerCount);
+                textAuthor = (TextView) itemView.findViewById(R.id.textAuthor);
+                textTimeStamp = (TextView) itemView.findViewById(R.id.textTimeStamp);
+                textId = (TextView) itemView.findViewById(R.id.textId);
+                postAnswer = (Button) itemView.findViewById(R.id.postanswer);
 
-            textQuestion.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    setTextForIntentAndCall(v,AnswerActivity.class);
-                }
-            });
+                textQuestion.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setTextForIntentAndCall(v, AnswerActivity.class);
+                    }
+                });
 
-            postAnswer.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    setTextForIntentAndCall(v,PostAnswer.class);
-                }
-            });
+                postAnswer.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setTextForIntentAndCall(v, PostAnswer.class);
+                    }
+                });
 
-            textTopAnswer.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    setTextForIntentAndCall(v,AnswerActivity.class);
-                }
-            });
-            textAnswerCount.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    setTextForIntentAndCall(v,AnswerActivity.class);
-                }
-            });
-
+                textTopAnswer.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setTextForIntentAndCall(v, AnswerActivity.class);
+                    }
+                });
+                textAnswerCount.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setTextForIntentAndCall(v, AnswerActivity.class);
+                    }
+                });
+            }
         }
                  public void setTextForIntentAndCall(View v,Class s) {
 

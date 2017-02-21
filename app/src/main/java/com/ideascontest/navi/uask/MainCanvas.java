@@ -53,6 +53,7 @@ public class MainCanvas extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final int REQUEST_SIGNUP = 0;
     private static final String TAG = "Main Canvas";
+    int _categorySelected;
     // Session Manager Class
     SessionManager _session;
 
@@ -80,55 +81,40 @@ public class MainCanvas extends AppCompatActivity
         {
             setContentView(R.layout.activity_main_canvas);
             SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTIONS,NetworkUtils.PARAM_QUESTION,"");
+            _categorySelected = -1;
         }
         else {
             setContentView(R.layout.activity_category);
-            TextView descBasic = (TextView) findViewById(R.id.basicInfo);
 
             if (feedType.equalsIgnoreCase("category")) {
                 String category = i.getStringExtra("category").toString();
                 Log.d("category",category);
                 SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FOR_CAT, NetworkUtils.PARAM_CATEGORY, category);
+
+                int index = -1;
+                for (int cnt=0;cnt<CAT_LIST.length;cnt++) {
+                    if (CAT_LIST[cnt].equals(category)) {
+                        index = cnt;
+                        break;
+                    }
+                }
+
+                _categorySelected = index;
                 Log.d("url",SearchUrl.toString());
             } else if (feedType.equalsIgnoreCase("userQuestions")) {
                 String user = i.getStringExtra("user").toString();
                 SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FROM_USER, NetworkUtils.PARAM_USERID, user);
-                descBasic.setText("List of all questions asked by you.");
-                descBasic.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                _categorySelected = 6;
             } else if (feedType.equalsIgnoreCase("userAnswers")) {
                 String user = i.getStringExtra("user").toString();
                 SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_ANS_BY_USER, NetworkUtils.PARAM_USERID, user);
-                descBasic.setText("List of all questions answered by you.");
-                descBasic.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                _categorySelected = 7;
             } else if (feedType.equalsIgnoreCase("privateQues")) {
                 String userFaculty = i.getStringExtra("userfaculty").toString();
                 SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_PQUESTION_BY_FACUSER, NetworkUtils.PARAM_FACULTY, userFaculty);
-                descBasic.setText("All the private questions asked by your faculty students. Visible only to fellow faculty students");
-                descBasic.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                _categorySelected = 8;
             }
 
-            String infoText = (String) descBasic.getText();
-            int count = infoText.split("\n").length;
-            int upperLimit = (count > 5) ?MainAnswerAdapter.ordinalIndexOf(infoText,"\n",5):140;
-            if (infoText.length()>140 || count > 5) {
-                infoText=infoText.substring(0,upperLimit)+"... "+"view more";
-
-                SpannableString sText = new SpannableString(infoText);
-                ClickableSpan myClickableSpan = new ClickableSpan() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.d("MainCanvas Category", "clickable Span");
-                        //finish();
-                    }
-                };
-                int spanLowLimit = upperLimit + 4;
-                int spanHighLimit = upperLimit + 13;
-                sText.setSpan(myClickableSpan, spanLowLimit, spanHighLimit, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                sText.setSpan(new RelativeSizeSpan(0.75f),spanLowLimit, spanHighLimit, 0);
-                sText.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primaryOrange)), spanLowLimit, spanHighLimit, 0);
-                descBasic.setText(sText);
-                descBasic.setMovementMethod(LinkMovementMethod.getInstance());
-            }
         }
         // Session class instance
         _session = new SessionManager(getApplicationContext());
@@ -286,7 +272,7 @@ public class MainCanvas extends AppCompatActivity
                     LinearLayoutManager layoutManager = new LinearLayoutManager(MainCanvas.this);
                     mainQuestionAnswerList.setLayoutManager(layoutManager);
                     mainQuestionAnswerList.setHasFixedSize(true);
-                    mQuestionAnswerAdapter = new MainQuestionAnswerAdapter(data);
+                    mQuestionAnswerAdapter = new MainQuestionAnswerAdapter(data,_categorySelected);
                     mainQuestionAnswerList.setAdapter(mQuestionAnswerAdapter);
 
                     // Setup and Handover data to recyclerview

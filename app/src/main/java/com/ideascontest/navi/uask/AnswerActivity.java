@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -24,17 +25,18 @@ public class AnswerActivity extends AppCompatActivity {
 
     private RecyclerView mainAnswerList;
     private MainAnswerAdapter mAnswerAdapter;
-    private TextView questionText,authorText,timeStampText;
-
+    private TextView questionText,authorText,timeStampText,submitAns;
+    String id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_answer);
         Intent intent = getIntent();
-        String id = intent.getStringExtra("id");
-        String question = intent.getStringExtra("question");
-        String author = intent.getStringExtra("author");
-        String timeStamp = intent.getStringExtra("timestamp");
+        id = intent.getStringExtra("id");
+        final String question = intent.getStringExtra("question");
+        final String author = intent.getStringExtra("author");
+        final String timeStamp = intent.getStringExtra("timestamp");
+        final String noOfAnswers = intent.getStringExtra("numanswers");
         questionText = (TextView)findViewById(R.id.textQuestion);
         questionText.setText(question);
         authorText = (TextView)findViewById(R.id.textAuthor);
@@ -42,10 +44,58 @@ public class AnswerActivity extends AppCompatActivity {
         timeStampText = (TextView)findViewById(R.id.textTimeStamp);
         timeStampText.setText(timeStamp);
 
+        submitAns = (TextView)findViewById(R.id.tb_answer);
 
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_viewqa);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle(null);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        URL SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_ANSWERS,NetworkUtils.PARAM_QUESTION,id);
-        new AnswerQueryTask().execute(SearchUrl);
+        if(!noOfAnswers.equalsIgnoreCase("0 Answers")) {
+            URL SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_ANSWERS, NetworkUtils.PARAM_QUESTION, id);
+            new AnswerQueryTask().execute(SearchUrl);
+        }
+        else
+        {
+            List<Answer> noData=new ArrayList<>();
+
+                    Answer answerData = new Answer();
+                    answerData.answerText="No Answers Available";
+                    answerData.author="";
+                    answerData.timeStamp="";
+                    noData.add(answerData);
+
+                mainAnswerList = (RecyclerView) findViewById(R.id.question_top_answer_recylerview);
+                LinearLayoutManager layoutManager = new LinearLayoutManager(AnswerActivity.this);
+                mainAnswerList.setLayoutManager(layoutManager);
+                mainAnswerList.setHasFixedSize(true);
+                mAnswerAdapter = new MainAnswerAdapter(noData);
+                mainAnswerList.setAdapter(mAnswerAdapter);
+        }
+
+        submitAns.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), PostAnswer.class);
+                intent.putExtra("id",id);
+                intent.putExtra("question",question);
+                intent.putExtra("author",author);
+                intent.putExtra("timestamp",timeStamp);
+                startActivityForResult(intent,0);
+                //finish();
+            }
+        });
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("here ",Integer.toString(requestCode)+" "+Integer.toString(resultCode));
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK) {
+                URL SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_ANSWERS, NetworkUtils.PARAM_QUESTION, id);
+                new AnswerQueryTask().execute(SearchUrl);
+            }
+        }
     }
 
     public class AnswerQueryTask extends AsyncTask<URL, Void, String> {

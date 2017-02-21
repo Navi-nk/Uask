@@ -53,10 +53,17 @@ public class MainCanvas extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final int REQUEST_SIGNUP = 0;
     private static final String TAG = "Main Canvas";
+    int _categorySelected;
     // Session Manager Class
     SessionManager _session;
 
-
+    static String[] CAT_LIST = {"Getting Around",
+            "Food & Beverages",
+            "Faculties/Departments",
+            "Sports & Recreation",
+            "Residences",
+            "General"
+    };
     private RecyclerView mainQuestionAnswerList;
     private MainQuestionAnswerAdapter mQuestionAnswerAdapter;
     private TextView mErrorMessageDisplay;
@@ -72,50 +79,42 @@ public class MainCanvas extends AppCompatActivity
         final int menuItemIdx = i.getIntExtra("itemposition",-1);
         if (feedType == null)
         {
+            Log.d("MainCanvas","first page");
             setContentView(R.layout.activity_main_canvas);
             SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTIONS,NetworkUtils.PARAM_QUESTION,"");
+            _categorySelected = -1;
         }
         else {
+            Log.d("MainCanvas","Category");
             setContentView(R.layout.activity_category);
-            TextView descBasic = (TextView) findViewById(R.id.basicInfo);
 
             if (feedType.equalsIgnoreCase("category")) {
                 String category = i.getStringExtra("category").toString();
+                Log.d("category",category);
                 SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FOR_CAT, NetworkUtils.PARAM_CATEGORY, category);
+
+                int index = -1;
+                for (int cnt=0;cnt<CAT_LIST.length;cnt++) {
+                    if (CAT_LIST[cnt].equals(category)) {
+                        index = cnt;
+                        break;
+                    }
+                }
+                _categorySelected = index;
+                Log.d("Index-Category",Integer.toString(_categorySelected));
+                Log.d("url",SearchUrl.toString());
             } else if (feedType.equalsIgnoreCase("userQuestions")) {
                 String user = i.getStringExtra("user").toString();
                 SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FROM_USER, NetworkUtils.PARAM_USERID, user);
-                descBasic.setText("List of all questions asked by you.");
-                descBasic.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                _categorySelected = 6;
             } else if (feedType.equalsIgnoreCase("userAnswers")) {
                 String user = i.getStringExtra("user").toString();
                 SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_ANS_BY_USER, NetworkUtils.PARAM_USERID, user);
-                descBasic.setText("List of all questions answered by you.");
-                descBasic.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                _categorySelected = 7;
             } else if (feedType.equalsIgnoreCase("privateQues")) {
                 String userFaculty = i.getStringExtra("userfaculty").toString();
                 SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_PQUESTION_BY_FACUSER, NetworkUtils.PARAM_FACULTY, userFaculty);
-                descBasic.setText("All the private questions asked by your faculty students. Visible only to fellow faculty students");
-                descBasic.setGravity(Gravity.CENTER | Gravity.BOTTOM);
-            }
-            String infoText = (String) descBasic.getText();
-            if (infoText.length()>140) {
-                infoText=infoText.substring(0,140)+"... "+"view more";
-
-                SpannableString sText = new SpannableString(infoText);
-                ClickableSpan myClickableSpan = new ClickableSpan() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.d("MainCanvas Category", "clickable Span");
-                        //finish();
-                    }
-                };
-                sText.setSpan(myClickableSpan, 144, 153, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                sText.setSpan(new RelativeSizeSpan(0.75f),144, 153, 0);
-                sText.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primaryOrange)), 144, 153, 0);
-                descBasic.setText(sText);
-                descBasic.setMovementMethod(LinkMovementMethod.getInstance());
-
+                _categorySelected = 8;
             }
 
         }
@@ -207,9 +206,19 @@ public class MainCanvas extends AppCompatActivity
             public void onClick(View view) {
                 Intent i = new Intent(getApplicationContext(), AskQuestionActivity.class);
                 i.putExtra("position",menuItemIdx);
-                startActivity(i);
+                startActivityForResult(i,0);
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("here in maincanvas",Integer.toString(requestCode)+" "+Integer.toString(resultCode));
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK) {
+                new QuestionAnswerQueryTask().execute(SearchUrl);
+            }
+        }
     }
 
 
@@ -226,6 +235,7 @@ public class MainCanvas extends AppCompatActivity
             URL searchUrl = params[0];
             String QuestionAnswerSearchResults = null;
             try {
+                Log.d("url",searchUrl.toString());
                 QuestionAnswerSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -258,13 +268,16 @@ public class MainCanvas extends AppCompatActivity
                         questionData.id=json_data.getString("_Id");
                         data.add(questionData);
                     }
-
+                    if(_categorySelected != -1)
+                    {
+                        data.add(new Question());
+                    }
 
                     mainQuestionAnswerList = (RecyclerView) findViewById(R.id.question_top_answer_recylerview);
                     LinearLayoutManager layoutManager = new LinearLayoutManager(MainCanvas.this);
                     mainQuestionAnswerList.setLayoutManager(layoutManager);
                     mainQuestionAnswerList.setHasFixedSize(true);
-                    mQuestionAnswerAdapter = new MainQuestionAnswerAdapter(data);
+                    mQuestionAnswerAdapter = new MainQuestionAnswerAdapter(data,_categorySelected);
                     mainQuestionAnswerList.setAdapter(mQuestionAnswerAdapter);
 
                     // Setup and Handover data to recyclerview
@@ -295,15 +308,15 @@ public class MainCanvas extends AppCompatActivity
         startActivity(intent);
     }
 
-
-    @Override
+//settings disabled
+  /*  @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_canvas, menu);
         return true;
     }
-
-    @Override
+*/
+ /*   @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -317,6 +330,7 @@ public class MainCanvas extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
+*/
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -327,7 +341,7 @@ public class MainCanvas extends AppCompatActivity
         if (id == R.id.nav_transport) {
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             i.putExtra("feedType","category");
-            i.putExtra("category","temp");
+            i.putExtra("category",CAT_LIST[0]);
             i.putExtra("itemposition",0);
             startActivity(i);
             finish();
@@ -336,7 +350,7 @@ public class MainCanvas extends AppCompatActivity
         else if (id == R.id.nav_food) {
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             i.putExtra("feedType","category");
-            i.putExtra("category","temp_1");
+            i.putExtra("category",CAT_LIST[1]);
             i.putExtra("itemposition",1);
             startActivity(i);
             finish();
@@ -347,7 +361,7 @@ public class MainCanvas extends AppCompatActivity
 
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             i.putExtra("feedType","category");
-            i.putExtra("category","temp");
+            i.putExtra("category",CAT_LIST[2]);
             i.putExtra("itemposition",2);
             startActivity(i);
             finish();
@@ -358,7 +372,7 @@ public class MainCanvas extends AppCompatActivity
 
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             i.putExtra("feedType","category");
-            i.putExtra("category","temp_1");
+            i.putExtra("category",CAT_LIST[3]);
             i.putExtra("itemposition",3);
             startActivity(i);
             finish();
@@ -369,7 +383,7 @@ public class MainCanvas extends AppCompatActivity
 
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             i.putExtra("feedType","category");
-            i.putExtra("category","temp");
+            i.putExtra("category",CAT_LIST[4]);
             i.putExtra("itemposition",4);
             startActivity(i);
             finish();
@@ -377,6 +391,8 @@ public class MainCanvas extends AppCompatActivity
 
         else if (id == R.id.nav_general) {
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
+            i.putExtra("feedType","category");
+            i.putExtra("category",CAT_LIST[5]);
             i.putExtra("itemposition",5);
             startActivity(i);
             finish();

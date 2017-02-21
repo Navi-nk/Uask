@@ -48,7 +48,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class NetworkUtils {
 
     final static String BASE_URL =
-            "http://88ce57f3.ngrok.io/UaskServiceProvider";
+            "http://1a60a9a0.ngrok.io/UaskServiceProvider";
 
     final static String GET_ALL_QUESTIONS = BASE_URL+"/qfeed/getfeed";
     final static String GET_ALL_ANSWERS = BASE_URL+"/qfeed/getans";

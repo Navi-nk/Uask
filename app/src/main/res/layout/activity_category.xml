@@ -1,68 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:id="@+id/drawer_layout"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:fitsSystemWindows="true"
-tools:openDrawer="start">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
 
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/text_margin"
-            android:layout_marginRight="@dimen/text_margin"
-            android:layout_marginTop="45dp"
-            android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. "
-            android:textSize="20sp"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp"
-            android:id="@+id/basicInfo"
-            />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="6dp"
-            android:background="@color/base"
-            android:layout_below="@id/basicInfo"
-            android:id="@+id/spacer"/>
-        <FrameLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/question_top_answer_content"
-            android:layout_below="@id/spacer"
-            android:layout_marginTop="0dp">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/question_top_answer_recylerview"
+    <FrameLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                />
-        </FrameLayout>
+                android:id="@+id/question_top_answer_content"
+                android:layout_below="@id/spacer"
+                android:layout_marginTop="0dp">
 
-    </RelativeLayout>
-    </ScrollView>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/question_top_answer_recylerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    />
+            </FrameLayout>
 
     <include
         layout="@layout/app_bar_main_canvas"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-<android.support.design.widget.NavigationView
-    android:id="@+id/nav_view"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:layout_gravity="start"
-    android:fitsSystemWindows="true"
-    app:headerLayout="@layout/nav_header_main_canvas"
-    app:menu="@menu/activity_main_canvas_drawer" />
+
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main_canvas"
+        app:menu="@menu/activity_main_canvas_drawer" />
 
 </android.support.v4.widget.DrawerLayout>

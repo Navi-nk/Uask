@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -45,8 +46,8 @@ public class AskQuestionActivity extends AppCompatActivity {
     MaterialBetterSpinner _categoryDropdown;
     @InjectView(R.id.checkBox)
     CheckBox privateFlag;
-    @InjectView(R.id.question_submit)
-    Button _submitButton;
+    @InjectView(R.id.tb_submit_ques)
+    TextView _submitButton;
 
     static String[] CATLIST = {"Getting Around",
             "Food & Beverages",
@@ -61,6 +62,12 @@ public class AskQuestionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ask_question);
         ButterKnife.inject(this);
+
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_postques);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle(null);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         Intent i = getIntent();
         int catDropDownPosition = i.getIntExtra("position",-1);
@@ -139,7 +146,7 @@ public class AskQuestionActivity extends AppCompatActivity {
 
         AsyncHttpClient client = new AsyncHttpClient();
        // client.get("http://192.168.0.114:8080/UaskServiceProvider/qfeed/askques", params, new AsyncHttpResponseHandler() {
-        client.get("http://88ce57f3.ngrok.io/UaskServiceProvider/qfeed/askques", params, new AsyncHttpResponseHandler() {
+        client.get("http://1a60a9a0.ngrok.io/UaskServiceProvider/qfeed/askques", params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {
@@ -150,6 +157,8 @@ public class AskQuestionActivity extends AppCompatActivity {
                     JSONObject obj = new JSONObject(s);
                     // When the JSON response has status boolean value assigned with true
                     if (obj.getBoolean("status")) {
+                        Intent i = new Intent();
+                        setResult(RESULT_OK, i);
                         finish();
                     } else {
                         Toast.makeText(getApplicationContext(), "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();

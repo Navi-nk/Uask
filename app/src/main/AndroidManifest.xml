@@ -25,9 +25,7 @@
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppThemeDark">
-
             <!-- android:label="@string/title_activity_login"< -->
-
         </activity>
         <activity
             android:name=".SignupActivity"
@@ -35,11 +33,13 @@
             android:theme="@style/AppThemeDark">
             >
         </activity>
-        <activity android:name=".AnswerActivity" />
+        <activity android:name=".AnswerActivity"
+            android:parentActivityName=".MainCanvas"
+            android:theme="@style/AppThemeNoBar"/>
         <activity
             android:name=".PostAnswer"
-            android:label="Post Answer"
-            android:parentActivityName=".MainCanvas" />
+            android:parentActivityName=".MainCanvas"
+            android:theme="@style/AppThemeNoBar"/>
         <activity
             android:name=".MapActivity"
             android:label="NUS Campuses"
@@ -51,8 +51,10 @@
         <activity
             android:name=".AskQuestionActivity"
             android:parentActivityName=".MainCanvas"
-            android:theme="@style/AppTheme"></activity>
-        <activity android:name=".ShowAnswer"></activity>
+            android:theme="@style/AppThemeNoBar">
+        </activity>
+        <activity android:name=".ShowAnswer">
+        </activity>
     </application>
 
 </manifest>

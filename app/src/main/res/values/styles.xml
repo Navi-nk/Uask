@@ -12,9 +12,10 @@
         <item name="android:textColorHint">@color/primaryOrange</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
+    <style name="AppThemeNoBar" parent="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+       <item name="windowNoTitle">true</item>
+        <item name="android:statusBarColor">@color/colorStatusbar</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,10 +26,10 @@ import java.util.List;
 
 public class PostAnswer extends AppCompatActivity {
 
-    private TextView questionText,authorText,timeStampText;
+    private TextView questionText,authorText,timeStampText,saveActionText;
     private EditText answer;
-    private Button submitanswer;
     private URL SearchUrl;
+    String parentIdentifier;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +39,7 @@ public class PostAnswer extends AppCompatActivity {
         String question = intent.getStringExtra("question");
         String author = intent.getStringExtra("author");
         String timeStamp = intent.getStringExtra("timestamp");
+        parentIdentifier = intent.getStringExtra("numanswers");
         questionText = (TextView)findViewById(R.id.textQuestion);
         questionText.setText(question);
         questionText.setTag(id);
@@ -45,8 +47,9 @@ public class PostAnswer extends AppCompatActivity {
         authorText.setText(author);
         timeStampText = (TextView)findViewById(R.id.textTimeStamp);
         timeStampText.setText(timeStamp);
-        submitanswer = (Button)findViewById(R.id.submitanswer);
+        saveActionText = (TextView) findViewById(R.id.tb_save);
         answer = (EditText)findViewById(R.id.answer);
+
         SessionManager _session;
         _session = new SessionManager(getApplicationContext());
         // Make API call and display question
@@ -54,20 +57,27 @@ public class PostAnswer extends AppCompatActivity {
         // get user data from session
         HashMap<String, String> user = _session.getUserDetails();
 
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_postans);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle(null);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         // name
         final String user_id = user.get(SessionManager.KEY_NAME);
-        submitanswer.setOnClickListener(new View.OnClickListener(){
+        saveActionText.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 String question_id = questionText.getTag().toString();
                 String answerText = answer.getText().toString();
-                SearchUrl = NetworkUtils.buildUrlToPostAnswer(NetworkUtils.POST_ANSWER,NetworkUtils.PARAM_USER_ID,user_id,NetworkUtils.PARAM_QUESTION_ID,question_id,NetworkUtils.ANSWER,answerText);
-                new PostAnswerTask().execute(SearchUrl);
+                if(answerText.isEmpty())
+                    answer.setError("Answer cannot be empty");
+                else {
+                    answer.setError(null);
+                    SearchUrl = NetworkUtils.buildUrlToPostAnswer(NetworkUtils.POST_ANSWER, NetworkUtils.PARAM_USER_ID, user_id, NetworkUtils.PARAM_QUESTION_ID, question_id, NetworkUtils.ANSWER, answerText);
+                    new PostAnswerTask().execute(SearchUrl);
+                }
             }
         });
-
-
-
 
     }
 
@@ -99,18 +109,29 @@ public class PostAnswer extends AppCompatActivity {
                 JSONObject jsonObj = new JSONObject(QuestionAnswerSearchResults);
                 String success = jsonObj.getString("status").toString();
                 if(success.equalsIgnoreCase("true")){
-                    Intent i = new Intent(getApplicationContext(),MainCanvas.class);
-                    startActivity(i);
+                    if(parentIdentifier == null || parentIdentifier.isEmpty())
+                    {
+                        Log.d("PostAnswer","from answerlist");
+                        Intent i = new Intent();
+                        setResult(RESULT_OK, i);
+                        finish();
+                    }
+                    else {
+                        Log.d("PostAnswer","from questionlist");
+                        Intent i = new Intent(getApplicationContext(), MainCanvas.class);
+                        startActivity(i);
+                        finish();
+                    }
                 }
 
             } catch (JSONException e) {
                 Toast.makeText(PostAnswer.this, e.toString(), Toast.LENGTH_LONG).show();
             }
             // COMPLETED (27) As soon as the loading is complete, hide the loading indicator
-            
+
         }
 
     }
 
-    
+
 }

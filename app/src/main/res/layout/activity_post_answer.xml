@@ -4,20 +4,46 @@
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/tb_postans"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            android:visibility="gone" />
+            >
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="?attr/actionBarSize"
+                >
+                <TextView
+                    android:id="@+id/tbtitle"
+                    style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="start|center"
+                    android:text="Post Answer"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"/>
 
-    </android.support.design.widget.AppBarLayout>
+                <TextView
+                    android:id="@+id/tb_save"
+                    style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:drawableLeft="@drawable/check"
+                    android:drawablePadding="4dp"
+                    android:gravity="end|center"
+                    android:paddingRight="16dp"
+                    android:text="Submit"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:textAllCaps="false"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true" />
+
+            </RelativeLayout>
+        </android.support.v7.widget.Toolbar>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -42,6 +68,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/textAuthor"
                 android:layout_marginLeft="@dimen/text_margin"
+                android:textStyle="bold"
                 android:textColor="@color/iron" />
 
             <TextView
@@ -49,6 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:id="@+id/textTimeStamp"
+                android:textStyle="bold"
                 android:layout_marginBottom="10dp"
                 android:textColor="@color/iron" />
 
@@ -67,38 +95,18 @@
                 android:background="@color/base"
                 android:layout_below="@id/question_bar"
                 android:id="@+id/spacer"/>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_below="@id/author_timestamp"
-            android:orientation="vertical">
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/text_margin"
             android:id="@+id/answer"
             android:maxLines="1000"
-            android:backgroundTint="@color/white"
+            android:backgroundTint="@color/accent"
             android:hint="Enter your Answer"
             />
-        </LinearLayout>
-        <Button
-            android:id="@+id/submitanswer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/button_setting"
 
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="center_horizontal"
-            android:text="Done"
-            />
         </LinearLayout>
 
     </RelativeLayout>
-
-
-
-
-
 
 </LinearLayout>

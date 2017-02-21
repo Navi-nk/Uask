@@ -99,11 +99,13 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
 
         if(viewType == STATIC_CARD)
         {
+            Log.d("onCreateAdapter","static");
             layoutIdForListItem = R.layout.question_list_item_one;
             view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
             viewHolder = new QuestionTopAnswerHolder(view,viewType);
         }
         else {
+            Log.d("onCreateAdapter","dynamic");
             layoutIdForListItem = R.layout.question_list_item;
             view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
             viewHolder = new QuestionTopAnswerHolder(view,viewType);
@@ -114,7 +116,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
     @Override
     public int getItemViewType(int position)
     {
-        if(position == 0 && (_category >= 0 && _category <8))
+        if(position == 0 && (_category >= 0 && _category <9))
             return STATIC_CARD;
         else
             return DYNAMIC_CARD;
@@ -133,7 +135,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
     public void onBindViewHolder(QuestionTopAnswerHolder holder, int position) {
         Log.d(TAG, "#" + position);
         QuestionTopAnswerHolder questionTopAnswerHolder = (QuestionTopAnswerHolder) holder;
-
+        Log.d(TAG, "Category" + _category);
             switch (_category) {
                 case 0:
                 case 1:

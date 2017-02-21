@@ -79,11 +79,13 @@ public class MainCanvas extends AppCompatActivity
         final int menuItemIdx = i.getIntExtra("itemposition",-1);
         if (feedType == null)
         {
+            Log.d("MainCanvas","first page");
             setContentView(R.layout.activity_main_canvas);
             SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTIONS,NetworkUtils.PARAM_QUESTION,"");
             _categorySelected = -1;
         }
         else {
+            Log.d("MainCanvas","Category");
             setContentView(R.layout.activity_category);
 
             if (feedType.equalsIgnoreCase("category")) {
@@ -98,8 +100,8 @@ public class MainCanvas extends AppCompatActivity
                         break;
                     }
                 }
-
                 _categorySelected = index;
+                Log.d("Index-Category",Integer.toString(_categorySelected));
                 Log.d("url",SearchUrl.toString());
             } else if (feedType.equalsIgnoreCase("userQuestions")) {
                 String user = i.getStringExtra("user").toString();
@@ -266,7 +268,10 @@ public class MainCanvas extends AppCompatActivity
                         questionData.id=json_data.getString("_Id");
                         data.add(questionData);
                     }
-
+                    if(_categorySelected != -1)
+                    {
+                        data.add(new Question());
+                    }
 
                     mainQuestionAnswerList = (RecyclerView) findViewById(R.id.question_top_answer_recylerview);
                     LinearLayoutManager layoutManager = new LinearLayoutManager(MainCanvas.this);

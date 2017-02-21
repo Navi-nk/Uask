@@ -13,7 +13,13 @@ public class ShowAnswer extends AppCompatActivity {
         setContentView(R.layout.activity_show_answer);
         Intent i = getIntent();
         String answertext = i.getStringExtra("answertext");
+        String author = i.getStringExtra("author");
+        String timeStamp = i.getStringExtra("timestamp");
         TextView answer = (TextView)findViewById(R.id.showanswer);
+        TextView auth = (TextView)findViewById(R.id.txtAuthor);
+        TextView timeStmp = (TextView)findViewById(R.id.txtTimeStamp);
         answer.setText(answertext);
+        auth.setText(author);
+        timeStmp.setText(timeStamp);
     }
 }

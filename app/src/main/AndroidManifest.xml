@@ -53,7 +53,8 @@
             android:parentActivityName=".MainCanvas"
             android:theme="@style/AppThemeNoBar">
         </activity>
-        <activity android:name=".ShowAnswer">
+        <activity android:name=".ShowAnswer"
+            >
         </activity>
     </application>
 

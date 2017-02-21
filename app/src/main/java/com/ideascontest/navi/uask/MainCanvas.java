@@ -338,7 +338,13 @@ public class MainCanvas extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_transport) {
+        if (id == R.id.nav_mainfeed) {
+            Intent i = new Intent(getApplicationContext(),MainCanvas.class);
+            startActivity(i);
+            finish();
+
+        }
+        else if (id == R.id.nav_transport) {
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             i.putExtra("feedType","category");
             i.putExtra("category",CAT_LIST[0]);

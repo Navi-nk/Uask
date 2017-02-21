@@ -1,12 +1,52 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tb_viewqa"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        >
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="?attr/actionBarSize"
+            >
+            <TextView
+                android:id="@+id/tb_qatitle"
+                style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="start|center"
+                android:text="uAsk"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tb_answer"
+                style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:drawableLeft="@drawable/answer_pen"
+                android:drawablePadding="4dp"
+                android:gravity="end|center"
+                android:paddingRight="16dp"
+                android:text="Answer"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+    </android.support.v7.widget.Toolbar>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/text_margin"
         android:textSize="20sp"
         android:drawableLeft="@drawable/ask_question24"
+        android:layout_below="@id/tb_viewqa"
         android:drawablePadding="4dp"
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
@@ -25,6 +65,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/textAuthor"
             android:layout_marginLeft="@dimen/text_margin"
+            android:textStyle="bold"
             android:textColor="@color/iron" />
 
         <TextView
@@ -32,6 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:id="@+id/textTimeStamp"
+            android:textStyle="bold"
             android:layout_marginBottom="10dp"
             android:textColor="@color/iron" />
 

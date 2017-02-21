@@ -107,7 +107,12 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
         QuestionTopAnswerHolder questionTopAnswerHolder= (QuestionTopAnswerHolder) holder;
         Question current=data.get(position);
         questionTopAnswerHolder.textQuestion.setText(current.questionText);
-        questionTopAnswerHolder.textTopAnswer.setText(current.topAnswer);
+
+        if(current.topAnswer.equals("0"))
+            questionTopAnswerHolder.textTopAnswer.setText("");
+        else
+            questionTopAnswerHolder.textTopAnswer.setText(current.topAnswer);
+
         questionTopAnswerHolder.textAnswerCount.setText(String.valueOf(current.noOfAnswers + " Answers"));
         questionTopAnswerHolder.textTimeStamp.setText(current.timeStamp);
         questionTopAnswerHolder.textAuthor.setText(current.author);
@@ -195,6 +200,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                      intent.putExtra("question",questionText);
                      intent.putExtra("author",authorText);
                      intent.putExtra("timestamp",timeStamp);
+                     intent.putExtra("numanswers",textAnswerCount.getText());
                      context.startActivity(intent);
                  }
 

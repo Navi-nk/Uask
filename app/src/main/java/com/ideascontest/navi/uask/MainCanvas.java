@@ -56,7 +56,13 @@ public class MainCanvas extends AppCompatActivity
     // Session Manager Class
     SessionManager _session;
 
-
+    static String[] CAT_LIST = {"Getting Around",
+            "Food & Beverages",
+            "Faculties/Departments",
+            "Sports & Recreation",
+            "Residences",
+            "General"
+    };
     private RecyclerView mainQuestionAnswerList;
     private MainQuestionAnswerAdapter mQuestionAnswerAdapter;
     private TextView mErrorMessageDisplay;
@@ -81,7 +87,9 @@ public class MainCanvas extends AppCompatActivity
 
             if (feedType.equalsIgnoreCase("category")) {
                 String category = i.getStringExtra("category").toString();
+                Log.d("category",category);
                 SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FOR_CAT, NetworkUtils.PARAM_CATEGORY, category);
+                Log.d("url",SearchUrl.toString());
             } else if (feedType.equalsIgnoreCase("userQuestions")) {
                 String user = i.getStringExtra("user").toString();
                 SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FROM_USER, NetworkUtils.PARAM_USERID, user);
@@ -98,6 +106,7 @@ public class MainCanvas extends AppCompatActivity
                 descBasic.setText("All the private questions asked by your faculty students. Visible only to fellow faculty students");
                 descBasic.setGravity(Gravity.CENTER | Gravity.BOTTOM);
             }
+
             String infoText = (String) descBasic.getText();
             int count = infoText.split("\n").length;
             int upperLimit = (count > 5) ?MainAnswerAdapter.ordinalIndexOf(infoText,"\n",5):140;
@@ -119,9 +128,7 @@ public class MainCanvas extends AppCompatActivity
                 sText.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primaryOrange)), spanLowLimit, spanHighLimit, 0);
                 descBasic.setText(sText);
                 descBasic.setMovementMethod(LinkMovementMethod.getInstance());
-
             }
-
         }
         // Session class instance
         _session = new SessionManager(getApplicationContext());
@@ -211,9 +218,19 @@ public class MainCanvas extends AppCompatActivity
             public void onClick(View view) {
                 Intent i = new Intent(getApplicationContext(), AskQuestionActivity.class);
                 i.putExtra("position",menuItemIdx);
-                startActivity(i);
+                startActivityForResult(i,0);
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("here in maincanvas",Integer.toString(requestCode)+" "+Integer.toString(resultCode));
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK) {
+                new QuestionAnswerQueryTask().execute(SearchUrl);
+            }
+        }
     }
 
 
@@ -230,6 +247,7 @@ public class MainCanvas extends AppCompatActivity
             URL searchUrl = params[0];
             String QuestionAnswerSearchResults = null;
             try {
+                Log.d("url",searchUrl.toString());
                 QuestionAnswerSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -299,15 +317,15 @@ public class MainCanvas extends AppCompatActivity
         startActivity(intent);
     }
 
-
-    @Override
+//settings disabled
+  /*  @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_canvas, menu);
         return true;
     }
-
-    @Override
+*/
+ /*   @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -321,6 +339,7 @@ public class MainCanvas extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
+*/
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -331,7 +350,7 @@ public class MainCanvas extends AppCompatActivity
         if (id == R.id.nav_transport) {
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             i.putExtra("feedType","category");
-            i.putExtra("category","temp");
+            i.putExtra("category",CAT_LIST[0]);
             i.putExtra("itemposition",0);
             startActivity(i);
             finish();
@@ -340,7 +359,7 @@ public class MainCanvas extends AppCompatActivity
         else if (id == R.id.nav_food) {
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             i.putExtra("feedType","category");
-            i.putExtra("category","temp_1");
+            i.putExtra("category",CAT_LIST[1]);
             i.putExtra("itemposition",1);
             startActivity(i);
             finish();
@@ -351,7 +370,7 @@ public class MainCanvas extends AppCompatActivity
 
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             i.putExtra("feedType","category");
-            i.putExtra("category","temp");
+            i.putExtra("category",CAT_LIST[2]);
             i.putExtra("itemposition",2);
             startActivity(i);
             finish();
@@ -362,7 +381,7 @@ public class MainCanvas extends AppCompatActivity
 
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             i.putExtra("feedType","category");
-            i.putExtra("category","temp_1");
+            i.putExtra("category",CAT_LIST[3]);
             i.putExtra("itemposition",3);
             startActivity(i);
             finish();
@@ -373,7 +392,7 @@ public class MainCanvas extends AppCompatActivity
 
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
             i.putExtra("feedType","category");
-            i.putExtra("category","temp");
+            i.putExtra("category",CAT_LIST[4]);
             i.putExtra("itemposition",4);
             startActivity(i);
             finish();
@@ -381,6 +400,8 @@ public class MainCanvas extends AppCompatActivity
 
         else if (id == R.id.nav_general) {
             Intent i = new Intent(getApplicationContext(),MainCanvas.class);
+            i.putExtra("feedType","category");
+            i.putExtra("category",CAT_LIST[5]);
             i.putExtra("itemposition",5);
             startActivity(i);
             finish();

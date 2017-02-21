@@ -28,8 +28,8 @@ public class PostAnswer extends AppCompatActivity {
 
     private TextView questionText,authorText,timeStampText,saveActionText;
     private EditText answer;
-    private Button submitanswer;
     private URL SearchUrl;
+    String parentIdentifier;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +39,7 @@ public class PostAnswer extends AppCompatActivity {
         String question = intent.getStringExtra("question");
         String author = intent.getStringExtra("author");
         String timeStamp = intent.getStringExtra("timestamp");
+        parentIdentifier = intent.getStringExtra("numanswers");
         questionText = (TextView)findViewById(R.id.textQuestion);
         questionText.setText(question);
         questionText.setTag(id);
@@ -108,9 +109,19 @@ public class PostAnswer extends AppCompatActivity {
                 JSONObject jsonObj = new JSONObject(QuestionAnswerSearchResults);
                 String success = jsonObj.getString("status").toString();
                 if(success.equalsIgnoreCase("true")){
-                    Intent i = new Intent(getApplicationContext(),MainCanvas.class);
-                    startActivity(i);
-                    finish();
+                    if(parentIdentifier == null || parentIdentifier.isEmpty())
+                    {
+                        Log.d("PostAnswer","from answerlist");
+                        Intent i = new Intent();
+                        setResult(RESULT_OK, i);
+                        finish();
+                    }
+                    else {
+                        Log.d("PostAnswer","from questionlist");
+                        Intent i = new Intent(getApplicationContext(), MainCanvas.class);
+                        startActivity(i);
+                        finish();
+                    }
                 }
 
             } catch (JSONException e) {

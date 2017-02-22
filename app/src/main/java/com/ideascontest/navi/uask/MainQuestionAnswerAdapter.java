@@ -142,7 +142,6 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                 case 2:
                 case 3:
                 case 4:
-                case 5:
                 {
                     if(position == 0) {
                       /*  String infoText = (String) questionTopAnswerHolder.basicInfoText.getText();
@@ -168,8 +167,8 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                             questionTopAnswerHolder.basicInfoText.setMovementMethod(LinkMovementMethod.getInstance());
                         }*/
                         String infoText = (String) questionTopAnswerHolder.basicInfoText.getText();
-                        int upperLimit =  140;
-                        if (infoText.length() > 140 ) {
+                        int upperLimit =  150;
+                        if (infoText.length() > 150 ) {
                             infoText = infoText.substring(0, upperLimit) + "... " + "view more";
 
                             SpannableString sText = new SpannableString(infoText);
@@ -194,12 +193,25 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                         populateDynamicUiElements(questionTopAnswerHolder,(position-1));
                     }
                 }
+                break;
+                case 5:
+                {
+                    if(position == 0) {
+                        questionTopAnswerHolder.basicInfoText.setText("List of all non-categorical questions");
+                        questionTopAnswerHolder.basicInfoText.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                        questionTopAnswerHolder.headingText.setVisibility(View.INVISIBLE);
+                    }
+                    else{
+                        populateDynamicUiElements(questionTopAnswerHolder,(position-1));
+                    }
+                }
                     break;
                 case 6:
                 {
                     if(position == 0) {
                         questionTopAnswerHolder.basicInfoText.setText("List of all questions asked by you.");
                         questionTopAnswerHolder.basicInfoText.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                        questionTopAnswerHolder.headingText.setVisibility(View.INVISIBLE);
                     }
                     else{
                         populateDynamicUiElements(questionTopAnswerHolder,(position-1));
@@ -211,6 +223,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                     if(position == 0) {
                         questionTopAnswerHolder.basicInfoText.setText("List of all questions answered by you.");
                         questionTopAnswerHolder.basicInfoText.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                        questionTopAnswerHolder.headingText.setVisibility(View.INVISIBLE);
                     }
                     else{
                         populateDynamicUiElements(questionTopAnswerHolder,(position-1));
@@ -221,6 +234,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                     if(position == 0) {
                         questionTopAnswerHolder.basicInfoText.setText("All the private questions asked by your faculty students. Visible only to fellow faculty students");
                         questionTopAnswerHolder.basicInfoText.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                        questionTopAnswerHolder.headingText.setVisibility(View.INVISIBLE);
                     }
                     else{
                         populateDynamicUiElements(questionTopAnswerHolder,(position-1));
@@ -271,7 +285,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
              {
 
         // Will display the position in the list, ie 0 through getItemCount() - 1
-        TextView textQuestion,textTopAnswer,textAnswerCount,textAuthor,textTimeStamp,textId,basicInfoText;
+        TextView textQuestion,textTopAnswer,textAnswerCount,textAuthor,textTimeStamp,textId,basicInfoText,headingText;
         Button postAnswer;
                  View v;
         // Will display which ViewHolder is displaying this data
@@ -289,6 +303,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
             if(viewType == STATIC_CARD)
             {
                 basicInfoText = (TextView) itemView.findViewById(R.id.basicInfo);
+                headingText = (TextView) itemView.findViewById(R.id.heading);
             }
             else {
 

@@ -33,6 +33,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/textCategory"
+                android:layout_marginLeft="@dimen/text_margin"
+                android:textStyle="bold"
+                android:textColor="@color/iron" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:id="@+id/textAuthor"
                 android:layout_marginLeft="@dimen/text_margin"
                 android:textStyle="bold"

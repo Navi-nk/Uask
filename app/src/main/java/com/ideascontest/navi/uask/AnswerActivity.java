@@ -25,7 +25,7 @@ public class AnswerActivity extends AppCompatActivity {
 
     private RecyclerView mainAnswerList;
     private MainAnswerAdapter mAnswerAdapter;
-    private TextView questionText,authorText,timeStampText,submitAns;
+    private TextView questionText,authorText,timeStampText,submitAns,categoryText;
     String id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +37,15 @@ public class AnswerActivity extends AppCompatActivity {
         final String author = intent.getStringExtra("author");
         final String timeStamp = intent.getStringExtra("timestamp");
         final String noOfAnswers = intent.getStringExtra("numanswers");
+        final String category = intent.getStringExtra("category");
         questionText = (TextView)findViewById(R.id.textQuestion);
         questionText.setText(question);
         authorText = (TextView)findViewById(R.id.textAuthor);
         authorText.setText(author);
         timeStampText = (TextView)findViewById(R.id.textTimeStamp);
         timeStampText.setText(timeStamp);
+        categoryText = (TextView)findViewById(R.id.textCategory);
+        categoryText.setText(category);
 
         submitAns = (TextView)findViewById(R.id.tb_answer);
 

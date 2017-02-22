@@ -274,6 +274,7 @@ public class MainCanvas extends AppCompatActivity
                         questionData.topAnswer= json_data.getString("_Answer");
                         questionData.author=json_data.getString("_Used_Id");
                         questionData.timeStamp=json_data.getString("_Datetime");
+                        questionData.category=json_data.getString("_Category");
                         questionData.id=json_data.getString("_Id");
                         data.add(questionData);
                     }

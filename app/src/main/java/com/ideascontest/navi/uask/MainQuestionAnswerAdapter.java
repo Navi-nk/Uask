@@ -142,10 +142,9 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                 case 2:
                 case 3:
                 case 4:
-                case 5:
                 {
                     if(position == 0) {
-                        String infoText = (String) questionTopAnswerHolder.basicInfoText.getText();
+                      /*  String infoText = (String) questionTopAnswerHolder.basicInfoText.getText();
                         int count = infoText.split("\n").length;
                         int upperLimit = (count > 5) ? MainAnswerAdapter.ordinalIndexOf(infoText, "\n", 5) : 140;
                         if (infoText.length() > 140 || count > 5) {
@@ -166,10 +165,43 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                             sText.setSpan(new ForegroundColorSpan( questionTopAnswerHolder.v.getResources().getColor(R.color.primaryOrange)), spanLowLimit, spanHighLimit, 0);
                             questionTopAnswerHolder.basicInfoText.setText(sText);
                             questionTopAnswerHolder.basicInfoText.setMovementMethod(LinkMovementMethod.getInstance());
+                        }*/
+                        String infoText = (String) questionTopAnswerHolder.basicInfoText.getText();
+                        int upperLimit =  150;
+                        if (infoText.length() > 150 ) {
+                            infoText = infoText.substring(0, upperLimit) + "... " + "view more";
+
+                            SpannableString sText = new SpannableString(infoText);
+                            ClickableSpan myClickableSpan = new ClickableSpan() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.d("MainCanvas Category", "clickable Span");
+                                    //finish();
+                                }
+                            };
+                            int spanLowLimit = upperLimit + 4;
+                            int spanHighLimit = upperLimit + 13;
+                            sText.setSpan(myClickableSpan, spanLowLimit, spanHighLimit, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            sText.setSpan(new RelativeSizeSpan(0.75f), spanLowLimit, spanHighLimit, 0);
+                            sText.setSpan(new ForegroundColorSpan(questionTopAnswerHolder.v.getResources().getColor(R.color.primaryOrange)), spanLowLimit, spanHighLimit, 0);
+                            questionTopAnswerHolder.basicInfoText.setText(sText);
+                            questionTopAnswerHolder.basicInfoText.setMovementMethod(LinkMovementMethod.getInstance());
                         }
                     }
                     else
                     {
+                        populateDynamicUiElements(questionTopAnswerHolder,(position-1));
+                    }
+                }
+                break;
+                case 5:
+                {
+                    if(position == 0) {
+                        questionTopAnswerHolder.basicInfoText.setText("List of all non-categorical questions");
+                        questionTopAnswerHolder.basicInfoText.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                        questionTopAnswerHolder.headingText.setVisibility(View.INVISIBLE);
+                    }
+                    else{
                         populateDynamicUiElements(questionTopAnswerHolder,(position-1));
                     }
                 }
@@ -179,6 +211,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                     if(position == 0) {
                         questionTopAnswerHolder.basicInfoText.setText("List of all questions asked by you.");
                         questionTopAnswerHolder.basicInfoText.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                        questionTopAnswerHolder.headingText.setVisibility(View.INVISIBLE);
                     }
                     else{
                         populateDynamicUiElements(questionTopAnswerHolder,(position-1));
@@ -190,6 +223,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                     if(position == 0) {
                         questionTopAnswerHolder.basicInfoText.setText("List of all questions answered by you.");
                         questionTopAnswerHolder.basicInfoText.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                        questionTopAnswerHolder.headingText.setVisibility(View.INVISIBLE);
                     }
                     else{
                         populateDynamicUiElements(questionTopAnswerHolder,(position-1));
@@ -200,6 +234,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                     if(position == 0) {
                         questionTopAnswerHolder.basicInfoText.setText("All the private questions asked by your faculty students. Visible only to fellow faculty students");
                         questionTopAnswerHolder.basicInfoText.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                        questionTopAnswerHolder.headingText.setVisibility(View.INVISIBLE);
                     }
                     else{
                         populateDynamicUiElements(questionTopAnswerHolder,(position-1));
@@ -250,7 +285,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
              {
 
         // Will display the position in the list, ie 0 through getItemCount() - 1
-        TextView textQuestion,textTopAnswer,textAnswerCount,textAuthor,textTimeStamp,textId,basicInfoText;
+        TextView textQuestion,textTopAnswer,textAnswerCount,textAuthor,textTimeStamp,textId,basicInfoText,headingText;
         Button postAnswer;
                  View v;
         // Will display which ViewHolder is displaying this data
@@ -268,6 +303,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
             if(viewType == STATIC_CARD)
             {
                 basicInfoText = (TextView) itemView.findViewById(R.id.basicInfo);
+                headingText = (TextView) itemView.findViewById(R.id.heading);
             }
             else {
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_show_answer"
     android:layout_width="match_parent"
@@ -10,11 +11,56 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.ideascontest.navi.uask.ShowAnswer">
 
+    <LinearLayout
+        android:id="@+id/l1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/answerhand"
+        android:layout_alignParentStart="true"
+        android:id="@+id/imageView2" />
+
     <TextView
         android:text="TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/text_margin"
-        android:layout_marginTop="11dp"
-        android:id="@+id/showanswer" />
+        android:id="@+id/showanswer"
+        android:paddingLeft="4dp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/imageView2" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/l2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/l1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtAuthor"
+            android:textStyle="bold"
+            android:layout_marginLeft="@dimen/text_margin"
+            android:textColor="@color/iron" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/txtTimeStamp"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/iron" />
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:background="@color/base"
+        android:layout_below="@+id/l2"/>
+
 </RelativeLayout>

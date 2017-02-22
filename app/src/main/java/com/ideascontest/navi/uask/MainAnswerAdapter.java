@@ -90,6 +90,8 @@ public class MainAnswerAdapter extends RecyclerView.Adapter<MainAnswerAdapter.An
         int upperLimit = (count > 5) ?ordinalIndexOf(ansText,"\n",5):140;
         //Log.d("MAAdapter string", ansText+" "+Integer.toString(count));
         if (ansText.length()>140 || count > 5) {
+            final String authorText = holder.textAuthor.getText().toString();
+            final String timeStamp = holder.textTimeStamp.getText().toString();
             Log.d("MainAnswerAdapter", "clickable Span");
             String spantext = ansText.substring(0, upperLimit) + "... " + "view more";
 
@@ -101,6 +103,8 @@ public class MainAnswerAdapter extends RecyclerView.Adapter<MainAnswerAdapter.An
                     Context context = v.getContext();
                     Intent i = new Intent(context, ShowAnswer.class);
                     i.putExtra("answertext", ansText);
+                    i.putExtra("author",authorText);
+                    i.putExtra("timestamp",timeStamp);
                     context.startActivity(i);
                 }
             };

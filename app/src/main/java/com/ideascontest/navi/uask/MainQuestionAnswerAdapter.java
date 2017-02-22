@@ -145,7 +145,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                 case 5:
                 {
                     if(position == 0) {
-                        String infoText = (String) questionTopAnswerHolder.basicInfoText.getText();
+                      /*  String infoText = (String) questionTopAnswerHolder.basicInfoText.getText();
                         int count = infoText.split("\n").length;
                         int upperLimit = (count > 5) ? MainAnswerAdapter.ordinalIndexOf(infoText, "\n", 5) : 140;
                         if (infoText.length() > 140 || count > 5) {
@@ -164,6 +164,27 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                             sText.setSpan(myClickableSpan, spanLowLimit, spanHighLimit, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                             sText.setSpan(new RelativeSizeSpan(0.75f), spanLowLimit, spanHighLimit, 0);
                             sText.setSpan(new ForegroundColorSpan( questionTopAnswerHolder.v.getResources().getColor(R.color.primaryOrange)), spanLowLimit, spanHighLimit, 0);
+                            questionTopAnswerHolder.basicInfoText.setText(sText);
+                            questionTopAnswerHolder.basicInfoText.setMovementMethod(LinkMovementMethod.getInstance());
+                        }*/
+                        String infoText = (String) questionTopAnswerHolder.basicInfoText.getText();
+                        int upperLimit =  140;
+                        if (infoText.length() > 140 ) {
+                            infoText = infoText.substring(0, upperLimit) + "... " + "view more";
+
+                            SpannableString sText = new SpannableString(infoText);
+                            ClickableSpan myClickableSpan = new ClickableSpan() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.d("MainCanvas Category", "clickable Span");
+                                    //finish();
+                                }
+                            };
+                            int spanLowLimit = upperLimit + 4;
+                            int spanHighLimit = upperLimit + 13;
+                            sText.setSpan(myClickableSpan, spanLowLimit, spanHighLimit, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            sText.setSpan(new RelativeSizeSpan(0.75f), spanLowLimit, spanHighLimit, 0);
+                            sText.setSpan(new ForegroundColorSpan(questionTopAnswerHolder.v.getResources().getColor(R.color.primaryOrange)), spanLowLimit, spanHighLimit, 0);
                             questionTopAnswerHolder.basicInfoText.setText(sText);
                             questionTopAnswerHolder.basicInfoText.setMovementMethod(LinkMovementMethod.getInstance());
                         }

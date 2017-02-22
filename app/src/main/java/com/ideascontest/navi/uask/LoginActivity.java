@@ -112,7 +112,7 @@ public class LoginActivity extends AppCompatActivity {
         AsyncHttpClient client = new AsyncHttpClient();
         //client.get("http://192.168.0.114:8080/UaskServiceProvider/login/dologin", params, new AsyncHttpResponseHandler() {
 //        client.get("http://172.27.242.165:8080/UaskServiceProvider/login/dologin", params, new AsyncHttpResponseHandler() {
-        client.get("http://1a60a9a0.ngrok.io/UaskServiceProvider/login/dologin", params, new AsyncHttpResponseHandler() {
+        client.get("http://731af621.ngrok.io/UaskServiceProvider/login/dologin", params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {

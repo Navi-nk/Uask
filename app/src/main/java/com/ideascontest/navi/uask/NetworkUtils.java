@@ -54,6 +54,8 @@ public class NetworkUtils {
     final static String GET_ALL_ANSWERS = BASE_URL+"/qfeed/getans";
     final static String GET_ALL_QUESTION_FOR_CAT = BASE_URL+"/qfeed/getcatfeed";
     final static String POST_ANSWER = BASE_URL+"/qfeed/ansques";
+    final static String SEARCH_QUESTION = BASE_URL + "/qfeed/getsearchfeed";
+    final static String PARAM_SEARCH_STRING = "searchstring";
 
     final static String PARAM_QUESTION = "question";
     final static String PARAM_CATEGORY="category";

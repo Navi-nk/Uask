@@ -1,6 +1,8 @@
 package com.ideascontest.navi.uask;
 
 import android.app.Application;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -83,6 +86,12 @@ public class MainCanvas extends AppCompatActivity
             setContentView(R.layout.activity_main_canvas);
             SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTIONS,NetworkUtils.PARAM_QUESTION,"");
             _categorySelected = -1;
+        }
+        else if(feedType.equalsIgnoreCase("search"))  {
+            setContentView(R.layout.activity_main_canvas);
+            SearchUrl = NetworkUtils.buildUrl(NetworkUtils.SEARCH_QUESTION,NetworkUtils.PARAM_SEARCH_STRING,i.getStringExtra("search_string").toString());
+            _categorySelected = -1;
+
         }
         else {
             Log.d("MainCanvas","Category");
@@ -308,15 +317,38 @@ public class MainCanvas extends AppCompatActivity
         startActivity(intent);
     }
 
-//settings disabled
-  /*  @Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_canvas, menu);
+        getMenuInflater().inflate(R.menu.main_canvas_menu, menu);
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+//        searchView.setSearchableInfo(
+//                searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                                return false;
+            }
+
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Intent i = new Intent(getApplicationContext(),MainCanvas.class);
+                i.putExtra("feedType","search");
+                i.putExtra("search_string",query);
+                startActivity(i);
+                finish();
+
+                return false;
+            }
+        });
+
         return true;
     }
-*/
- /*   @Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -330,7 +362,6 @@ public class MainCanvas extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-*/
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

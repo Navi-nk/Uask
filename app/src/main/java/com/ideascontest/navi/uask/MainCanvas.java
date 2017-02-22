@@ -87,6 +87,12 @@ public class MainCanvas extends AppCompatActivity
             SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTIONS,NetworkUtils.PARAM_QUESTION,"");
             _categorySelected = -1;
         }
+        else if(feedType.equalsIgnoreCase("search"))  {
+            setContentView(R.layout.activity_main_canvas);
+            SearchUrl = NetworkUtils.buildUrl(NetworkUtils.SEARCH_QUESTION,NetworkUtils.PARAM_SEARCH_STRING,i.getStringExtra("search_string").toString());
+            _categorySelected = -1;
+
+        }
         else {
             Log.d("MainCanvas","Category");
             setContentView(R.layout.activity_category);
@@ -311,8 +317,7 @@ public class MainCanvas extends AppCompatActivity
         startActivity(intent);
     }
 
-//settings disabled
-  /*  @Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_canvas_menu, menu);
@@ -332,9 +337,8 @@ public class MainCanvas extends AppCompatActivity
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Intent i = new Intent(getApplicationContext(),MainCanvas.class);
-                i.putExtra("feedType","category");
-                i.putExtra("category","temp_1");
-                i.putExtra("itemposition",1);
+                i.putExtra("feedType","search");
+                i.putExtra("search_string",query);
                 startActivity(i);
                 finish();
 
@@ -344,8 +348,7 @@ public class MainCanvas extends AppCompatActivity
 
         return true;
     }
-*/
- /*   @Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -359,7 +362,6 @@ public class MainCanvas extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-*/
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

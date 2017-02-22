@@ -58,6 +58,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static android.R.attr.author;
+import static android.R.attr.category;
+import static android.R.attr.dropDownHorizontalOffset;
 import static android.R.attr.id;
 import static android.R.attr.textSize;
 
@@ -264,6 +266,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
         holder.textTimeStamp.setText(current.timeStamp);
         holder.textAuthor.setText(current.author);
         holder.textQuestion.setTag(String.valueOf(current.id));
+        holder.textCategory.setText(current.category);
     }
 
     /**
@@ -285,7 +288,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
              {
 
         // Will display the position in the list, ie 0 through getItemCount() - 1
-        TextView textQuestion,textTopAnswer,textAnswerCount,textAuthor,textTimeStamp,textId,basicInfoText,headingText;
+        TextView textQuestion,textTopAnswer,textAnswerCount,textAuthor,textTimeStamp,textId,basicInfoText,headingText,textCategory;
         Button postAnswer;
                  View v;
         // Will display which ViewHolder is displaying this data
@@ -314,6 +317,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                 textTimeStamp = (TextView) itemView.findViewById(R.id.textTimeStamp);
                 textId = (TextView) itemView.findViewById(R.id.textId);
                 postAnswer = (Button) itemView.findViewById(R.id.postanswer);
+                textCategory = (TextView) itemView.findViewById(R.id.textCategory);
 
                 textQuestion.setOnClickListener(new OnClickListener() {
                     @Override
@@ -350,11 +354,13 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                      String id = textQuestion.getTag().toString();
                      String authorText = textAuthor.getText().toString();
                      String timeStamp = textTimeStamp.getText().toString();
+                     String category = textCategory.getText().toString();
                      Intent intent = new Intent(context, s);
                      intent.putExtra("id",id);
                      intent.putExtra("question",questionText);
                      intent.putExtra("author",authorText);
                      intent.putExtra("timestamp",timeStamp);
+                     intent.putExtra("category",category);
                      intent.putExtra("numanswers",textAnswerCount.getText());
                      context.startActivity(intent);
                  }

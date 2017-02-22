@@ -11,4 +11,5 @@ public class Question {
     public String timeStamp;
     public String author;
     public String id;
+    public String category;
 }

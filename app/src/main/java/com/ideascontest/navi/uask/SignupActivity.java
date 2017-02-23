@@ -181,7 +181,7 @@ public class SignupActivity extends AppCompatActivity {
                     // When the JSON response has status boolean value assigned with true
                     if (obj.getBoolean("status")) {
 
-                        _session.createLoginSession(name,"ISS");
+                        _session.createLoginSession(name,_facultyText);
                         // Navigate to Home screen
                         Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
                         startActivity(intent);

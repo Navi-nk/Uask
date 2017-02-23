@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+<FrameLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/text_margin"
+            android:layout_marginRight="@dimen/text_margin"
+            android:layout_marginTop="45dp"
+            android:text="Basic Information:"
+            android:textSize="20sp"
+            android:paddingTop="10dp"
+            android:textColor="@color/primary"
+            android:id="@+id/heading"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/text_margin"
+            android:layout_marginRight="@dimen/text_margin"
+            android:layout_marginTop="2dp"
+            android:text="With over 40 sports and a calendar crammed with sporting events, your life in NUS is as adrenalin-packed as you make it to be! Whether you are a muscle-ripping national athlete or a couch potato looking to lose a few pounds, NUS has just the sports for you ranging from mega-competitive to ultra-recreational.\n\nNUS has a wide variety of sports facilities to cater to your different sporting interests, including a rock climbing wall, tennis courts and swimming pools. Following is the breif description on some of facilities available:\n 1 x Dance Studio (Closed from 1 Apr 2015 onwards due to redevelopment works)\n 5 x Multi-Purpose Sports Halls (MPSH 1, 2, 4, 5, 6)\n 5 x Squash Courts (Closed from 1 Apr 2015 onwards due to redevelopment works)\n 1 x Rock Climbing Gym (Closed from 1 Apr 2015 onwards due to redevelopment works)\n 1 x Strength and Conditioning Lab (Closed from 1 Apr 2015 onwards due to redevelopment works)\n 1 x Students Gym @ MPSH 3\n 1 x Bukit Timah Campus (BTC) Gym - Opened to BTC staff and students only.\n 1 x Archery Range\n 4 x Basketball Courts\n 2 x Handball Courts\n 4 x Multi-Purpose Courts\n 4 x Netball Courts\n 1 x Sepak Takraw Court\n 13 x Tennis Courts and 2 Practice Walls\n 2 x Volleyball Courts\n 1 x Certified Athletics Arena\n 1 x Soccer Field\n 2 x Multi-Purpose Fields\n 1 x Olympic-size Swimming Pool (Closed from 1 Apr 2015 onwards due to redevelopment works)\n 1 x Instructional Swimming Pool (Closed from 1 Apr 2015 onwards due to redevelopment works)\n\nUniversity Town - Stephen Riady Centre\n 2 x Multi-Purpose Sports Hall (Basketball, Badminton, Volleyball)\n 1 x Fitness gym\n 1 x Aerobics studio\n 1 x Recreation swimming pool\n 1 x Sport Climbing Wall"
+            android:textSize="18sp"
+            android:paddingBottom="10dp"
+            android:textColor="@color/primary"
+            android:id="@+id/basicInfo"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:background="@color/base"
+            android:id="@+id/spacer"/>
+    </LinearLayout>
+</FrameLayout>
+</ScrollView>

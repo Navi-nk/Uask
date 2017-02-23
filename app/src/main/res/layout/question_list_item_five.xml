@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+<FrameLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/text_margin"
+            android:layout_marginRight="@dimen/text_margin"
+            android:layout_marginTop="45dp"
+            android:text="Basic Information:"
+            android:textSize="20sp"
+            android:paddingTop="10dp"
+            android:textColor="@color/primary"
+            android:id="@+id/heading"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/text_margin"
+            android:layout_marginRight="@dimen/text_margin"
+            android:layout_marginTop="2dp"
+            android:text="An NUS education is recognised as among the best in Asia, and the world.It offers 17 Faculties and Schools and 2,000 modules each semester. Following are the faculties part of NUS:\n&#8226;  Arts and Social Sciences\n&#8226; Business\n&#8226; Computing\n&#8226; Continuing and Lifelong Education\n&#8226; Dentistry\n&#8226; Design and Environment\n&#8226; Development of Teaching and Learning\n&#8226; Duke-NUS\n&#8226; Engineering\n&#8226; English Language Communication\n&#8226; Integrative Sciences and Engineering\n&#8226; Law\n&#8226; Medicine\n&#8226; Music\n&#8226; Public Health\n&#8226; Public Policy\n&#8226; Science\n&#8226; Systems Science - ISS\n&#8226; University Scholar Programme\n&#8226; Yale-NUS\n\nNUS also has a well recognised study aboard programme where in 8 in 10 of our undergraduates go on study-abroad programmes with over 300 top universities in more than 40 countries. Aspiring entrepreneurs can take the first step towards their dreams with a variety of opportunities, including nine NUS Overseas Colleges offering internships in high-tech start-ups and classes at prestigious partner universities in some of the most enterprising hubs in the world."
+            android:textSize="18sp"
+            android:paddingBottom="10dp"
+            android:textColor="@color/primary"
+            android:id="@+id/basicInfo"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:background="@color/base"
+            android:id="@+id/spacer"/>
+    </LinearLayout>
+</FrameLayout>
+</ScrollView>

@@ -22,6 +22,7 @@ package com.ideascontest.navi.uask;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.ButtonBarLayout;
@@ -33,12 +34,14 @@ import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -102,7 +105,8 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
         if(viewType == STATIC_CARD)
         {
             Log.d("onCreateAdapter","static");
-            layoutIdForListItem = R.layout.question_list_item_one;
+
+            layoutIdForListItem = getStaticLayouts(_category);
             view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
             viewHolder = new QuestionTopAnswerHolder(view,viewType);
         }
@@ -113,6 +117,30 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
             viewHolder = new QuestionTopAnswerHolder(view,viewType);
         }
         return viewHolder;
+    }
+
+    private int getStaticLayouts(int category) {
+        int layout;
+        switch(category){
+            case 0:
+                layout = R.layout.question_list_item_one;
+                break;
+            case 1:
+                layout = R.layout.question_list_item_two;
+            break;
+            case 2:
+                layout = R.layout.question_list_item_five;
+                break;
+            case 3:
+                layout = R.layout.question_list_item_three;
+                break;
+            case 4:
+                layout = R.layout.question_list_item_four;
+                break;
+            default:
+                layout = R.layout.question_list_item_one;
+        }
+        return layout;
     }
 
     @Override
@@ -135,8 +163,10 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
      */
     @Override
     public void onBindViewHolder(QuestionTopAnswerHolder holder, int position) {
+
         Log.d(TAG, "#" + position);
         QuestionTopAnswerHolder questionTopAnswerHolder = (QuestionTopAnswerHolder) holder;
+        final Context context = questionTopAnswerHolder.v.getContext();
         Log.d(TAG, "Category" + _category);
             switch (_category) {
                 case 0:
@@ -177,8 +207,10 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                             ClickableSpan myClickableSpan = new ClickableSpan() {
                                 @Override
                                 public void onClick(View v) {
-                                    Log.d("MainCanvas Category", "clickable Span");
-                                    //finish();
+                                    Log.d("Mainadapter Category", "clickable Span");
+                                    Intent intent = new Intent(context, ShowBasicInfo.class);
+                                    intent.putExtra("category",_category);
+                                    context.startActivity(intent);//finish();
                                 }
                             };
                             int spanLowLimit = upperLimit + 4;
@@ -189,6 +221,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                             questionTopAnswerHolder.basicInfoText.setText(sText);
                             questionTopAnswerHolder.basicInfoText.setMovementMethod(LinkMovementMethod.getInstance());
                         }
+
                     }
                     else
                     {
@@ -199,6 +232,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                 case 5:
                 {
                     if(position == 0) {
+
                         questionTopAnswerHolder.basicInfoText.setText("List of all non-categorical questions");
                         questionTopAnswerHolder.basicInfoText.setGravity(Gravity.CENTER | Gravity.BOTTOM);
                         questionTopAnswerHolder.headingText.setVisibility(View.INVISIBLE);
@@ -223,6 +257,7 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                 case 7:
                 {
                     if(position == 0) {
+
                         questionTopAnswerHolder.basicInfoText.setText("List of all questions answered by you.");
                         questionTopAnswerHolder.basicInfoText.setGravity(Gravity.CENTER | Gravity.BOTTOM);
                         questionTopAnswerHolder.headingText.setVisibility(View.INVISIBLE);
@@ -231,9 +266,11 @@ public class MainQuestionAnswerAdapter extends RecyclerView.Adapter<MainQuestion
                         populateDynamicUiElements(questionTopAnswerHolder,(position-1));
                     }
                 }
+                break;
                 case 8:
                 {
                     if(position == 0) {
+
                         questionTopAnswerHolder.basicInfoText.setText("All the private questions asked by your faculty students. Visible only to fellow faculty students");
                         questionTopAnswerHolder.basicInfoText.setGravity(Gravity.CENTER | Gravity.BOTTOM);
                         questionTopAnswerHolder.headingText.setVisibility(View.INVISIBLE);

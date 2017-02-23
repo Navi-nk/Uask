@@ -55,6 +55,8 @@
             android:theme="@style/AppThemeNoBar">
         </activity>
         <activity android:name=".ShowAnswer"
+            > </activity>
+        <activity android:name=".ShowBasicInfo"
             >
         </activity>
     </application>

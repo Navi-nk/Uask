@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+<FrameLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/text_margin"
+            android:layout_marginRight="@dimen/text_margin"
+            android:layout_marginTop="45dp"
+            android:text="Basic Information:"
+            android:textSize="20sp"
+            android:paddingTop="10dp"
+            android:textColor="@color/primary"
+            android:id="@+id/heading"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/text_margin"
+            android:layout_marginRight="@dimen/text_margin"
+            android:layout_marginTop="2dp"
+            android:text="NUS Two main residences in the Kent Ridge Campus: UTown Residences and Prince George's Park Residences. Full-time NUS Graduate students may apply for a place in selected Student Residences. The Residences offer independent living in a communal setting with opportunities for cross cultural interaction.
+
+\n\nFor Graduate Students Staying Alone - Prince George's Park Residences Married Apartment Type 1 and 2 (PGPR),Prince George's Park Residences Type A and B (PGPR),UTown Residence (comprising of Single Apartment and Married Apartment).\nFor Graduate Married Students With Accompanying Spouse
+Prince George's Park Residences Married Apartment Type 1 and 2 (PGPR),UTown Residence (Married Apartment) and for Graduate Married Students With Accompanying Spouse and Children
+Prince George's Park Residences Married Apartment Type 1 (PGPR).
+
+\n\nThe best places to stay off-campus are Dover,Clement,West Coast Highway,Pasir Panjang and Buona Vista among others."
+            android:textSize="18sp"
+            android:paddingBottom="10dp"
+            android:textColor="@color/primary"
+            android:id="@+id/basicInfo"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:background="@color/base"
+            android:id="@+id/spacer"/>
+    </LinearLayout>
+</FrameLayout>
+</ScrollView>

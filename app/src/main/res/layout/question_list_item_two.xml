@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+<FrameLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/text_margin"
+            android:layout_marginRight="@dimen/text_margin"
+            android:layout_marginTop="45dp"
+            android:text="Basic Information:"
+            android:textSize="20sp"
+            android:paddingTop="10dp"
+            android:textColor="@color/primary"
+            android:id="@+id/heading"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/text_margin"
+            android:layout_marginRight="@dimen/text_margin"
+            android:layout_marginTop="2dp"
+            android:text="Students have wide variety of options inside NUS campus when it comes to cafes,restaurants,canteens,food kiosks and fast food joints. One can easily grab a quick bite as they go about their activities.\n\nFollowing is the brief description about the options available in each campus\nKent Ridge Campus :\n  24 cafes/restaurants\n  4 canteens and 3 food courts :\n   &#8226;The Deck\n    Faculty of Arts and Social Sciences\n    Total No. of Stalls = 13\n    Seating Capacity: 1018\n    Operation hours: \n      Mon-Fri 7.30am to 4.00pm*\n      Sat 7.30am to 3.00pm\n\n   &#8226;Techno Edge\n    Faculty of Engineering\n    Total No. of Stalls = 14\n    Seating Capacity: 852\n    Operation hours:\n      Mon-Fri 7.30am to 4.00pm*\n      Sat 7.30am to 3.00pm\n\n   &#8226;Frontier Phase 1\n    Faculty of Science\n    Total No. of Stalls = 5\n    Seating Capacity: 400\n    Operation hours:\n      Mon-Fri 7.30am to 4.00pm*\n      Sat 7.30am to 3.00pm\n\n   &#8226;Foodclique\n    PGPR\n    Total No. of Stalls = 13\n    Seating Capacity: 318\n    Operation hours:\n      Daily 7.00am - 9.30pm\n\n   &#8226;The Terrace\n    School of Computing/NUS Business School\n    Total No. of Stalls = 12\n    Seating Capacity: 948\n    Operation hours:\n      Mon-Fri 7.30am to 4.00pm*\n      Sat 7.30am to 3.00pm\n\n   &#8226;Central Square\n    Yusof Ishak House Level 2\n    Total No. of Stalls = 11\n    Seating Capacity: 363\n    Operation hours:\n      Mon - Fri 8.00am to 8.00pm\n      Sat 8.00am to 3.00pm\n\n*Some stalls operate till 8.00pm during the weekdays.\n\nUniversity Town:\n  8 cafes/restaurants\n  2 food courts :\n   &#8226;Koufu Foodcourt\n    Town Plaza\n    Total No. of Stalls = 13\n    Seating Capacity: 490\n    Operation hours:\n      Mon - Fri 7.00am to 10.00pm\n      Sat and Sun 10.00am to 10.00pm\n\n   &#8226;Flavours @ UTown\n    Stephen Riady Centre\n    Total No. of Stalls = 10\n    Seating Capacity: 700\n    Operation hours:\n      Daily 7.30am to 10.00pm\n
+\n\nBukit Timah Campus:\n  1 cafe\n  1 food court :\n   &#8226;The Summit\n    Bukit Timah Campus(Blk B)\n    Total No. of Stalls = 7\n    Seating Capacity: 300\n    Operation hours:\n      Mon - Fri 7.00am to 8.00pm\n      Sat 7.00am to 4.00pm"
+            android:textSize="18sp"
+            android:paddingBottom="10dp"
+            android:textColor="@color/primary"
+            android:id="@+id/basicInfo"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:background="@color/base"
+            android:id="@+id/spacer"/>
+    </LinearLayout>
+</FrameLayout>
+</ScrollView>

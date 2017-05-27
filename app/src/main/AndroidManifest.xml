@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ideascontest.navi.uask">
+    package="com.codelords.project.uask">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <meta-data android:name="com.facebook.sdk.AutoLogAppEventsEnabled"
+        android:value="false"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/finallogo"
@@ -11,8 +12,31 @@
         android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"/>
+
+
+
+        <meta-data android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"/>
+
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges=
+                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
         <activity
-            android:name=".MainCanvas"
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
+
+    <activity
+            android:name="com.codelords.project.uask.MainCanvas"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -24,39 +48,39 @@
 
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name="com.codelords.project.uask.LoginActivity"
             android:theme="@style/AppThemeDark">
             <!-- android:label="@string/title_activity_login"< -->
         </activity>
         <activity
-            android:name=".SignupActivity"
-            android:parentActivityName=".LoginActivity"
+            android:name="com.codelords.project.uask.SignupActivity"
+            android:parentActivityName="com.codelords.project.uask.LoginActivity"
             android:theme="@style/AppThemeDark">
             >
         </activity>
-        <activity android:name=".AnswerActivity"
-            android:parentActivityName=".MainCanvas"
+        <activity android:name="com.codelords.project.uask.AnswerActivity"
+            android:parentActivityName="com.codelords.project.uask.MainCanvas"
             android:theme="@style/AppThemeNoBar"/>
         <activity
-            android:name=".PostAnswer"
-            android:parentActivityName=".MainCanvas"
+            android:name="com.codelords.project.uask.PostAnswer"
+            android:parentActivityName="com.codelords.project.uask.MainCanvas"
             android:theme="@style/AppThemeNoBar"/>
         <activity
-            android:name=".MapActivity"
+            android:name="com.codelords.project.uask.MapActivity"
             android:label="NUS Campuses"
-            android:parentActivityName=".MainCanvas" />
+            android:parentActivityName="com.codelords.project.uask.MainCanvas" />
         <activity
-            android:name=".About"
+            android:name="com.codelords.project.uask.About"
             android:label="About Us"
-            android:parentActivityName=".MainCanvas" />
+            android:parentActivityName="com.codelords.project.uask.MainCanvas" />
         <activity
-            android:name=".AskQuestionActivity"
-            android:parentActivityName=".MainCanvas"
+            android:name="com.codelords.project.uask.AskQuestionActivity"
+            android:parentActivityName="com.codelords.project.uask.MainCanvas"
             android:theme="@style/AppThemeNoBar">
         </activity>
-        <activity android:name=".ShowAnswer"
+        <activity android:name="com.codelords.project.uask.ShowAnswer"
             > </activity>
-        <activity android:name=".ShowBasicInfo"
+        <activity android:name="com.codelords.project.uask.ShowBasicInfo"
             >
         </activity>
     </application>

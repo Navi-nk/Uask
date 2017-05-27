@@ -33,4 +33,7 @@
         <string name="error_message">
         Failed to get results. Please try again.
     </string>
+    <string name="facebook_app_id">339754909772985</string>
+    <string name="fb_login_protocol_scheme">fb339754909772985</string>
+
 </resources>

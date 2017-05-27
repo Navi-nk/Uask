@@ -5,7 +5,7 @@
     android:id="@+id/activity_about"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ideascontest.navi.uask.About">
+    tools:context="com.codelords.project.uask.About">
 
     <ImageView
         android:layout_width="match_parent"

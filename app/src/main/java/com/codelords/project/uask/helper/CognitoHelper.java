@@ -2,7 +2,10 @@ package com.codelords.project.uask.helper;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserPool;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
@@ -29,13 +32,19 @@ public class CognitoHelper {
     private static final String clientId = "replace_this_with_app_client_id";
     private static final String clientSecret = "replace_this_with_the_app_client_secret";
 
+
     private static final Regions cognitoRegion = Regions.DEFAULT_REGION;
 
     private static CognitoUserSession currSession;
     private static CognitoUserDetails userDetails;
 
+    private static CognitoCachingCredentialsProvider credentialsProvider;
+
+    private static CognitoDevice newDevice;
+
     private static Set<String> currUserAttributes;
 
+    private static String userPoolUrl="cognito-idp."+cognitoRegion.getName()+".amazonaws.com/"+userPoolId;
 
     public static void init(Context context) {
 
@@ -53,7 +62,15 @@ public class CognitoHelper {
             userPool = new CognitoUserPool(context, userPoolId, clientId, clientSecret, cognitoRegion);
         }
 
+        if(credentialsProvider == null) {
+            credentialsProvider = new CognitoCachingCredentialsProvider(
+                    context, // Context
+                    userPoolId, // Identity Pool ID
+                    cognitoRegion // Region
+            );
+        }
 
+        newDevice = null;
         currUserAttributes = new HashSet<String>();
 
     }
@@ -71,6 +88,9 @@ public class CognitoHelper {
         userDetails = details;
     }
 
+    public static String getUserPoolUrl() {
+        return userPoolUrl;
+    }
 
     public static  CognitoUserDetails getUserDetails() {
         return userDetails;
@@ -88,4 +108,37 @@ public class CognitoHelper {
         currUserAttributes.add(attribute);
     }
 
+    public static void setCurrSession(CognitoUserSession session) {
+        currSession = session;
+    }
+
+    public static void newDevice(CognitoDevice device) {
+        newDevice = device;
+    }
+
+    public static CognitoDevice getNewDevice() {
+        return newDevice;
+    }
+
+
+    public static String formatException(Exception exception) {
+        String formattedString = "Internal Error";
+        Log.e("App Error",exception.toString());
+        Log.getStackTraceString(exception);
+
+        String temp = exception.getMessage();
+
+        if(temp != null && temp.length() > 0) {
+            formattedString = temp.split("\\(")[0];
+            if(temp != null && temp.length() > 0) {
+                return formattedString;
+            }
+        }
+
+        return  formattedString;
+    }
+
+    public static void setLogins(Map<String,String> logins) {
+        CognitoHelper.credentialsProvider.setLogins(logins);
+    }
 }

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "59505410509",
+    "project_id": "carbon-syntax-168713"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:59505410509:android:b01c90be6716273c",
+        "android_client_info": {
+          "package_name": "com.codelords.project.uask"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "59505410509-hntposbd1b1n0b7tht26o6tr8hkfv9ei.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "59505410509-82cnoubtv2gfuat3bl900eeo0sbnkvds.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.codelords.project.uask",
+            "certificate_hash": "4f5ed4b720d22c9d667a88ef1b55837aeccd4a54"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyConbERGLlRejn80ME73lrcWz86JI68qBc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

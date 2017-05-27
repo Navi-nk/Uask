@@ -1,7 +1,10 @@
 package com.codelords.project.uask;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -18,11 +21,32 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationDetails;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.NewPasswordContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
+import com.codelords.project.uask.helper.CognitoHelper;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -31,16 +55,35 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
 
-public class LoginActivity extends AppCompatActivity {
+
+
+public class LoginActivity extends AppCompatActivity implements
+        GoogleApiClient.OnConnectionFailedListener{
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+    //FB Login parameters
     private LoginButton loginButton;
     private CallbackManager callbackManager;
+
+    // User Details
+    private String username;
+    private String password;
+
+    private AlertDialog userDialog;
+
+    private GoogleApiClient mGoogleApiClient;
+
+    private ProgressDialog progressDialog;
+
+    private static final int RC_SIGN_IN = 9001;
 
     // Session Manager Class
     SessionManager _session;
@@ -60,8 +103,21 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.inject(this);
         loginButton = (LoginButton)findViewById(R.id.login_button);
         _session = new SessionManager(getApplicationContext());
+        // Set the dimensions of the sign-in button.
+        SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        signInButton.setSize(SignInButton.SIZE_WIDE);
+        TextView textView = (TextView) signInButton.getChildAt(0);
+        textView.setText("Continue with Google");
+
         //This method to implement the sign up link functionality.
         implementSignUpLink();
+        //FB sign in
+        implementFBSignIn();
+
+        implementGoogleSignIn();
+
+        //Setup AWS Cognito attributes
+        CognitoHelper.init(getApplicationContext());
 
         //Listener for Log in button
         _loginButton.setOnClickListener(new View.OnClickListener() {
@@ -71,10 +127,45 @@ public class LoginActivity extends AppCompatActivity {
                 performLogin();
             }
         });
+
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+            }
+        });
+
+        findCurrent();
+    }
+
+    private void implementGoogleSignIn() {
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        // Build a GoogleApiClient with access to the Google Sign-In API and the
+// options specified by gso.
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+    }
+
+    private void implementFBSignIn(){
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d("fb",loginResult.getAccessToken().getToken()+' '+loginResult.getAccessToken().getUserId());
+                Map<String, String> logins = new HashMap<String, String>();
+                logins.put("graph.facebook.com", loginResult.getAccessToken().getToken());
+                CognitoHelper.setLogins(logins);
+
+                //_session.createLoginSession(uname,obj.getJSONArray("res").getJSONObject(0).getString("_faculty") ); have to implement this
+
                 Intent intent = new Intent(getApplicationContext(), About.class);
                 startActivity(intent);
             }
@@ -111,7 +202,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         }*/
-
     }
 
     private void implementSignUpLink()
@@ -137,22 +227,25 @@ public class LoginActivity extends AppCompatActivity {
         Log.d("LoginActivity", "login");
         _loginButton.setEnabled(false);
 
-        final String uname = _userName.getText().toString();
-        String password = _passwordText.getText().toString();
+        username = _userName.getText().toString();
+        password = _passwordText.getText().toString();
 
-        if(!validate(uname,password))
+        if(!validate(username,password))
         {
             _loginButton.setEnabled(true);
             return;
         }
 
-        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
+        progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 
-        RequestParams params = new RequestParams();
+        CognitoHelper.getPool().getUser(username).getSessionInBackground(authenticationHandler);
+
+
+       /* RequestParams params = new RequestParams();
         params.put("username", uname);
         params.put("password", password);
 
@@ -215,11 +308,20 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
 
-        });
+        });*/
 
     }
+    private void findCurrent() {
+        CognitoUser user = CognitoHelper.getPool().getCurrentUser();
+        username = user.getUserId();
+        if(username != null) {
+            CognitoHelper.setUser(username);
+            _userName.setText(user.getUserId());
+            user.getSessionInBackground(authenticationHandler);
+        }
+    }
 
-    private boolean validate(String email,String password) {
+    private boolean validate(final String email,final String password) {
         boolean valid = true;
 
         //if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
@@ -257,7 +359,141 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("fb",Integer.toString(requestCode));
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
+        }else{
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
     }
+
+
+    private void handleSignInResult(GoogleSignInResult result) {
+        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+            GoogleSignInAccount acct = result.getSignInAccount();
+
+            //Need to check this
+            /*GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
+            AccountManager am = AccountManager.get(this);
+            Account[] accounts = am.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
+            String token = GoogleAuthUtil.getToken(getApplicationContext(), accounts[0].name,
+                    "audience:server:client_id:YOUR_GOOGLE_CLIENT_ID");*/
+            Map<String, String> logins = new HashMap<String, String>();
+            logins.put("accounts.google.com", acct.getIdToken());
+            CognitoHelper.setLogins(logins);
+            //this will be changed anyway
+            Intent intent = new Intent(getApplicationContext(), About.class);
+            startActivity(intent);
+
+        } else {
+            // Signed out, show unauthenticated UI.
+
+        }
+    }
+    private void showDialogMessage(String title, String body) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title).setMessage(body).setNeutralButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    userDialog.dismiss();
+                } catch (Exception e) {
+                    //
+                }
+            }
+        });
+        userDialog = builder.create();
+        userDialog.show();
+    }
+
+    private void getUserAuthentication(AuthenticationContinuation continuation, String username) {
+        if(username != null) {
+            this.username = username;
+            CognitoHelper.setUser(username);
+        }
+        if(this.password == null) {
+            return;
+        }
+        AuthenticationDetails authenticationDetails = new AuthenticationDetails(this.username, password, null);
+        continuation.setAuthenticationDetails(authenticationDetails);
+        continuation.continueTask();
+    }
+
+    AuthenticationHandler authenticationHandler = new AuthenticationHandler() {
+        @Override
+        public void onSuccess(CognitoUserSession cognitoUserSession, CognitoDevice device) {
+            Log.e(TAG, "Auth Success");
+            _loginButton.setEnabled(true);
+            CognitoHelper.setCurrSession(cognitoUserSession);
+            CognitoHelper.newDevice(device);
+            progressDialog.dismiss();
+           // _session.createLoginSession(uname,obj.getJSONArray("res").getJSONObject(0).getString("_faculty") ); have to implement this
+
+            String idToken = cognitoUserSession.getIdToken().getJWTToken();
+
+            Map<String, String> logins = new HashMap<String, String>();
+            logins.put(CognitoHelper.getUserPoolUrl(), idToken);
+            CognitoHelper.setLogins(logins);
+
+            Intent intent = new Intent(getApplicationContext(), About.class);
+            startActivity(intent);
+            finish();
+        }
+
+        @Override
+        public void getAuthenticationDetails(AuthenticationContinuation authenticationContinuation, String username) {
+
+            progressDialog.dismiss();
+            Locale.setDefault(Locale.US);
+            getUserAuthentication(authenticationContinuation, username);
+        }
+
+        @Override
+        public void getMFACode(MultiFactorAuthenticationContinuation multiFactorAuthenticationContinuation) {
+            progressDialog.dismiss();
+            //Not required
+        }
+
+        @Override
+        public void authenticationChallenge(ChallengeContinuation continuation) {
+            progressDialog.dismiss();
+            //Not required
+        }
+
+        @Override
+        public void onFailure(Exception e) {
+            progressDialog.dismiss();
+            _userName.setError("Sign In Failed");
+
+            _passwordText.setError("Sign In Failed");
+
+            showDialogMessage("Sign-in failed", CognitoHelper.formatException(e));
+        }
+
+    };
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    //This need to be incorporated for logout..
+    private void signOut() {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        // [START_EXCLUDE]
+
+                        // [END_EXCLUDE]
+                    }
+                });
+    }
+
+
 }
      

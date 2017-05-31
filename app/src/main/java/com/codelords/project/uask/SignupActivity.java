@@ -18,6 +18,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHandler;
+import com.codelords.project.uask.helper.CognitoHelper;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -37,7 +42,7 @@ import cz.msebera.android.httpclient.Header;
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
     String _facultyText;
-
+    ProgressDialog progressDialog;
     // Session Manager Class
     SessionManager _session;
 
@@ -55,6 +60,7 @@ public class SignupActivity extends AppCompatActivity {
     Button _signupButton;
     @InjectView(R.id.link_login)
     TextView _loginLink;
+
 
     static String[] SPINNERLIST = {"Arts & Social Sciences",
             "Business",
@@ -152,14 +158,18 @@ public class SignupActivity extends AppCompatActivity {
             _signupButton.setEnabled(true);
             return;
         }
+        CognitoUserAttributes userAttributes = new CognitoUserAttributes();
+        userAttributes.addAttribute(CognitoHelper.getSignUpFields().get("email"), email);
+        userAttributes.addAttribute(CognitoHelper.getSignUpFields().get("preferred_username"), name);
 
-        final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
+        progressDialog = new ProgressDialog(SignupActivity.this,
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Processing...");
         progressDialog.show();
+        CognitoHelper.getPool().signUpInBackground(name, password, userAttributes, null, signUpHandler);
 
-        RequestParams params = new RequestParams();
+      /*  RequestParams params = new RequestParams();
         params.put("username", name);
         params.put("email", email);
         params.put("password", password);
@@ -220,7 +230,7 @@ public class SignupActivity extends AppCompatActivity {
                 }
             }
 
-        });
+        });*/
     }
 
     private boolean validate(String name, String email, String password, String confirmpassword, String faculty) {
@@ -267,4 +277,34 @@ public class SignupActivity extends AppCompatActivity {
 
         return valid;
     }
+
+    SignUpHandler signUpHandler = new SignUpHandler() {
+        @Override
+        public void onSuccess(CognitoUser user, boolean signUpConfirmationState,
+                              CognitoUserCodeDeliveryDetails cognitoUserCodeDeliveryDetails) {
+            // Check signUpConfirmationState to see if the user is already confirmed
+            progressDialog.dismiss();
+            if (signUpConfirmationState) {
+                // User is already confirmed
+                _signupButton.setEnabled(true);
+                Intent intent = new Intent();
+                intent.putExtra("name", _nameText.getText().toString());
+                intent.putExtra("password", _passwordText.getText().toString());
+                setResult(RESULT_OK, intent);
+                finish();
+                finish();
+            }
+            else {
+                Toast.makeText(getApplicationContext(), "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
+                _signupButton.setEnabled(true);
+            }
+        }
+
+        @Override
+        public void onFailure(Exception exception) {
+            progressDialog.dismiss();
+            Toast.makeText(getApplicationContext(), "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
+            _signupButton.setEnabled(true);
+        }
+    };
 }

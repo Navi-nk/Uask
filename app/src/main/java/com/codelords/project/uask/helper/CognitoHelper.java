@@ -26,6 +26,7 @@ public class CognitoHelper {
 
     private static CognitoHelper cognitoHelper;
     private static CognitoUserPool userPool;
+    private static Map<String, String> signUpFields;
     private static String user;
 
     private static final String userPoolId = "replace_this_with_your_cognito_pool_id";
@@ -47,7 +48,7 @@ public class CognitoHelper {
     private static String userPoolUrl="cognito-idp."+cognitoRegion.getName()+".amazonaws.com/"+userPoolId;
 
     public static void init(Context context) {
-
+        setData();
         if (cognitoHelper != null && userPool != null) {
             return;
         }
@@ -120,7 +121,15 @@ public class CognitoHelper {
         return newDevice;
     }
 
+    public static Map<String, String> getSignUpFields() {
+        return signUpFields;
+    }
 
+    private static void setData() {
+        signUpFields = new HashMap<String, String>();
+        signUpFields.put("email","email");
+        signUpFields.put("preferred username","preferred_username");
+    }
     public static String formatException(Exception exception) {
         String formattedString = "Internal Error";
         Log.e("App Error",exception.toString());

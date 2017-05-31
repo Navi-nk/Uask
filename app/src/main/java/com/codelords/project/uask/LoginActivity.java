@@ -147,7 +147,7 @@ public class LoginActivity extends AppCompatActivity implements
                 .build();
 
         // Build a GoogleApiClient with access to the Google Sign-In API and the
-// options specified by gso.
+        // options specified by gso.
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
@@ -364,7 +364,24 @@ public class LoginActivity extends AppCompatActivity implements
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
-        }else{
+        }else if(requestCode == REQUEST_SIGNUP){
+            String name = data.getStringExtra("name");
+            String userPasswd = data.getStringExtra("password");
+            progressDialog = new ProgressDialog(LoginActivity.this,
+                    R.style.AppTheme_Dark_Dialog);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setMessage("Signing In...");
+            progressDialog.show();
+            if (!name.isEmpty() && !userPasswd.isEmpty()) {
+                // We have the user details, so sign in!
+                username = name;
+                password = userPasswd;
+                CognitoHelper.getPool().getUser(username).getSessionInBackground(authenticationHandler);
+            }else{
+                Toast.makeText(getApplicationContext(), "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
+            }
+        }
+        else{
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }

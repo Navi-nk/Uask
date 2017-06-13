@@ -35,10 +35,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
+//Amazon mobile analytics
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.*;
+
 public class MainCanvas extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final int REQUEST_SIGNUP = 0;
     private static final String TAG = "Main Canvas";
+    private static MobileAnalyticsManager analytics;
     int _categorySelected;
     // Session Manager Class
     SessionManager _session;
@@ -60,6 +65,18 @@ public class MainCanvas extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+//        initialize sesssion for AWS
+        try {
+            analytics = MobileAnalyticsManager.getOrCreateInstance(
+                    this.getApplicationContext(),
+                    "8d5e6256080e4acea50fcf9a805f0822", //Amazon Mobile Analytics App ID
+                    "us-east-1:ef4509a3-af9a-40e9-8eff-915dba4cc0e4" //Amazon Cognito Identity Pool ID
+            );
+        } catch(InitializationException ex) {
+            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
+        }
         Intent i = getIntent();
         String feedType = i.getStringExtra("feedType");
         final int menuItemIdx = i.getIntExtra("itemposition",-1);
@@ -210,6 +227,24 @@ public class MainCanvas extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 new QuestionAnswerQueryTask().execute(SearchUrl);
             }
+        }
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(analytics != null) {
+            analytics.getSessionClient().pauseSession();
+            analytics.getEventClient().submitEvents();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(analytics != null) {
+            analytics.getSessionClient().resumeSession();
         }
     }
 

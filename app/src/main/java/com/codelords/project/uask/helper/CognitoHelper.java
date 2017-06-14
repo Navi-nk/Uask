@@ -29,12 +29,12 @@ public class CognitoHelper {
     private static Map<String, String> signUpFields;
     private static String user;
 
-    private static final String userPoolId = "replace_this_with_your_cognito_pool_id";
-    private static final String clientId = "replace_this_with_app_client_id";
-    private static final String clientSecret = "replace_this_with_the_app_client_secret";
+    private static final String userPoolId = "us-east-1_JBDCXi8Kh";
+    private static final String clientId = "2cjum8451c8tvfp3mlgi9ndhsf";
+    private static final String clientSecret = "1e25fnqghmeckf3p7hsn9r8hspjr92e8q8ljkoinkft7s3tvbmn6";
 
 
-    private static final Regions cognitoRegion = Regions.DEFAULT_REGION;
+    private static final Regions cognitoRegion = Regions.US_EAST_1;
 
     private static CognitoUserSession currSession;
     private static CognitoUserDetails userDetails;
@@ -129,6 +129,7 @@ public class CognitoHelper {
         signUpFields = new HashMap<String, String>();
         signUpFields.put("email","email");
         signUpFields.put("preferred username","preferred_username");
+        signUpFields.put("faculty","faculty");
     }
     public static String formatException(Exception exception) {
         String formattedString = "Internal Error";
@@ -149,5 +150,9 @@ public class CognitoHelper {
 
     public static void setLogins(Map<String,String> logins) {
         CognitoHelper.credentialsProvider.setLogins(logins);
+    }
+
+    public static CognitoCachingCredentialsProvider getCredentialsProvider(){
+        return credentialsProvider;
     }
 }

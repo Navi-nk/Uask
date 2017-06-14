@@ -161,6 +161,7 @@ public class SignupActivity extends AppCompatActivity {
         CognitoUserAttributes userAttributes = new CognitoUserAttributes();
         userAttributes.addAttribute(CognitoHelper.getSignUpFields().get("email"), email);
         userAttributes.addAttribute(CognitoHelper.getSignUpFields().get("preferred_username"), name);
+        userAttributes.addAttribute(CognitoHelper.getSignUpFields().get("faculty"),_facultyText);
 
         progressDialog = new ProgressDialog(SignupActivity.this,
                 R.style.AppTheme_Dark_Dialog);
@@ -291,7 +292,6 @@ public class SignupActivity extends AppCompatActivity {
                 intent.putExtra("name", _nameText.getText().toString());
                 intent.putExtra("password", _passwordText.getText().toString());
                 setResult(RESULT_OK, intent);
-                finish();
                 finish();
             }
             else {

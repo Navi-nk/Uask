@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationDetails;
@@ -30,6 +31,7 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.Chal
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.NewPasswordContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GetDetailsHandler;
 import com.codelords.project.uask.helper.CognitoHelper;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -367,6 +369,7 @@ public class LoginActivity extends AppCompatActivity implements
         }else if(requestCode == REQUEST_SIGNUP){
             String name = data.getStringExtra("name");
             String userPasswd = data.getStringExtra("password");
+
             progressDialog = new ProgressDialog(LoginActivity.this,
                     R.style.AppTheme_Dark_Dialog);
             progressDialog.setIndeterminate(true);
@@ -456,9 +459,7 @@ public class LoginActivity extends AppCompatActivity implements
             logins.put(CognitoHelper.getUserPoolUrl(), idToken);
             CognitoHelper.setLogins(logins);
 
-            Intent intent = new Intent(getApplicationContext(), About.class);
-            startActivity(intent);
-            finish();
+            CognitoHelper.getPool().getUser(username).getDetailsInBackground(getUserDetailsHandler);
         }
 
         @Override
@@ -497,6 +498,34 @@ public class LoginActivity extends AppCompatActivity implements
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
+
+    // Implement callback handler for getting details
+    GetDetailsHandler getUserDetailsHandler = new GetDetailsHandler() {
+        @Override
+        public void onSuccess(CognitoUserDetails cognitoUserDetails) {
+            // The user detail are in cognitoUserDetails
+
+            CognitoHelper.setUserDetails(cognitoUserDetails);
+
+
+            _session.createLoginSession(cognitoUserDetails.getAttributes().getAttributes().get("preferred_username"), cognitoUserDetails.getAttributes().getAttributes().get("faculty"));
+
+            // Navigate to Home screen
+            Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
+            startActivity(intent);
+            finish();
+
+//            Intent intent = new Intent(getApplicationContext(), About.class);
+//            startActivity(intent);
+//            finish();
+        }
+
+        @Override
+        public void onFailure(Exception exception) {
+            // Fetch user details failed, check exception for the cause
+        }
+    };
 
     //This need to be incorporated for logout..
     private void signOut() {

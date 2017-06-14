@@ -12,6 +12,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codelords.project.uask.helper.ApiGatewayHelper;
+import com.codelords.uask.apiclientsdk.UAskClient;
+import com.codelords.uask.apiclientsdk.model.AnswerFeedModel;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,6 +30,7 @@ public class AnswerActivity extends AppCompatActivity {
     private RecyclerView mainAnswerList;
     private MainAnswerAdapter mAnswerAdapter;
     private TextView questionText,authorText,timeStampText,submitAns,categoryText;
+    private static UAskClient apiClient;
     String id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +61,8 @@ public class AnswerActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         if(!noOfAnswers.equalsIgnoreCase("0 Answers")) {
-            URL SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_ANSWERS, NetworkUtils.PARAM_QUESTION, id);
-            new AnswerQueryTask().execute(SearchUrl);
+           // URL SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_ANSWERS, NetworkUtils.PARAM_QUESTION, id);
+            new AnswerQueryTask().execute();
         }
         else
         {
@@ -95,13 +100,13 @@ public class AnswerActivity extends AppCompatActivity {
         Log.d("here ",Integer.toString(requestCode)+" "+Integer.toString(resultCode));
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
-                URL SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_ANSWERS, NetworkUtils.PARAM_QUESTION, id);
-                new AnswerQueryTask().execute(SearchUrl);
+                //URL SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_ANSWERS, NetworkUtils.PARAM_QUESTION, id);
+                new AnswerQueryTask().execute();
             }
         }
     }
 
-    public class AnswerQueryTask extends AsyncTask<URL, Void, String> {
+    public class AnswerQueryTask extends AsyncTask<Void, Void, AnswerFeedModel> {
 
         // COMPLETED (26) Override onPreExecute to set the loading indicator to visible
         @Override
@@ -110,20 +115,21 @@ public class AnswerActivity extends AppCompatActivity {
         }
 
         @Override
-        protected String doInBackground(URL... params) {
-            URL searchUrl = params[0];
-            String QuestionAnswerSearchResults = null;
+        protected AnswerFeedModel doInBackground(Void... params) {
+            //URL searchUrl = params[0];
+            AnswerFeedModel QuestionAnswerSearchResults = null;
+            apiClient = ApiGatewayHelper.getApiClientFactory().build(UAskClient.class);
             try {
-                QuestionAnswerSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
-            } catch (IOException e) {
+                QuestionAnswerSearchResults = apiClient.getanswersGet(id);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return QuestionAnswerSearchResults;
         }
 
         @Override
-        protected void onPostExecute(String QuestionAnswerSearchResults) {
-            Log.d("Check result",QuestionAnswerSearchResults);
+        protected void onPostExecute(AnswerFeedModel QuestionAnswerSearchResults) {
+ //           Log.d("Check result",QuestionAnswerSearchResults);
             // COMPLETED (27) As soon as the loading is complete, hide the loading indicator
             if (QuestionAnswerSearchResults != null && !QuestionAnswerSearchResults.equals("")) {
                 // COMPLETED (17) Call showJsonDataView if we have valid, non-null results
@@ -133,15 +139,15 @@ public class AnswerActivity extends AppCompatActivity {
 
                 try {
 
-                    JSONArray jArray = new JSONArray(QuestionAnswerSearchResults);
+                    //JSONArray jArray = new JSONArray(QuestionAnswerSearchResults);
 
                     // Extract data from json and store into ArrayList as class objects
-                    for(int i=0;i<jArray.length();i++){
-                        JSONObject json_data = jArray.getJSONObject(i);
+                    for(int i=0;i<QuestionAnswerSearchResults.size();i++){
+                      //  JSONObject json_data = jArray.getJSONObject(i);
                         Answer answerData = new Answer();
-                        answerData.answerText= json_data.getString("_Text");
-                        answerData.author=json_data.getString("_Answered_UserID");
-                        answerData.timeStamp=json_data.getString("_Datetime");
+                        answerData.answerText= QuestionAnswerSearchResults.get(i).getText();
+                        answerData.author=QuestionAnswerSearchResults.get(i).getAnsweredUserID();
+                        answerData.timeStamp=QuestionAnswerSearchResults.get(i).getDatetime();
                         data.add(answerData);
                     }
 
@@ -155,7 +161,7 @@ public class AnswerActivity extends AppCompatActivity {
 
                     // Setup and Handover data to recyclerview
 
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     Toast.makeText(AnswerActivity.this, e.toString(), Toast.LENGTH_LONG).show();
                 }
 

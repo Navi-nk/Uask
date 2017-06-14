@@ -38,13 +38,19 @@ import java.util.List;
 
 //Amazon mobile analytics
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.*;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
+import com.codelords.project.uask.helper.ApiGatewayHelper;
 import com.codelords.project.uask.helper.CognitoHelper;
+import com.codelords.uask.apiclientsdk.UAskClient;
+import com.codelords.uask.apiclientsdk.model.QuestionFeedModel;
+import com.google.gson.Gson;
 
 public class MainCanvas extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final int REQUEST_SIGNUP = 0;
     private static final String TAG = "Main Canvas";
     private static MobileAnalyticsManager analytics;
+    private static UAskClient apiClient;
     int _categorySelected;
     // Session Manager Class
     SessionManager _session;
@@ -60,20 +66,46 @@ public class MainCanvas extends AppCompatActivity
     private MainQuestionAnswerAdapter mQuestionAnswerAdapter;
     private TextView mErrorMessageDisplay;
     private FrameLayout mQuestionTopAnswerContent;
-    private  URL SearchUrl;
+    //private  URL SearchUrl;
+    private Integer apiId = 0;
+    private String apiParam;
+
     String userName;
     String facultyName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Session class instance
+        _session = new SessionManager(getApplicationContext());
+        //Check if user is still loggedin if not redirect to login activity
+
+       /*if(!_session.isLoggedIn())
+        {
+            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+            // Closing all the Activities
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            // Add new Flag to start new Activity
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            // Staring Login Activity
+            startActivity(i);
+            finish();
+        }
+        else {
+           CognitoHelper.init(this);
+           new RefreshTask().execute();
+        }*/
+
+        CognitoHelper.init(this);
+        ApiGatewayHelper.init(CognitoHelper.getCredentialsProvider());
 
 //        initialize sesssion for AWS
         try {
             analytics = MobileAnalyticsManager.getOrCreateInstance(
                     this.getApplicationContext(),
                     "8d5e6256080e4acea50fcf9a805f0822", //Amazon Mobile Analytics App ID
-                    "us-east-1:ef4509a3-af9a-40e9-8eff-915dba4cc0e4" //Amazon Cognito Identity Pool ID
+                    CognitoHelper.getIdentityPoolId()//Amazon Cognito Identity Pool ID
             );
         } catch(InitializationException ex) {
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
@@ -85,12 +117,14 @@ public class MainCanvas extends AppCompatActivity
         {
             Log.d("MainCanvas","first page");
             setContentView(R.layout.activity_main_canvas);
-            SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTIONS,NetworkUtils.PARAM_QUESTION,"");
+            //SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTIONS,NetworkUtils.PARAM_QUESTION,"");
+            apiId=1;
+            apiParam=null;
             _categorySelected = -1;
         }
         else if(feedType.equalsIgnoreCase("search"))  {
             setContentView(R.layout.activity_main_canvas);
-            SearchUrl = NetworkUtils.buildUrl(NetworkUtils.SEARCH_QUESTION,NetworkUtils.PARAM_SEARCH_STRING,i.getStringExtra("search_string").toString());
+            //SearchUrl = NetworkUtils.buildUrl(NetworkUtils.SEARCH_QUESTION,NetworkUtils.PARAM_SEARCH_STRING,i.getStringExtra("search_string").toString());
             _categorySelected = -1;
 
         }
@@ -99,54 +133,38 @@ public class MainCanvas extends AppCompatActivity
             setContentView(R.layout.activity_category);
 
             if (feedType.equalsIgnoreCase("category")) {
-                String category = i.getStringExtra("category").toString();
-                Log.d("category",category);
-                SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FOR_CAT, NetworkUtils.PARAM_CATEGORY, category);
-
+                apiParam = i.getStringExtra("category").toString();
+                Log.d("category",apiParam);
+                //SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FOR_CAT, NetworkUtils.PARAM_CATEGORY, category);
+                apiId=2;
                 int index = -1;
                 for (int cnt=0;cnt<CAT_LIST.length;cnt++) {
-                    if (CAT_LIST[cnt].equals(category)) {
+                    if (CAT_LIST[cnt].equals(apiParam)) {
                         index = cnt;
                         break;
                     }
                 }
                 _categorySelected = index;
                 Log.d("Index-Category",Integer.toString(_categorySelected));
-                Log.d("url",SearchUrl.toString());
+                //Log.d("url",SearchUrl.toString());
             } else if (feedType.equalsIgnoreCase("userQuestions")) {
-                String user = i.getStringExtra("user").toString();
-                SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FROM_USER, NetworkUtils.PARAM_USERID, user);
+                apiParam = i.getStringExtra("user").toString();
+                //SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_FROM_USER, NetworkUtils.PARAM_USERID, user);
+                apiId=3;
                 _categorySelected = 6;
             } else if (feedType.equalsIgnoreCase("userAnswers")) {
-                String user = i.getStringExtra("user").toString();
-                SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_ANS_BY_USER, NetworkUtils.PARAM_USERID, user);
+                apiParam = i.getStringExtra("user").toString();
+                //SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_QUESTION_ANS_BY_USER, NetworkUtils.PARAM_USERID, user);
+                apiId=4;
                 _categorySelected = 7;
             } else if (feedType.equalsIgnoreCase("privateQues")) {
-                String userFaculty = i.getStringExtra("userfaculty").toString();
-                SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_PQUESTION_BY_FACUSER, NetworkUtils.PARAM_FACULTY, userFaculty);
+                apiParam = i.getStringExtra("userfaculty").toString();
+                //SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_PQUESTION_BY_FACUSER, NetworkUtils.PARAM_FACULTY, userFaculty);
+                apiId=5;
                 _categorySelected = 8;
             }
 
         }
-        // Session class instance
-        _session = new SessionManager(getApplicationContext());
-        //Check if user is still loggedin if not redirect to login activity
-
-        if(!_session.isLoggedIn())
-        {
-            i = new Intent(getApplicationContext(), LoginActivity.class);
-            // Closing all the Activities
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            // Add new Flag to start new Activity
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            // Staring Login Activity
-            startActivity(i);
-            finish();
-        }
-        else
-            CognitoHelper.init(this);
-
-        // Make API call and display question
 
         // get user data from session
         HashMap<String, String> user = _session.getUserDetails();
@@ -210,7 +228,7 @@ public class MainCanvas extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        new QuestionAnswerQueryTask().execute(SearchUrl);
+        new QuestionAnswerQueryTask().execute();
         //Ask a question
         FloatingActionButton qfab = (FloatingActionButton) findViewById(R.id.fab);
         qfab.setOnClickListener(new View.OnClickListener() {
@@ -228,7 +246,7 @@ public class MainCanvas extends AppCompatActivity
         Log.d("here in maincanvas",Integer.toString(requestCode)+" "+Integer.toString(resultCode));
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
-                new QuestionAnswerQueryTask().execute(SearchUrl);
+                new QuestionAnswerQueryTask().execute();
             }
         }
     }
@@ -252,7 +270,7 @@ public class MainCanvas extends AppCompatActivity
     }
 
 
-    public class QuestionAnswerQueryTask extends AsyncTask<URL, Void, String> {
+    public class QuestionAnswerQueryTask extends AsyncTask<Void, Void, QuestionFeedModel> {
 
         // COMPLETED (26) Override onPreExecute to set the loading indicator to visible
         @Override
@@ -261,22 +279,42 @@ public class MainCanvas extends AppCompatActivity
         }
 
         @Override
-        protected String doInBackground(URL... params) {
-            URL searchUrl = params[0];
-            String QuestionAnswerSearchResults = null;
+        protected QuestionFeedModel doInBackground(Void... params) {
+            QuestionFeedModel response = null;
             try {
-                Log.d("url",searchUrl.toString());
-                QuestionAnswerSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
-            } catch (IOException e) {
+                apiClient = ApiGatewayHelper.getApiClientFactory().build(UAskClient.class);
+                //Gson gson = new Gson();
+                switch (apiId){
+                    case 1:
+                        response = apiClient.getfeedGet();
+                        break;
+                    case 2:
+                        response = apiClient.getcategoryfeedGet(apiParam);
+                        break;
+                    case 3:
+                        response = apiClient.getuserquestionsGet(apiParam);
+                        break;
+                    case 4:
+                        response = apiClient.getuseranswersGet(apiParam);
+                        break;
+                    case 5:
+                        response = apiClient.getprivatefeedGet(apiParam);
+                        break;
+                    default:
+                        response = apiClient.getfeedGet();
+                        break;
+                }
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            return QuestionAnswerSearchResults;
+            return response;
         }
 
         @Override
-        protected void onPostExecute(String QuestionAnswerSearchResults) {
+        protected void onPostExecute(QuestionFeedModel response) {
             // COMPLETED (27) As soon as the loading is complete, hide the loading indicator
-            if (QuestionAnswerSearchResults != null && !QuestionAnswerSearchResults.equals("")) {
+            if (response != null && !response.equals("")) {
                 // COMPLETED (17) Call showJsonDataView if we have valid, non-null results
                 //this method will be running on UI thread
 
@@ -284,19 +322,19 @@ public class MainCanvas extends AppCompatActivity
 
                 try {
 
-                    JSONArray jArray = new JSONArray(QuestionAnswerSearchResults);
+                   // JSONArray jArray = new JSONArray(response);
 
                     // Extract data from json and store into ArrayList as class objects
-                    for(int i=0;i<jArray.length();i++){
-                        JSONObject json_data = jArray.getJSONObject(i);
+                    for(int i=0;i<response.size();i++){
+                        //JSONObject json_data = response.get(i);
                         Question questionData = new Question();
-                        questionData.questionText= json_data.getString("_Text");
-                        questionData.noOfAnswers = json_data.getInt("_Number_Answers");
-                        questionData.topAnswer= json_data.getString("_Answer");
-                        questionData.author=json_data.getString("_Used_Id");
-                        questionData.timeStamp=json_data.getString("_Datetime");
-                        questionData.category=json_data.getString("_Category");
-                        questionData.id=json_data.getString("_Id");
+                        questionData.questionText= response.get(i).getText();
+                        questionData.noOfAnswers = response.get(i).getNumberAnswers();
+                        questionData.topAnswer= response.get(i).getAnswer();
+                        questionData.author=response.get(i).getUsedId();
+                        questionData.timeStamp=response.get(i).getDatetime();
+                        questionData.category=response.get(i).getCategory();
+                        questionData.id=response.get(i).getId();
                         data.add(questionData);
                     }
                     if(_categorySelected != -1)
@@ -313,14 +351,12 @@ public class MainCanvas extends AppCompatActivity
 
                     // Setup and Handover data to recyclerview
 
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     Toast.makeText(MainCanvas.this, e.toString(), Toast.LENGTH_LONG).show();
                 }
 
             }
         }
-
-
     }
 
 
@@ -504,4 +540,6 @@ public class MainCanvas extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
 }

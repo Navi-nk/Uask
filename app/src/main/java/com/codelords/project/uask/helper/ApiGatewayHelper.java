@@ -16,7 +16,7 @@ public class ApiGatewayHelper {
 
     private static ApiGatewayHelper apiGatewayHelper;
     private static ApiClientFactory apiClientFactory;
-    private static UAskClient apiClient;
+    //private static UAskClient apiClient;
 
     public static void init(CognitoCachingCredentialsProvider credentialsProvider) {
         if (apiGatewayHelper != null) {
@@ -30,9 +30,15 @@ public class ApiGatewayHelper {
             apiClientFactory = new ApiClientFactory()
                     .credentialsProvider(credentialsProvider);
 
-        apiClient = apiClientFactory.build(UAskClient.class);
+        //apiClient = apiClientFactory.build(UAskClient.class);
 
         }
+    public static ApiClientFactory getApiClientFactory() {
+        return apiClientFactory;
+    }
+/*    public static UAskClient getApiClient() {
+        return apiClient;
+    }*/
 
 
 }

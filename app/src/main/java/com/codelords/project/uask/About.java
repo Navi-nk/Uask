@@ -29,7 +29,7 @@ public class About extends AppCompatActivity {
                 }
             });
             delPermRequest.executeAsync();*/
-            LoginManager.getInstance().logOut();
+            //LoginManager.getInstance().logOut();
             finish();
         }
         return super.onKeyDown(keyCode, event);

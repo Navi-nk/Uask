@@ -129,6 +129,11 @@ public class CognitoHelper {
         return signUpFields;
     }
 
+
+    public static String getIdentityPoolId() {
+        return identityPoolId;
+    }
+
     private static void setData() {
         signUpFields = new HashMap<String, String>();
         signUpFields.put("email","email");

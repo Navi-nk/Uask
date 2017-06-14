@@ -2,8 +2,11 @@ package com.codelords.project.uask;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,15 +18,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codelords.project.uask.helper.ApiGatewayHelper;
+import com.codelords.uask.apiclientsdk.UAskClient;
+import com.codelords.uask.apiclientsdk.model.QueryPostStatus;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -33,9 +42,11 @@ public class AskQuestionActivity extends AppCompatActivity {
     private static final String TAG = "AskQuestion";
     String _categoryText;
     String _questionText;
+    private static UAskClient apiClient;
 
     // Session Manager Class
     SessionManager _session;
+    ProgressDialog progressDialog;
 
     @InjectView(R.id.askquestion)
     EditText _quesText;
@@ -127,7 +138,7 @@ public class AskQuestionActivity extends AppCompatActivity {
             return;
         }
 
-        final ProgressDialog progressDialog = new ProgressDialog(AskQuestionActivity.this,
+        progressDialog = new ProgressDialog(AskQuestionActivity.this,
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Submitting...");
@@ -135,13 +146,16 @@ public class AskQuestionActivity extends AppCompatActivity {
 
         String flag = (privateFlag.isChecked())? "true" :"false" ;
         Log.d("flag",flag);
-        RequestParams params = new RequestParams();
+
+        String[] params = {_categoryText, userName, _questionText, flag};
+        new postQuestionTask().execute(params);
+        /*RequestParams params = new RequestParams();
         params.put("question", _questionText);
         params.put("category", _categoryText);
         params.put("flag", flag);
-        params.put("userId",userName);
+        params.put("userId",userName);*/
 
-        AsyncHttpClient client = new AsyncHttpClient();
+      /*  AsyncHttpClient client = new AsyncHttpClient();
        // client.get("http://192.168.0.114:8080/UaskServiceProvider/qfeed/askques", params, new AsyncHttpResponseHandler() {
         client.get("http://731af621.ngrok.io/UaskServiceProvider/qfeed/askques", params, new AsyncHttpResponseHandler() {
             @Override
@@ -192,7 +206,47 @@ public class AskQuestionActivity extends AppCompatActivity {
                 }
             }
 
-        });
+        });*/
+    }
+
+    public class postQuestionTask extends AsyncTask<String[], Void, QueryPostStatus> {
+
+        // COMPLETED (26) Override onPreExecute to set the loading indicator to visible
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected QueryPostStatus doInBackground(String[]... params) {
+            //URL searchUrl = params[0];
+            QueryPostStatus QuestionAnswerSearchResults = null;
+            apiClient = ApiGatewayHelper.getApiClientFactory().build(UAskClient.class);
+            try {
+                QuestionAnswerSearchResults = apiClient.postquestionGet(params[0][0],params[0][1],params[0][2],params[0][3]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return QuestionAnswerSearchResults;
+        }
+
+        @Override
+        protected void onPostExecute(QueryPostStatus postQuestionStatus) {
+            // Log.d("Check result",QuestionAnswerSearchResults);
+            // COMPLETED (27) As soon as the loading is complete, hide the loading indicator
+            if (postQuestionStatus != null && !postQuestionStatus.equals("")) {
+                progressDialog.dismiss();
+                if (Boolean.valueOf(postQuestionStatus.getStatus())) {
+                    Intent i = new Intent();
+                    setResult(RESULT_OK, i);
+                    finish();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
+                    _submitButton.setEnabled(true);
+                }
+            }
+
+        }
     }
 
     private boolean validate(String name, String question, String category) {

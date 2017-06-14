@@ -320,6 +320,11 @@ public class LoginActivity extends AppCompatActivity implements
         CognitoUser user = CognitoHelper.getPool().getCurrentUser();
         username = user.getUserId();
         if(username != null) {
+            progressDialog = new ProgressDialog(LoginActivity.this,
+                    R.style.AppTheme_Dark_Dialog);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setMessage("Signing in...");
+            progressDialog.show();
             CognitoHelper.setUser(username);
             _userName.setText(user.getUserId());
             user.getSessionInBackground(authenticationHandler);
@@ -453,8 +458,7 @@ public class LoginActivity extends AppCompatActivity implements
             _loginButton.setEnabled(true);
             CognitoHelper.setCurrSession(cognitoUserSession);
             CognitoHelper.newDevice(device);
-            if(progressDialog != null)
-                progressDialog.dismiss();
+
            // _session.createLoginSession(uname,obj.getJSONArray("res").getJSONObject(0).getString("_faculty") ); have to implement this
 
             String idToken = cognitoUserSession.getIdToken().getJWTToken();
@@ -524,6 +528,8 @@ public class LoginActivity extends AppCompatActivity implements
             // Navigate to Home screen
             Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
             startActivity(intent);
+            if(progressDialog != null)
+                progressDialog.dismiss();
             finish();
 
 //            Intent intent = new Intent(getApplicationContext(), About.class);
@@ -548,16 +554,6 @@ public class LoginActivity extends AppCompatActivity implements
                         // [END_EXCLUDE]
                     }
                 });
-    }
-
-
-    class RefreshTask extends AsyncTask<Void, Void, Boolean> {
-
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-            CognitoHelper.getCredentialsProvider().refresh();
-            return true;
-        }
     }
 
 

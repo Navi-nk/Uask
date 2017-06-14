@@ -373,6 +373,7 @@ public class MainCanvas extends AppCompatActivity
     public void navigateToPostAnswer(View view) {
         Intent intent = new Intent(getApplicationContext(), PostAnswer.class);
         startActivity(intent);
+        finish();
     }
 
     @Override

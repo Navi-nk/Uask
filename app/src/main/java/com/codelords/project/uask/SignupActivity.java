@@ -1,6 +1,7 @@
 package com.codelords.project.uask;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -22,7 +23,10 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHandler;
+import com.codelords.project.uask.helper.ApiGatewayHelper;
 import com.codelords.project.uask.helper.CognitoHelper;
+import com.codelords.uask.apiclientsdk.UAskClient;
+import com.codelords.uask.apiclientsdk.model.QueryPostStatus;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -44,6 +48,7 @@ public class SignupActivity extends AppCompatActivity {
     String _facultyText;
     ProgressDialog progressDialog;
     // Session Manager Class
+    private static UAskClient apiClient;
     SessionManager _session;
 
     @InjectView(R.id.input_name)
@@ -286,15 +291,12 @@ public class SignupActivity extends AppCompatActivity {
         public void onSuccess(CognitoUser user, boolean signUpConfirmationState,
                               CognitoUserCodeDeliveryDetails cognitoUserCodeDeliveryDetails) {
             // Check signUpConfirmationState to see if the user is already confirmed
-            progressDialog.dismiss();
             if (signUpConfirmationState) {
                 // User is already confirmed
                 _signupButton.setEnabled(true);
-                Intent intent = new Intent();
-                intent.putExtra("name", _nameText.getText().toString());
-                intent.putExtra("password", _passwordText.getText().toString());
-                setResult(RESULT_OK, intent);
-                finish();
+                String name = _nameText.getText().toString();
+                String pwd = _passwordText.getText().toString();
+                new saveUserDetailsTask().execute(_facultyText,name,pwd);
             }
             else {
                 Toast.makeText(getApplicationContext(), "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
@@ -310,4 +312,55 @@ public class SignupActivity extends AppCompatActivity {
             exception.getStackTrace();
         }
     };
+
+
+    public class saveUserDetailsTask extends AsyncTask<String, Void, QueryPostStatus> {
+
+        // COMPLETED (26) Override onPreExecute to set the loading indicator to visible
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected QueryPostStatus doInBackground(String... strings) {
+            QueryPostStatus answerPostStatus = null;
+            apiClient = ApiGatewayHelper.getApiClientFactory().build(UAskClient.class);
+            try {
+                answerPostStatus = apiClient.signupGet(strings[0] ,strings[1],strings[2]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return answerPostStatus;
+        }
+
+        @Override
+        protected void onPostExecute(QueryPostStatus answerPostStatus) {
+            // Log.d("Check result",QuestionAnswerSearchResults);
+            try {
+
+                // JSONObject jsonObj = new JSONObject(QuestionAnswerSearchResults);
+                //String success = jsonObj.getString("status").toString();
+                if (answerPostStatus != null && !answerPostStatus.equals("")) {
+                    if (Boolean.valueOf(answerPostStatus.getStatus())) {
+                        if (Boolean.valueOf(answerPostStatus.getStatus())) {
+                            Intent intent = new Intent();
+                            intent.putExtra("name", _nameText.getText().toString());
+                            intent.putExtra("password", _passwordText.getText().toString());
+                            setResult(RESULT_OK, intent);
+                            progressDialog.dismiss();
+                            finish();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
+                            _signupButton.setEnabled(true);
+                        }
+                    }
+                }
+            } catch(Exception e) {
+                Toast.makeText(SignupActivity.this, e.toString(), Toast.LENGTH_LONG).show();
+            }
+            // COMPLETED (27) As soon as the loading is complete, hide the loading indicator
+        }
+
+    }
 }

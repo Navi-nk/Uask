@@ -1,5 +1,6 @@
 package com.codelords.project.uask;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.codelords.project.uask.helper.ApiGatewayHelper;
+import com.codelords.uask.apiclientsdk.UAskClient;
+import com.codelords.uask.apiclientsdk.model.QueryPostStatus;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,8 +27,10 @@ public class PostAnswer extends AppCompatActivity {
 
     private TextView questionText,authorText,timeStampText,saveActionText;
     private EditText answer;
-    private URL SearchUrl;
+   // private URL SearchUrl;
     String parentIdentifier;
+    private static UAskClient apiClient;
+    ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,15 +74,20 @@ public class PostAnswer extends AppCompatActivity {
                     answer.setError("Answer cannot be empty");
                 else {
                     answer.setError(null);
-                    SearchUrl = NetworkUtils.buildUrlToPostAnswer(NetworkUtils.POST_ANSWER, NetworkUtils.PARAM_USER_ID, user_id, NetworkUtils.PARAM_QUESTION_ID, question_id, NetworkUtils.ANSWER, answerText);
-                    new PostAnswerTask().execute(SearchUrl);
+                    progressDialog = new ProgressDialog(PostAnswer.this,
+                            R.style.AppTheme_Dark_Dialog);
+                    progressDialog.setIndeterminate(true);
+                    progressDialog.setMessage("Submitting...");
+                    progressDialog.show();
+                    //SearchUrl = NetworkUtils.buildUrlToPostAnswer(NetworkUtils.POST_ANSWER, NetworkUtils.PARAM_USER_ID, user_id, NetworkUtils.PARAM_QUESTION_ID, question_id, NetworkUtils.ANSWER, answerText);
+                    new PostAnswerTask().execute(user_id,question_id,answerText);
                 }
             }
         });
 
     }
 
-    public class PostAnswerTask extends AsyncTask<URL, Void, String> {
+    public class PostAnswerTask extends AsyncTask<String, Void, QueryPostStatus> {
 
         // COMPLETED (26) Override onPreExecute to set the loading indicator to visible
         @Override
@@ -84,48 +96,45 @@ public class PostAnswer extends AppCompatActivity {
         }
 
         @Override
-        protected String doInBackground(URL... params) {
-            URL searchUrl = params[0];
-            String QuestionAnswerSearchResults = null;
+        protected QueryPostStatus doInBackground(String... strings) {
+            QueryPostStatus answerPostStatus = null;
+            apiClient = ApiGatewayHelper.getApiClientFactory().build(UAskClient.class);
             try {
-                QuestionAnswerSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
-            } catch (IOException e) {
+                answerPostStatus = apiClient.answerquestionGet(strings[0] ,strings[1],strings[2]);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            return QuestionAnswerSearchResults;
+            return answerPostStatus;
         }
 
         @Override
-        protected void onPostExecute(String QuestionAnswerSearchResults) {
-            Log.d("Check result",QuestionAnswerSearchResults);
+        protected void onPostExecute(QueryPostStatus answerPostStatus) {
+           // Log.d("Check result",QuestionAnswerSearchResults);
             try {
 
-                JSONObject jsonObj = new JSONObject(QuestionAnswerSearchResults);
-                String success = jsonObj.getString("status").toString();
-                if(success.equalsIgnoreCase("true")){
-                    if(parentIdentifier == null || parentIdentifier.isEmpty())
-                    {
-                        Log.d("PostAnswer","from answerlist");
-                        Intent i = new Intent();
-                        setResult(RESULT_OK, i);
-                        finish();
-                    }
-                    else {
-                        Log.d("PostAnswer","from questionlist");
-                        Intent i = new Intent(getApplicationContext(), MainCanvas.class);
-                        startActivity(i);
-                        finish();
+                // JSONObject jsonObj = new JSONObject(QuestionAnswerSearchResults);
+                //String success = jsonObj.getString("status").toString();
+                if (answerPostStatus != null && !answerPostStatus.equals("")) {
+                    if (Boolean.valueOf(answerPostStatus.getStatus())) {
+                        progressDialog.dismiss();
+                        if (parentIdentifier == null || parentIdentifier.isEmpty()) {
+                            Log.d("PostAnswer", "from answerlist");
+                            Intent i = new Intent();
+                            setResult(RESULT_OK, i);
+                            finish();
+                        } else {
+                            Log.d("PostAnswer", "from questionlist");
+                            Intent i = new Intent(getApplicationContext(), MainCanvas.class);
+                            startActivity(i);
+                            finish();
+                        }
                     }
                 }
-
-            } catch (JSONException e) {
+                } catch(Exception e) {
                 Toast.makeText(PostAnswer.this, e.toString(), Toast.LENGTH_LONG).show();
             }
-            // COMPLETED (27) As soon as the loading is complete, hide the loading indicator
-
+                // COMPLETED (27) As soon as the loading is complete, hide the loading indicator
         }
 
     }
-
-
 }

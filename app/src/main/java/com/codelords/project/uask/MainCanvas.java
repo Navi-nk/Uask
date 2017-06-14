@@ -38,6 +38,7 @@ import java.util.List;
 
 //Amazon mobile analytics
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.*;
+import com.codelords.project.uask.helper.CognitoHelper;
 
 public class MainCanvas extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -142,6 +143,8 @@ public class MainCanvas extends AppCompatActivity
             startActivity(i);
             finish();
         }
+        else
+            CognitoHelper.init(this);
 
         // Make API call and display question
 
@@ -484,6 +487,8 @@ public class MainCanvas extends AppCompatActivity
         else if(id == R.id.nav_logout){
             //Clear session data
             _session.logoutUser();
+            if(CognitoHelper.getPool().getCurrentUser() != null)
+                CognitoHelper.getPool().getCurrentUser().signOut();
             // After logout redirect user to Loing Activity
             Intent i = new Intent(getApplicationContext(), LoginActivity.class);
             // Closing all the Activities

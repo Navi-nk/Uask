@@ -160,7 +160,7 @@ public class SignupActivity extends AppCompatActivity {
         }
         CognitoUserAttributes userAttributes = new CognitoUserAttributes();
         userAttributes.addAttribute(CognitoHelper.getSignUpFields().get("email"), email);
-        userAttributes.addAttribute(CognitoHelper.getSignUpFields().get("preferred_username"), name);
+        userAttributes.addAttribute(CognitoHelper.getSignUpFields().get("preferred username"), name);
         userAttributes.addAttribute(CognitoHelper.getSignUpFields().get("faculty"),_facultyText);
 
         progressDialog = new ProgressDialog(SignupActivity.this,
@@ -244,12 +244,14 @@ public class SignupActivity extends AppCompatActivity {
             _nameText.setError(null);
         }
       //  ^[A-Za-z].*?@gmail\\.com$
-        Pattern p_1 = Pattern.compile("^[A-Za-z0-9+_-]+@nus\\.edu\\.sg$");
-        Pattern p_2 = Pattern.compile("^[A-Za-z0-9+_-]+@u\\.nus\\.edu$");
+        //Pattern p_1 = Pattern.compile("^[A-Za-z0-9+_-]+@nus\\.edu\\.sg$");
+        Pattern p_1 = Pattern.compile("^[A-Za-z0-9+_-]+@[a-z]+\\.+[a-z]+");
+       // Pattern p_2 = Pattern.compile("^[A-Za-z0-9+_-]+@u\\.nus\\.edu$");
         Matcher match_1 = p_1.matcher(email);
-        Matcher match_2 = p_2.matcher(email);
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() || (!match_1.matches() && !match_2.matches())) {
-            _emailText.setError("Please enter a valid email address");
+        //Matcher match_2 = p_2.matcher(email);
+        //if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() || (!match_1.matches() && !match_2.matches())) {
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        _emailText.setError("Please enter a valid email address");
             valid = false;
         } else {
             _emailText.setError(null);
@@ -305,6 +307,7 @@ public class SignupActivity extends AppCompatActivity {
             progressDialog.dismiss();
             Toast.makeText(getApplicationContext(), "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
             _signupButton.setEnabled(true);
+            exception.getStackTrace();
         }
     };
 }

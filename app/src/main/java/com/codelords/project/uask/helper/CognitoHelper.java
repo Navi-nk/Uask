@@ -6,10 +6,12 @@ import android.util.Log;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserPool;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.util.StringInputStream;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -129,7 +131,7 @@ public class CognitoHelper {
         signUpFields = new HashMap<String, String>();
         signUpFields.put("email","email");
         signUpFields.put("preferred username","preferred_username");
-        signUpFields.put("faculty","faculty");
+        signUpFields.put("faculty","custom:faculty");
     }
     public static String formatException(Exception exception) {
         String formattedString = "Internal Error";

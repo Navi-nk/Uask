@@ -141,6 +141,18 @@ public class LoginActivity extends AppCompatActivity implements
         findCurrent();
     }
 
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        if(progressDialog == null){
+            progressDialog = new ProgressDialog(LoginActivity.this,
+                    R.style.AppTheme_Dark_Dialog);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setMessage("Signing In...");
+            progressDialog.show();
+        }
+    }
+
     private void implementGoogleSignIn() {
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -450,7 +462,8 @@ public class LoginActivity extends AppCompatActivity implements
             _loginButton.setEnabled(true);
             CognitoHelper.setCurrSession(cognitoUserSession);
             CognitoHelper.newDevice(device);
-            progressDialog.dismiss();
+            if(progressDialog != null)
+                progressDialog.dismiss();
            // _session.createLoginSession(uname,obj.getJSONArray("res").getJSONObject(0).getString("_faculty") ); have to implement this
 
             String idToken = cognitoUserSession.getIdToken().getJWTToken();
@@ -464,8 +477,8 @@ public class LoginActivity extends AppCompatActivity implements
 
         @Override
         public void getAuthenticationDetails(AuthenticationContinuation authenticationContinuation, String username) {
-
-            progressDialog.dismiss();
+            if(progressDialog != null)
+                progressDialog.dismiss();
             Locale.setDefault(Locale.US);
             getUserAuthentication(authenticationContinuation, username);
         }
@@ -509,7 +522,7 @@ public class LoginActivity extends AppCompatActivity implements
             CognitoHelper.setUserDetails(cognitoUserDetails);
 
 
-            _session.createLoginSession(cognitoUserDetails.getAttributes().getAttributes().get("preferred_username"), cognitoUserDetails.getAttributes().getAttributes().get("faculty"));
+            _session.createLoginSession(cognitoUserDetails.getAttributes().getAttributes().get(CognitoHelper.getSignUpFields().get("preferred username")), cognitoUserDetails.getAttributes().getAttributes().get(CognitoHelper.getSignUpFields().get("faculty")));
 
             // Navigate to Home screen
             Intent intent = new Intent(getApplicationContext(), MainCanvas.class);

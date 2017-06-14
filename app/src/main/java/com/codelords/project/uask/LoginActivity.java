@@ -2,6 +2,7 @@ package com.codelords.project.uask;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -141,17 +142,7 @@ public class LoginActivity extends AppCompatActivity implements
         findCurrent();
     }
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        if(progressDialog == null){
-            progressDialog = new ProgressDialog(LoginActivity.this,
-                    R.style.AppTheme_Dark_Dialog);
-            progressDialog.setIndeterminate(true);
-            progressDialog.setMessage("Signing In...");
-            progressDialog.show();
-        }
-    }
+
 
     private void implementGoogleSignIn() {
         // Configure sign-in to request the user's ID, email address, and basic
@@ -471,6 +462,7 @@ public class LoginActivity extends AppCompatActivity implements
             Map<String, String> logins = new HashMap<String, String>();
             logins.put(CognitoHelper.getUserPoolUrl(), idToken);
             CognitoHelper.setLogins(logins);
+            new RefreshTask().execute();
 
             CognitoHelper.getPool().getUser(username).getDetailsInBackground(getUserDetailsHandler);
         }
@@ -479,25 +471,30 @@ public class LoginActivity extends AppCompatActivity implements
         public void getAuthenticationDetails(AuthenticationContinuation authenticationContinuation, String username) {
             if(progressDialog != null)
                 progressDialog.dismiss();
+            _loginButton.setEnabled(true);
             Locale.setDefault(Locale.US);
             getUserAuthentication(authenticationContinuation, username);
         }
 
         @Override
         public void getMFACode(MultiFactorAuthenticationContinuation multiFactorAuthenticationContinuation) {
-            progressDialog.dismiss();
+            if(progressDialog != null)
+                progressDialog.dismiss();
             //Not required
         }
 
         @Override
         public void authenticationChallenge(ChallengeContinuation continuation) {
-            progressDialog.dismiss();
+            if(progressDialog != null)
+                progressDialog.dismiss();
             //Not required
         }
 
         @Override
         public void onFailure(Exception e) {
-            progressDialog.dismiss();
+            _loginButton.setEnabled(true);
+            if(progressDialog != null)
+                progressDialog.dismiss();
             _userName.setError("Sign In Failed");
 
             _passwordText.setError("Sign In Failed");
@@ -551,6 +548,16 @@ public class LoginActivity extends AppCompatActivity implements
                         // [END_EXCLUDE]
                     }
                 });
+    }
+
+
+    class RefreshTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            CognitoHelper.getCredentialsProvider().refresh();
+            return true;
+        }
     }
 
 

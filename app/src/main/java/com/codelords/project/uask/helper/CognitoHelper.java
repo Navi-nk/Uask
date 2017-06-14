@@ -2,6 +2,7 @@ package com.codelords.project.uask.helper;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
@@ -31,6 +32,7 @@ public class CognitoHelper {
     private static Map<String, String> signUpFields;
     private static String user;
 
+    private static final String identityPoolId = "us-east-1:ef4509a3-af9a-40e9-8eff-915dba4cc0e4";
     private static final String userPoolId = "us-east-1_JBDCXi8Kh";
     private static final String clientId = "2cjum8451c8tvfp3mlgi9ndhsf";
     private static final String clientSecret = "1e25fnqghmeckf3p7hsn9r8hspjr92e8q8ljkoinkft7s3tvbmn6";
@@ -68,7 +70,7 @@ public class CognitoHelper {
         if(credentialsProvider == null) {
             credentialsProvider = new CognitoCachingCredentialsProvider(
                     context, // Context
-                    userPoolId, // Identity Pool ID
+                    identityPoolId, // Identity Pool ID
                     cognitoRegion // Region
             );
         }
@@ -157,4 +159,5 @@ public class CognitoHelper {
     public static CognitoCachingCredentialsProvider getCredentialsProvider(){
         return credentialsProvider;
     }
+
 }

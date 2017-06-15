@@ -35,5 +35,10 @@
     </string>
     <string name="facebook_app_id">339754909772985</string>
     <string name="fb_login_protocol_scheme">fb339754909772985</string>
+    <string name="bot_name">CustomUAskBot</string>
+    <string name="bot_alias">$LATEST</string>
+    <string name="identity_id_test">us-east-1:ef4509a3-af9a-40e9-8eff-915dba4cc0e4</string>
+    <string name="aws_region">Regions.US_EAST_1</string>
+    <string name="screen_options_main_message">Amazon Lex</string>
 
 </resources>

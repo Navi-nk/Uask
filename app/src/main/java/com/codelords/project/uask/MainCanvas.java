@@ -519,6 +519,10 @@ public class MainCanvas extends AppCompatActivity
             startActivity(i);
             finish();
         }
+        else if (id == R.id.chatbot) {
+            Intent i = new Intent(getApplicationContext(), TextActivity.class);
+            startActivity(i);
+        }
         else if (id == R.id.nav_maps) {
             Intent i = new Intent(getApplicationContext(), MapActivity.class);
             startActivity(i);

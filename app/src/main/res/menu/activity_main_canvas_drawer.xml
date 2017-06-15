@@ -82,6 +82,10 @@
     <item android:title="Basic Info">
         <menu>
             <item
+                android:id="@+id/chatbot"
+                android:icon="@drawable/google_maps"
+                android:title="Chat Bot" />
+            <item
                 android:id="@+id/nav_maps"
                 android:icon="@drawable/google_maps"
                 android:title="Campus Maps" />

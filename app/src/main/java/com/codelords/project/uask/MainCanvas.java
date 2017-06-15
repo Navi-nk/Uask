@@ -540,7 +540,7 @@ public class MainCanvas extends AppCompatActivity
 
             // After logout redirect user to Loing Activity
             Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-            i.putExtra("logout","google");
+            //i.putExtra("logout","google");
             // Closing all the Activities
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             // Add new Flag to start new Activity

@@ -83,11 +83,15 @@ public class TextActivity extends Activity {
         // Create Lex interaction client.
         lexInteractionClient = new InteractionClient(getApplicationContext(),
                 CognitoHelper.getCredentialsProvider(),
-                Regions.US_EAST_1,
+                //Regions.US_EAST_1,
+                CognitoHelper.getCognitoRegion(),
                 appContext.getResources().getString(R.string.bot_name),
                 appContext.getResources().getString(R.string.bot_alias));
-        lexInteractionClient.setAudioPlaybackListener(audioPlaybackListener);
+       // lexInteractionClient.setAudioPlaybackListener(audioPlaybackListener);
         lexInteractionClient.setInteractionListener(interactionListener);
+        //lexInteractionClient.
+
+        Log.v("test",appContext.getResources().getString(R.string.bot_name));
     }
 
     /**

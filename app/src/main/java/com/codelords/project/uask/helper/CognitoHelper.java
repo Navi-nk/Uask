@@ -38,6 +38,10 @@ public class CognitoHelper {
     private static final String clientSecret = "1e25fnqghmeckf3p7hsn9r8hspjr92e8q8ljkoinkft7s3tvbmn6";
 
 
+    public static Regions getCognitoRegion() {
+        return cognitoRegion;
+    }
+
     private static final Regions cognitoRegion = Regions.US_EAST_1;
 
     private static CognitoUserSession currSession;

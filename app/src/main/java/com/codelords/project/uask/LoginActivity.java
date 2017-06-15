@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -58,10 +59,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -91,6 +94,7 @@ public class LoginActivity extends AppCompatActivity implements
     //FB Login parameters
     private LoginButton loginButton;
     private CallbackManager callbackManager;
+    Boolean flag = false;
 
     // User Details
     private String username;
@@ -117,9 +121,9 @@ public class LoginActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
        // LoginManager.getInstance().logOut();
-        Intent sintent = getIntent();
-        if(sintent.getStringExtra("logout") != null )
-            signOut();
+      //  Intent sintent = getIntent();
+      //  if(sintent.getStringExtra("logout") != null )
+      //      signOut();
 
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_login);
@@ -127,10 +131,10 @@ public class LoginActivity extends AppCompatActivity implements
         loginButton = (LoginButton)findViewById(R.id.login_button);
         _session = new SessionManager(getApplicationContext());
         // Set the dimensions of the sign-in button.
-        SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
-        signInButton.setSize(SignInButton.SIZE_WIDE);
-        TextView textView = (TextView) signInButton.getChildAt(0);
-        textView.setText("Continue with Google");
+       // SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+      //  signInButton.setSize(SignInButton.SIZE_WIDE);
+      //  TextView textView = (TextView) signInButton.getChildAt(0);
+      //  textView.setText("Continue with Google");
 
         //Setup AWS Cognito attributes
         CognitoHelper.init(getApplicationContext());
@@ -155,7 +159,8 @@ public class LoginActivity extends AppCompatActivity implements
             new GetFbDetails(fbAccessToken).execute();
         }
 
-        implementGoogleSignIn();
+      //  if(!flag)
+       //     implementGoogleSignIn();
 
 
         //Listener for Log in button
@@ -167,14 +172,14 @@ public class LoginActivity extends AppCompatActivity implements
             }
         });
 
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                startActivityForResult(signInIntent, RC_SIGN_IN);
-            }
-        });
-        checkGoogleSignin();
+      //  signInButton.setOnClickListener(new View.OnClickListener() {
+       //     @Override
+       //     public void onClick(View v) {
+       //         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        //        startActivityForResult(signInIntent, RC_SIGN_IN);
+       //     }
+       // });
+       // checkGoogleSignin();
         findCurrent();
 
 
@@ -188,6 +193,8 @@ public class LoginActivity extends AppCompatActivity implements
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                .requestServerAuthCode("59505410509-hntposbd1b1n0b7tht26o6tr8hkfv9ei.apps.googleusercontent.com")
+                .requestScopes(new Scope(Scopes.PLUS_LOGIN))
                 .build();
 
         // Build a GoogleApiClient with access to the Google Sign-In API and the
@@ -335,12 +342,11 @@ public class LoginActivity extends AppCompatActivity implements
                // if(Boolean.valueOf(user.getStatus()) && !user.getRes().isEmpty()){
                 if(Boolean.valueOf(user.getStatus())){
                     _session.createLoginSession((user.getRes()).get(0).getName(), (user.getRes()).get(0).getFaculty());
-
+                    if(progressDialog != null)
+                        progressDialog.dismiss();
                     // Navigate to Home screen
                     Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
                     startActivity(intent);
-                    if(progressDialog != null)
-                        progressDialog.dismiss();
                     finish();
                 }
                 else {
@@ -422,11 +428,11 @@ public class LoginActivity extends AppCompatActivity implements
             try {
                   if(Boolean.valueOf(answerPostStatus.getStatus())){
                       _session.createLoginSession(user, faculty);
+                      if(progressDialog != null)
+                          progressDialog.dismiss();
                             // Navigate to Home screen
                             Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
                             startActivity(intent);
-                            if(progressDialog != null)
-                                progressDialog.dismiss();
                             finish();
                     }
                   else{
@@ -838,15 +844,34 @@ public class LoginActivity extends AppCompatActivity implements
 
     //This need to be incorporated for logout..
     private void signOut() {
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        // [START_EXCLUDE]
-                    Log.v("LoginActivity","Logged out of Google");
-                        // [END_EXCLUDE]
-                    }
-                });
+        if(mGoogleApiClient == null) {
+            implementGoogleSignIn();
+            flag = true;
+            mGoogleApiClient.connect();
+        }
+        mGoogleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+            @Override
+            public void onConnected(@Nullable Bundle bundle) {
+                if(mGoogleApiClient.isConnected()) {
+                    Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(@NonNull Status status) {
+                            if (status.isSuccess()) {
+                                Log.d(TAG, "User Logged out");
+                                //Intent intent = new Intent(LogoutActivity.this, LoginActivity.class);
+                                //startActivity(intent);
+                                //finish();
+                            }
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onConnectionSuspended(int i) {
+                Log.d(TAG, "Google API Client Connection Suspended");
+            }
+        });
     }
 
     private void checkGoogleSignin(){

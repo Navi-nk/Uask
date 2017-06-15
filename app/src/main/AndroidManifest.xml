@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
+
     <meta-data android:name="com.facebook.sdk.AutoLogAppEventsEnabled"
         android:value="false"/>
     <application
@@ -83,6 +84,7 @@
         <activity android:name="com.codelords.project.uask.ShowBasicInfo"
             >
         </activity>
+        <activity android:name=".TextActivity" />
     </application>
 
 </manifest>

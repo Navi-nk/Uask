@@ -37,6 +37,7 @@ public class TextActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text);
         init();
+        Conversation.clear();
     }
 
     @Override
@@ -121,7 +122,7 @@ public class TextActivity extends Activity {
      */
     private void readUserText(final LexServiceContinuation continuation) {
         convContinuation = continuation;
-        inConversation = true;
+        inConversation = false;
     }
 
     /**
@@ -129,7 +130,7 @@ public class TextActivity extends Activity {
      */
     private void startNewConversation() {
         Log.d(TAG, "Starting new conversation");
-        Conversation.clear();
+//        Conversation.clear();
         inConversation = false;
         clearTextInput();
     }

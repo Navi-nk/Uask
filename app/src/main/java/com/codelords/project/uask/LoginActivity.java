@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -115,7 +116,11 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LoginManager.getInstance().logOut();
+       // LoginManager.getInstance().logOut();
+        Intent sintent = getIntent();
+        if(sintent.getStringExtra("logout") != null )
+            signOut();
+
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
@@ -170,7 +175,6 @@ public class LoginActivity extends AppCompatActivity implements
             }
         });
         checkGoogleSignin();
-        
         findCurrent();
 
 
@@ -328,8 +332,8 @@ public class LoginActivity extends AppCompatActivity implements
         protected void onPostExecute(UserDetailsModel user) {
             // Log.d("Check result",QuestionAnswerSearchResults);
             try {
-                if(Boolean.valueOf(user.getStatus()) && !user.getRes().isEmpty()){
-
+               // if(Boolean.valueOf(user.getStatus()) && !user.getRes().isEmpty()){
+                if(Boolean.valueOf(user.getStatus())){
                     _session.createLoginSession((user.getRes()).get(0).getName(), (user.getRes()).get(0).getFaculty());
 
                     // Navigate to Home screen
@@ -344,7 +348,7 @@ public class LoginActivity extends AppCompatActivity implements
                     LayoutInflater li = LayoutInflater.from(LoginActivity.this);
                     View promptsView = li.inflate(R.layout.custom_dialog, null);
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                            LoginActivity.this);
+                            LoginActivity.this,R.style.DialogTheme);
                     alertDialogBuilder.setView(promptsView);
                     populateFacultySpinner(promptsView);
                     alertDialogBuilder
@@ -366,6 +370,8 @@ public class LoginActivity extends AppCompatActivity implements
                             .setNegativeButton("Cancel",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
+                                            if(progressDialog != null)
+                                                progressDialog.dismiss();
                                             dialog.cancel();
                                         }
                                     });
@@ -677,6 +683,12 @@ public class LoginActivity extends AppCompatActivity implements
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
+
+            progressDialog = new ProgressDialog(LoginActivity.this,
+                    R.style.AppTheme_Dark_Dialog);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setMessage("Signing In...");
+            progressDialog.show();
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
 
@@ -689,6 +701,11 @@ public class LoginActivity extends AppCompatActivity implements
             Map<String, String> logins = new HashMap<String, String>();
             logins.put("accounts.google.com", acct.getIdToken());
             CognitoHelper.setLogins(logins);
+            new RefreshTask().execute();
+
+            String username = acct.getDisplayName();
+            String email = acct.getEmail();
+            new processFBDetailsTask().execute(_facultyText,username,email);
             //this will be changed anyway
             //Intent intent = new Intent(getApplicationContext(), About.class);
             //startActivity(intent);
@@ -826,7 +843,7 @@ public class LoginActivity extends AppCompatActivity implements
                     @Override
                     public void onResult(Status status) {
                         // [START_EXCLUDE]
-
+                    Log.v("LoginActivity","Logged out of Google");
                         // [END_EXCLUDE]
                     }
                 });
@@ -840,7 +857,7 @@ public class LoginActivity extends AppCompatActivity implements
             Log.d(TAG, "Got cached sign-in");
             GoogleSignInResult result = opr.get();
             handleSignInResult(result);
-        } else {
+        } /*else {
             // If the user has not previously signed in on this device or the sign-in has expired,
             // this asynchronous branch will attempt to sign in the user silently.  Cross-device
             // single sign-on will occur in this branch.
@@ -852,7 +869,7 @@ public class LoginActivity extends AppCompatActivity implements
                     handleSignInResult(googleSignInResult);
                 }
             });
-        }
+        }*/
     }
 
 

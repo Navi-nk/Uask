@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
@@ -16,7 +18,9 @@ import android.util.Log;
 
 import android.content.Intent;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -33,11 +37,18 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.Mult
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.NewPasswordContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GetDetailsHandler;
+import com.codelords.project.uask.helper.ApiGatewayHelper;
 import com.codelords.project.uask.helper.CognitoHelper;
+import com.codelords.uask.apiclientsdk.UAskClient;
+import com.codelords.uask.apiclientsdk.model.QueryPostStatus;
+import com.codelords.uask.apiclientsdk.model.UserDetailsModel;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
@@ -48,16 +59,19 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -66,6 +80,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
 
+import static com.codelords.project.uask.SignupActivity.SPINNERLIST;
 
 
 public class LoginActivity extends AppCompatActivity implements
@@ -85,7 +100,7 @@ public class LoginActivity extends AppCompatActivity implements
     private GoogleApiClient mGoogleApiClient;
 
     private ProgressDialog progressDialog;
-
+    private String _facultyText;
     private static final int RC_SIGN_IN = 9001;
 
     // Session Manager Class
@@ -100,7 +115,7 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        LoginManager.getInstance().logOut();
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
@@ -112,15 +127,31 @@ public class LoginActivity extends AppCompatActivity implements
         TextView textView = (TextView) signInButton.getChildAt(0);
         textView.setText("Continue with Google");
 
+        //Setup AWS Cognito attributes
+        CognitoHelper.init(getApplicationContext());
+        ApiGatewayHelper.init(CognitoHelper.getCredentialsProvider());
+
         //This method to implement the sign up link functionality.
         implementSignUpLink();
         //FB sign in
         implementFBSignIn();
 
+        //If access token is already here, set fb session
+        final AccessToken fbAccessToken = AccessToken.getCurrentAccessToken();
+        if (fbAccessToken != null) {
+            progressDialog = new ProgressDialog(LoginActivity.this,
+                    R.style.AppTheme_Dark_Dialog);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setMessage("Signing In...");
+            progressDialog.show();
+            setFacebookSession(fbAccessToken);
+            loginButton.setVisibility(View.GONE);
+            //LoginManager.getInstance().registerCallback();
+            new GetFbDetails(fbAccessToken).execute();
+        }
+
         implementGoogleSignIn();
 
-        //Setup AWS Cognito attributes
-        CognitoHelper.init(getApplicationContext());
 
         //Listener for Log in button
         _loginButton.setOnClickListener(new View.OnClickListener() {
@@ -138,8 +169,12 @@ public class LoginActivity extends AppCompatActivity implements
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }
         });
-
+        checkGoogleSignin();
+        
         findCurrent();
+
+
+
     }
 
 
@@ -161,18 +196,28 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     private void implementFBSignIn(){
+        loginButton.setReadPermissions(Arrays.asList("email"));
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d("fb",loginResult.getAccessToken().getToken()+' '+loginResult.getAccessToken().getUserId());
-                Map<String, String> logins = new HashMap<String, String>();
-                logins.put("graph.facebook.com", loginResult.getAccessToken().getToken());
-                CognitoHelper.setLogins(logins);
+                progressDialog = new ProgressDialog(LoginActivity.this,
+                        R.style.AppTheme_Dark_Dialog);
+                progressDialog.setIndeterminate(true);
+                progressDialog.setMessage("Signing In...");
+                progressDialog.show();
+                AccessToken accessToken = loginResult.getAccessToken();
+                setFacebookSession(accessToken);
 
+                new GetFbDetails(accessToken).execute();
+
+                //Map<String, String> logins = new HashMap<String, String>();
+                //logins.put("graph.facebook.com", loginResult.getAccessToken().getToken());
+                //CognitoHelper.setLogins(logins);
                 //_session.createLoginSession(uname,obj.getJSONArray("res").getJSONObject(0).getString("_faculty") ); have to implement this
 
-                Intent intent = new Intent(getApplicationContext(), About.class);
-                startActivity(intent);
+               // Intent intent = new Intent(getApplicationContext(), About.class);
+                //startActivity(intent);
             }
 
             @Override
@@ -185,6 +230,237 @@ public class LoginActivity extends AppCompatActivity implements
                 Log.d("fb","2");
             }
         });
+    }
+
+    private void setFacebookSession(AccessToken accessToken) {
+        Log.i(TAG, "facebook token: " + accessToken.getToken());
+        CognitoHelper.clearToken();
+        Map<String, String> logins = new HashMap<String, String>();
+        logins.put("graph.facebook.com", accessToken.getToken());
+        CognitoHelper.setLogins(logins);
+        new RefreshTask().execute();
+        loginButton.setVisibility(View.GONE);
+    }
+
+    private class GetFbDetails extends AsyncTask<Void, Void, String[]> {
+        //private final LoginResult loginResult;
+        private final AccessToken accessToken;
+        private ProgressDialog dialog;
+
+        public GetFbDetails(AccessToken accessToken) {
+            this.accessToken = accessToken;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            dialog = ProgressDialog.show(LoginActivity.this, "Wait", "Getting user name and email");
+        }
+
+        @Override
+        protected String[] doInBackground(Void... params) {
+            GraphRequest request = GraphRequest.newMeRequest(
+                    accessToken,
+                    new GraphRequest.GraphJSONObjectCallback() {
+                        @Override
+                        public void onCompleted(
+                                JSONObject object,
+                                GraphResponse response) {
+                            // Application code
+                            Log.v("LoginActivity", response.toString());
+                        }
+                    });
+            Log.v("token",accessToken.getToken());
+            String[] response = new String[2];
+            Bundle parameters = new Bundle();
+            parameters.putString("fields", "name,email");
+            request.setParameters(parameters);
+            GraphResponse graphResponse = request.executeAndWait();
+            try {
+
+                response[0] = graphResponse.getJSONObject().getString("name");
+                response[1] = graphResponse.getJSONObject().getString("email");
+            } catch (JSONException e) {
+                return null;
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String[] response) {
+            dialog.dismiss();
+            if (response != null && !response[0].isEmpty() && !response[1].isEmpty()) {
+                new processFBDetailsTask().execute(_facultyText,response[0],response[1]);
+            } else {
+                if(progressDialog != null)
+                    progressDialog.dismiss();
+                Toast.makeText(LoginActivity.this, "Unable to get user name and email from Facebook",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    public class processFBDetailsTask extends AsyncTask<String, Void, UserDetailsModel> {
+
+        String username,email;
+        // COMPLETED (26) Override onPreExecute to set the loading indicator to visible
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected UserDetailsModel doInBackground(String... strings) {
+            UserDetailsModel user=null;
+            //Toast.makeText(MainActivity.this, "Hello " + response, Toast.LENGTH_LONG).show();
+            UAskClient apiClient = ApiGatewayHelper.getApiClientFactory().build(UAskClient.class);
+            try {
+                this.username = strings[1];
+                email = strings[2];
+                user = apiClient.getusersGet(this.username, "NA");
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            return user;
+        }
+
+        @Override
+        protected void onPostExecute(UserDetailsModel user) {
+            // Log.d("Check result",QuestionAnswerSearchResults);
+            try {
+                if(Boolean.valueOf(user.getStatus()) && !user.getRes().isEmpty()){
+
+                    _session.createLoginSession((user.getRes()).get(0).getName(), (user.getRes()).get(0).getFaculty());
+
+                    // Navigate to Home screen
+                    Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
+                    startActivity(intent);
+                    if(progressDialog != null)
+                        progressDialog.dismiss();
+                    finish();
+                }
+                else {
+
+                    LayoutInflater li = LayoutInflater.from(LoginActivity.this);
+                    View promptsView = li.inflate(R.layout.custom_dialog, null);
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                            LoginActivity.this);
+                    alertDialogBuilder.setView(promptsView);
+                    populateFacultySpinner(promptsView);
+                    alertDialogBuilder
+                            .setCancelable(false)
+                            .setPositiveButton("OK",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            if (!_facultyText.isEmpty()) {
+                                                new storeFBDetailsTask().execute(_facultyText,username,email);
+                                            }
+                                            else{
+                                                if(progressDialog != null)
+                                                    progressDialog.dismiss();
+                                                Toast.makeText(LoginActivity.this, "faculty not set. aborting login",
+                                                        Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    })
+                            .setNegativeButton("Cancel",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+
+                    // create alert dialog
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    // show it
+                    alertDialog.show();
+
+                }
+            } catch(Exception e) {
+                Toast.makeText(LoginActivity.this, e.toString(), Toast.LENGTH_LONG).show();
+            }
+            // COMPLETED (27) As soon as the loading is complete, hide the loading indicator
+        }
+
+    }
+
+    public class storeFBDetailsTask extends AsyncTask<String, Void, QueryPostStatus> {
+
+        String user,faculty;
+
+        // COMPLETED (26) Override onPreExecute to set the loading indicator to visible
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected QueryPostStatus doInBackground(String... strings) {
+            QueryPostStatus answerPostStatus=null;
+            //Toast.makeText(MainActivity.this, "Hello " + response, Toast.LENGTH_LONG).show();
+            UAskClient apiClient = ApiGatewayHelper.getApiClientFactory().build(UAskClient.class);
+            try {
+                faculty=strings[0];
+                user=strings[1];
+                answerPostStatus = apiClient.signupGet(strings[0],strings[1],strings[2]);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            return answerPostStatus;
+        }
+
+        @Override
+        protected void onPostExecute(QueryPostStatus answerPostStatus) {
+            // Log.d("Check result",QuestionAnswerSearchResults);
+            try {
+                  if(Boolean.valueOf(answerPostStatus.getStatus())){
+                      _session.createLoginSession(user, faculty);
+                            // Navigate to Home screen
+                            Intent intent = new Intent(getApplicationContext(), MainCanvas.class);
+                            startActivity(intent);
+                            if(progressDialog != null)
+                                progressDialog.dismiss();
+                            finish();
+                    }
+                  else{
+                      if(progressDialog != null)
+                          progressDialog.dismiss();
+                      Toast.makeText(LoginActivity.this, "sign up failed. aborting login",
+                              Toast.LENGTH_LONG).show();
+                  }
+            } catch(Exception e) {
+                Toast.makeText(LoginActivity.this, e.toString(), Toast.LENGTH_LONG).show();
+            }
+            // COMPLETED (27) As soon as the loading is complete, hide the loading indicator
+        }
+    }
+
+    private void populateFacultySpinner(View view) {
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, SPINNERLIST);
+        final MaterialBetterSpinner materialDesignSpinner = (MaterialBetterSpinner)
+        //        findViewById(R.id.faculty_dropdown);
+                view.findViewById(R.id.faculty_dropdown);
+        materialDesignSpinner.setAdapter(arrayAdapter);
+        materialDesignSpinner.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //Not required now
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //Not required
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                _facultyText = materialDesignSpinner.getText().toString();
+            }
+        });
+    }
+
       /*  //Check if user is currently logged in
         if (AccessToken.getCurrentAccessToken() != null && com.facebook.Profile.getCurrentProfile() != null){
             //Logged in so show the login button
@@ -207,7 +483,7 @@ public class LoginActivity extends AppCompatActivity implements
                 }
             });
         }*/
-    }
+
 
     private void implementSignUpLink()
     {
@@ -414,8 +690,8 @@ public class LoginActivity extends AppCompatActivity implements
             logins.put("accounts.google.com", acct.getIdToken());
             CognitoHelper.setLogins(logins);
             //this will be changed anyway
-            Intent intent = new Intent(getApplicationContext(), About.class);
-            startActivity(intent);
+            //Intent intent = new Intent(getApplicationContext(), About.class);
+            //startActivity(intent);
 
         } else {
             // Signed out, show unauthenticated UI.
@@ -554,6 +830,29 @@ public class LoginActivity extends AppCompatActivity implements
                         // [END_EXCLUDE]
                     }
                 });
+    }
+
+    private void checkGoogleSignin(){
+        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+        if (opr.isDone()) {
+            // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
+            // and the GoogleSignInResult will be available instantly.
+            Log.d(TAG, "Got cached sign-in");
+            GoogleSignInResult result = opr.get();
+            handleSignInResult(result);
+        } else {
+            // If the user has not previously signed in on this device or the sign-in has expired,
+            // this asynchronous branch will attempt to sign in the user silently.  Cross-device
+            // single sign-on will occur in this branch.
+            //showProgressDialog();
+            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                @Override
+                public void onResult(GoogleSignInResult googleSignInResult) {
+              //      hideProgressDialog();
+                    handleSignInResult(googleSignInResult);
+                }
+            });
+        }
     }
 
 

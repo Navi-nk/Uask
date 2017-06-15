@@ -161,6 +161,11 @@ public class CognitoHelper {
         CognitoHelper.credentialsProvider.setLogins(logins);
     }
 
+    public static void clearToken() {
+        CognitoHelper.credentialsProvider.clear();
+    }
+
+
     public static CognitoCachingCredentialsProvider getCredentialsProvider(){
         return credentialsProvider;
     }

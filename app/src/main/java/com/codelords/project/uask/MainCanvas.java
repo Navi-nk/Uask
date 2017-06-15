@@ -43,6 +43,7 @@ import com.codelords.project.uask.helper.ApiGatewayHelper;
 import com.codelords.project.uask.helper.CognitoHelper;
 import com.codelords.uask.apiclientsdk.UAskClient;
 import com.codelords.uask.apiclientsdk.model.QuestionFeedModel;
+import com.facebook.login.LoginManager;
 import com.google.gson.Gson;
 
 public class MainCanvas extends AppCompatActivity
@@ -126,7 +127,8 @@ public class MainCanvas extends AppCompatActivity
             setContentView(R.layout.activity_main_canvas);
             //SearchUrl = NetworkUtils.buildUrl(NetworkUtils.SEARCH_QUESTION,NetworkUtils.PARAM_SEARCH_STRING,i.getStringExtra("search_string").toString());
             _categorySelected = -1;
-
+            apiParam=i.getStringExtra("search_string").toString();
+            apiId=6;
         }
         else {
             Log.d("MainCanvas","Category");
@@ -299,6 +301,9 @@ public class MainCanvas extends AppCompatActivity
                         break;
                     case 5:
                         response = apiClient.getprivatefeedGet(apiParam);
+                        break;
+                    case 6:
+                        response = apiClient.searchquestionGet(apiParam);
                         break;
                     default:
                         response = apiClient.getfeedGet();
@@ -526,6 +531,8 @@ public class MainCanvas extends AppCompatActivity
             _session.logoutUser();
             if(CognitoHelper.getPool().getCurrentUser() != null)
                 CognitoHelper.getPool().getCurrentUser().signOut();
+
+                LoginManager.getInstance().logOut();
             // After logout redirect user to Loing Activity
             Intent i = new Intent(getApplicationContext(), LoginActivity.class);
             // Closing all the Activities

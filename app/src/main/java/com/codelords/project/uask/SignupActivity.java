@@ -295,8 +295,8 @@ public class SignupActivity extends AppCompatActivity {
                 // User is already confirmed
                 _signupButton.setEnabled(true);
                 String name = _nameText.getText().toString();
-                String pwd = _passwordText.getText().toString();
-                new saveUserDetailsTask().execute(_facultyText,name,pwd);
+                String email = _emailText.getText().toString();
+                new saveUserDetailsTask().execute(_facultyText,name,email);
             }
             else {
                 Toast.makeText(getApplicationContext(), "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
@@ -342,7 +342,7 @@ public class SignupActivity extends AppCompatActivity {
                 // JSONObject jsonObj = new JSONObject(QuestionAnswerSearchResults);
                 //String success = jsonObj.getString("status").toString();
                 if (answerPostStatus != null && !answerPostStatus.equals("")) {
-                    if (Boolean.valueOf(answerPostStatus.getStatus())) {
+                    //if (Boolean.valueOf(answerPostStatus.getStatus())) {
                         if (Boolean.valueOf(answerPostStatus.getStatus())) {
                             Intent intent = new Intent();
                             intent.putExtra("name", _nameText.getText().toString());
@@ -354,7 +354,7 @@ public class SignupActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
                             _signupButton.setEnabled(true);
                         }
-                    }
+                    //}
                 }
             } catch(Exception e) {
                 Toast.makeText(SignupActivity.this, e.toString(), Toast.LENGTH_LONG).show();

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/colorPrimary"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/txt_exit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:text="Please provide your faculty."
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"/>
+
+    <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+        android:id="@+id/faculty_dropdown"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:hint="Faculty"
+        app:met_underlineColor="@color/iron"
+        app:met_primaryColor="@color/white"
+        app:met_baseColor="@color/iron"
+        app:met_floatingLabelTextSize="16sp"
+        app:met_floatingLabelTextColor="@color/primaryOrange"
+        app:met_textColor="@color/primaryOrange"
+        app:met_textColorHint="@color/primaryOrange"
+        app:met_floatingLabel="normal"
+        />
+</LinearLayout>

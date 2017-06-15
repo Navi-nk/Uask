@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codelords.project.uask.helper.ApiGatewayHelper;
+import com.codelords.project.uask.helper.CognitoHelper;
 import com.codelords.uask.apiclientsdk.UAskClient;
 import com.codelords.uask.apiclientsdk.model.AnswerFeedModel;
 
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.*;
 
 public class AnswerActivity extends AppCompatActivity {
 
@@ -31,6 +33,7 @@ public class AnswerActivity extends AppCompatActivity {
     private MainAnswerAdapter mAnswerAdapter;
     private TextView questionText,authorText,timeStampText,submitAns,categoryText;
     private static UAskClient apiClient;
+    private static MobileAnalyticsManager analytics;
     String id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +62,21 @@ public class AnswerActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(null);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        try {
+            analytics = MobileAnalyticsManager.getOrCreateInstance(
+                    this.getApplicationContext(),
+                    "8d5e6256080e4acea50fcf9a805f0822", //Amazon Mobile Analytics App ID
+                    CognitoHelper.getIdentityPoolId()//Amazon Cognito Identity Pool ID
+            );
+        } catch(InitializationException ex) {
+            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
+        }
+
+        AnalyticsEvent questionViewEvent = analytics.getEventClient().createEvent("ViewQuestion")
+                .withAttribute("questionId", id);
+        //Record the  Question View  event
+        analytics.getEventClient().recordEvent(questionViewEvent);
 
         if(!noOfAnswers.equalsIgnoreCase("0 Answers")) {
            // URL SearchUrl = NetworkUtils.buildUrl(NetworkUtils.GET_ALL_ANSWERS, NetworkUtils.PARAM_QUESTION, id);

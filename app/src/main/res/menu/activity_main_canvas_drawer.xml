@@ -83,8 +83,8 @@
         <menu>
             <item
                 android:id="@+id/chatbot"
-                android:icon="@drawable/google_maps"
-                android:title="Chat Bot" />
+                android:icon="@drawable/chatbot"
+                android:title="U Ask Us" />
             <item
                 android:id="@+id/nav_maps"
                 android:icon="@drawable/google_maps"

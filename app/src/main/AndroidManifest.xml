@@ -84,7 +84,9 @@
         <activity android:name="com.codelords.project.uask.ShowBasicInfo"
             >
         </activity>
-        <activity android:name=".TextActivity" />
+        <activity android:name=".TextActivity"
+            android:theme="@style/AppThemeNoBar"
+            android:parentActivityName="com.codelords.project.uask.MainCanvas" />/>
     </application>
 
 </manifest>

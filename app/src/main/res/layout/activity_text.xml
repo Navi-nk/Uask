@@ -1,15 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/activity_text"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_intra_group_separation"
-    android:paddingLeft="@dimen/activity_intra_group_separation"
-    android:paddingRight="@dimen/activity_intra_group_separation"
-    android:paddingTop="@dimen/activity_intra_group_separation"
+    android:orientation="vertical"
     android:background ="#FFFFFF">
-
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tb_viewqa"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        >
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="?attr/actionBarSize"
+            >
+            <TextView
+                android:id="@+id/tb_qatitle"
+                style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="start|center"
+                android:text="uAsk"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textStyle="bold"/>
+        </RelativeLayout>
+    </android.support.v7.widget.Toolbar>
     <include layout="@layout/text_response_content" />
 
-</RelativeLayout>
+</LinearLayout>
+

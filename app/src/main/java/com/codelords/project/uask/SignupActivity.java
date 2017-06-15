@@ -262,7 +262,7 @@ public class SignupActivity extends AppCompatActivity {
             _emailText.setError(null);
         }
 
-        if (password.isEmpty() || password.length() < 3 || password.length() > 10) {
+        if (password.isEmpty() || password.length() < 7 || password.length() > 10) {
             _passwordText.setError("between 3 and 10 alphanumeric characters");
             valid = false;
         } else {

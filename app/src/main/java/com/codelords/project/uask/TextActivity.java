@@ -3,6 +3,8 @@ package com.codelords.project.uask;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -23,7 +25,7 @@ import com.codelords.project.uask.helper.CognitoHelper;
 import java.text.DateFormat;
 import java.util.Date;
 
-public class TextActivity extends Activity {
+public class TextActivity extends AppCompatActivity {
     private static final String TAG = "TextActivity";
     private EditText userTextInput;
     private Context appContext;
@@ -36,6 +38,11 @@ public class TextActivity extends Activity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.tb_viewqa);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle(null);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         init();
         Conversation.clear();
     }
